@@ -18,7 +18,7 @@
 int_t xorgauss_up_stack[__ID_SIZE__];
 int_t xorgauss_up_top_stack;
 
-/// @var uint_xorgauss_nb_of_vars;
+/// @var uint_t xorgauss_nb_of_vars;
 /// @var uint_t xorgauss_nb_of_equations;
 /// @brief resp. number of variables, number of equations
 static uint_t xorgauss_nb_of_vars;
