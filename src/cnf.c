@@ -113,18 +113,18 @@ inline bool cnf_infer(void) {
 
     // here propagation stack is initialized
     while(cnf_up_top_stack) {
-		l = cnf_up_stack[--cnf_up_top_stack];
-		if(_cnf_is_true(l)) continue;
-        else if(_cnf_is_false(l)) {
+		l = cnf_up_stack[--cnf_up_top_stack]; // l <-- top element from CNF_propagation_stack
+		if(_cnf_is_true(l)) continue; // Si l = true
+        else if(_cnf_is_false(l)) { // Si l = false
             cnf_up_top_stack = 0;
             return(false);
         } else {
-            _cnf_set(l, __TRUE__);
+            _cnf_set(l, __TRUE__); // l = true  -l = false
             cnf_history[cnf_history_top++] = l;
             // push propagation thanks to binary implications
-            const int_t _sz_bin_imp = cnf_size_of_binary_implications[l];
-            int_t * const _bin_imp = cnf_binary_implication[l];
-			for(i = 0; i < _sz_bin_imp; ++i) cnf_up_stack[cnf_up_top_stack++] = _bin_imp[i];
+            const int_t _sz_bin_imp = cnf_size_of_binary_implications[l]; // _sz_bin_imp = la taille de la liste d'implication 
+            int_t * const _bin_imp = cnf_binary_implication[l]; // _bin_imp = la liste des implication
+			for(i = 0; i < _sz_bin_imp; ++i) cnf_up_stack[cnf_up_top_stack++] = _bin_imp[i]; // Pour chaque implication on l'ajoute à CNF_propagation_stack
             // push propagation thanks to ternary implications
             const int_t _sz_ter_imp = cnf_size_of_ternary_implications[l];
             int_t * const _ter_imp = cnf_ternary_implication[l];
@@ -172,10 +172,12 @@ inline bool cnf_set_true(const int_t l) {
     return(cnf_infer());
 }
 
+// Lance la unit propagation sur les OR-clauses ?????
 bool cnf_set_unitary(void) {
 	return(cnf_infer());
 }
 
+// Initialise et remplie les structures pour le module CNF
 bool cnf_initiate_from_dimacs(void) {
     int_t i, j, sz;
     const int_t _n_v = dimacs_nb_vars();
@@ -332,6 +334,8 @@ void cnf_undo() {
     }
 	cnf_history_top_it = cnf_history_top;
 }
+
+// LAST_ASSIGNED_IN_CNF()
 
 /// @fn int_t cnf_last_assigned_breakpoint(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
