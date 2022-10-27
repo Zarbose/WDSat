@@ -123,7 +123,7 @@ inline void xorgauss_reset_boolean_vector(uint_t *v) {
 		v[i] ^= v[i];
 }
 
-inline uint_t xorgauss_get_size_of_boolean_vector(uint_t *v, uint_t *lt) {
+inline uint_t xorgauss_get_size_of_boolean_vector(uint_t *v, uint_t *lt) { // Not used
 	uint_t sz = 0ULL, mask, _id, i;
 	_id = 0ULL;
 	bool is_cst = false;
@@ -152,7 +152,7 @@ inline uint_t xorgauss_get_size_of_boolean_vector(uint_t *v, uint_t *lt) {
 	return(sz);
 }
 
-inline uint_t xorgauss_get_last_id_from_boolean_vector(uint_t *v) {
+inline uint_t xorgauss_get_last_id_from_boolean_vector(uint_t *v) { // Not used
 	uint_t i, _id, mask;
 	_id = 0ULL;
 	_id = __SZ_ATOM__ * __SZ_GAUSS__;
@@ -223,7 +223,7 @@ inline bool xorgauss_is_constant(uint_t *v) {
 	return(true);
 }
 
-void aff_bin(uint_t v)
+void aff_bin(uint_t v) // Not used
 {
 	int i;
 	for(i=63; i>=0; i--)
@@ -233,6 +233,7 @@ void aff_bin(uint_t v)
 	printf("\n");
 }
 
+// Initialise et remplie les structures pour le module XORGAUSS
 bool xorgauss_from_dimacs() {
 	static uint_t i, j, u_lt;
 	static int_t lt;
@@ -600,6 +601,7 @@ bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 	return true;
 }
 
+
 bool xorgauss_set_true(const int_t v)
 {
 	assert(abs((int) v) <= xorgauss_nb_of_vars);
@@ -741,6 +743,7 @@ bool xorgauss_infer(int_t v) {
 	return true;
 }
 
+// Initialise et remplie les structures pour le module XORGAUSS 
 bool xorgauss_initiate_from_dimacs() {
 	const int_t _n_v = dimacs_nb_vars();
 	const int_t _n_x = dimacs_nb_xor_equations();
