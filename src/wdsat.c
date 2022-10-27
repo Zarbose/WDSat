@@ -25,7 +25,7 @@ int test[100] = {0};
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
-static int_t nb_of_vars;
+static int_t nb_of_vars; // Not used
 	
 /// @var int_t wdsat_cnf_up_stack[__ID_SIZE__];
 /// @brief unit propagation cnf stack
@@ -62,12 +62,12 @@ bool wdsat_set_true(const int_t l) {
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
             if(_cnf_is_undef(_l)) _next_loop = true;
-			if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l);*/return false;}
+			if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
 		}
 		while(wdsat_xorset_up_top_stack) {
 			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
 			if(_xorset_is_undef(_l)) _next_loop = true;
-			if(!xorset_set_true(_l)) {/*printf("xor contr %lld\n",_l);*/return false;}
+			if(!xorset_set_true(_l)) {/*printf("xor contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
 		}
 		wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
 		wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
@@ -419,6 +419,7 @@ bool wdsat_infer(const int_t l) {
 	return true;
 }
 
+// Déduction ?????
 bool wdsat_infer_unitary() {
 	bool _loop_pass = true;
 	bool _continue;
@@ -428,7 +429,7 @@ bool wdsat_infer_unitary() {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 	
-	if(!wdsat_set_unitary()) return false;
+	if(!wdsat_set_unitary()) return false; // Affectation avec les modules CNF et XORSET ?????
 	while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;
