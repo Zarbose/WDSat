@@ -86,11 +86,12 @@ bool xorset_set_true(const int_t v) {
     return(xorset_infer());
 }
 
+// Lance la unit propagation sur les XOR-clauses ?????
 bool xorset_set_unitary(void) {
 	return(xorset_infer());
 }
 
-int_t xorset_occurrence(int_t l)
+int_t xorset_occurrence(int_t l) // Not used
 {
     return xorset_size_of_index[l];
 }
@@ -98,53 +99,53 @@ int_t xorset_occurrence(int_t l)
 bool xorset_infer() {
     static int_t l, i, j, c, up_l;
     while(xorset_up_top_stack) {
-        l = xorset_up_stack[--xorset_up_top_stack];
-        if(_xorset_is_true(l)) continue;
-        else if(_xorset_is_false(l)) {
+        l = xorset_up_stack[--xorset_up_top_stack]; // l <-- top element from XORSET_propagation_stack
+        if(_xorset_is_true(l)) continue; // Si l = true
+        else if(_xorset_is_false(l)) { // Si l = false
             xorset_up_top_stack = 0;
             return(false);
         } else {
-            _xorset_set(l, __TRUE__)
+            _xorset_set(l, __TRUE__) // l = true  -l = TRUE xor TRUE
             xorset_history[xorset_history_top++] = l;
             // for clauses where _l is assigned to TRUE
-            const int_t xt_sz = xorset_size_of_index[l];
-            int_t * const idx_t = xorset_index[l];
-            for(i = 0; i < xt_sz; ++i) {
+            const int_t xt_sz = xorset_size_of_index[l]; // xt_sz = la taille de la liste des clauses qui possédent le littéral l
+            int_t * const idx_t = xorset_index[l]; // idx_t = la liste des clauses qui possédent le littéral l
+            for(i = 0; i < xt_sz; ++i) { // For each C in xorset_index[l]
                 c = idx_t[i];
-                ++xorset_degree_s[c];
+                ++xorset_degree_s[c]; // increment degree_T[C]
                 xorset_history_s[xorset_history_s_top++] = c;
                 const int_t d_s = xorset_degree_s[c];
                 const int_t sz_eq = size_of_xor_equation[c];
                 const int_t unset_lt = sz_eq - d_s - xorset_degree_u[c];
                 /// below is same as 'if(_xorset_clause_unsat(c)) return(false);'
 				if((!unset_lt) && (!(d_s & 1LL))) {xorset_up_top_stack = 0; return(false);}
-                if(unset_lt == 1) {
+                if(unset_lt == 1) { // if degree_T[C] + degree_F[C] = size [C] -1 ?????????
                     for(j = 0; j < sz_eq; ++j) {
                         up_l = xor_equation[c][j];
                         if(_xorset_is_undef(up_l)) {
-                            xorset_up_stack[xorset_up_top_stack++] = (d_s & 1) ? -up_l : up_l;
+                            xorset_up_stack[xorset_up_top_stack++] = (d_s & 1) ? -up_l : up_l; // if degree_T[C] is even 
 							break;
                         }
                     }
                 }
             }
             // for clauses where _l is assigned to FALSE
-            const int_t xf_sz = xorset_size_of_index[-l];
-            int_t * const idx_f = xorset_index[-l];
-            for(i = 0; i < xf_sz; ++i) {
+            const int_t xf_sz = xorset_size_of_index[-l];// xf_sz = la taille de la liste des clauses qui possédent le littéral -l
+            int_t * const idx_f = xorset_index[-l]; // idx_f = la liste des clauses qui possédent le littéral -l
+            for(i = 0; i < xf_sz; ++i) { // For each C in xorset_index[-l]
                 c = idx_f[i];
-                ++xorset_degree_u[c];
+                ++xorset_degree_u[c]; // increment degree_F[C]
                 xorset_history_u[xorset_history_u_top++] = c; //CHECK** changed from: xorset_history_s[xorset_history_s_top++] = c;
                 const int_t d_s = xorset_degree_s[c];
                 const int_t sz_eq = size_of_xor_equation[c];
                 const int_t unset_lt = sz_eq - d_s - xorset_degree_u[c];
                 /// below is same as 'if(_xorset_clause_unsat(c)) return(false);'
 				if((!unset_lt) && (!(d_s & 1LL))) {xorset_up_top_stack = 0; return(false);}
-                if(unset_lt == 1) {
+                if(unset_lt == 1) { // if degree_T[C] + degree_F[C] = size [C] -1 ?????????
                     for(j = 0; j < sz_eq; ++j) {
                         up_l = xor_equation[c][j];
                         if(_xorset_is_undef(up_l)) {
-                            xorset_up_stack[xorset_up_top_stack++] = (d_s & 1) ? -up_l : up_l;
+                            xorset_up_stack[xorset_up_top_stack++] = (d_s & 1) ? -up_l : up_l; // if degree_F[C] is even 
 							break;
                         }
                     }
@@ -157,7 +158,7 @@ bool xorset_infer() {
     return(true);
 }
 
-void xorset_set_deg(int_t l) {
+void xorset_set_deg(int_t l) { // Not used
 	static int_t i, c;
 			_xorset_set(l, __TRUE__)
 			const int_t xt_sz = xorset_size_of_index[l];
@@ -175,6 +176,7 @@ void xorset_set_deg(int_t l) {
 			}
 }
 
+// Initialise et remplie les structures pour le module XORSET
 bool xorset_initiate_from_dimacs() {
     static int_t i, j, sz;
     const int_t _n_v = dimacs_nb_vars();
@@ -282,7 +284,7 @@ void xorset_undo() {
 /// the last breakpoint
 /// @param up_stack is the list that will be filled
 /// @return the last element in the stack 
-int_t xorset_last_assigned_breakpoint(int_t *up_stack) {
+int_t xorset_last_assigned_breakpoint(int_t *up_stack) { // Not used
 	int_t up_stack_top = 0LL;
 	int_t _l;
 	xorset_history_top_it = (xorset_step_top) ? xorset_step[xorset_step_top - 1LL] : 0;
@@ -292,6 +294,8 @@ int_t xorset_last_assigned_breakpoint(int_t *up_stack) {
 	}
 	return up_stack_top;
 }
+
+// LAST_ASSIGNED_IN_XORSET()
 
 //CHECK**
 /// @fn int_t xorset_last_assigned(int_t *up_stack);
@@ -311,7 +315,7 @@ int_t xorset_last_assigned(int_t *up_stack) {
 
 /// @fn const int_t xorset_number_of_assigned_variables();
 /// @brief return the number of assigned variables.
-inline const int_t xorset_number_of_assigned_variables() { return xorset_history_top; }
+inline const int_t xorset_number_of_assigned_variables() { return xorset_history_top; } // Not used
 
 void cpy_from_dimacs()
 {
