@@ -119,7 +119,7 @@ inline bool cnf_infer(void) {
             cnf_up_top_stack = 0;
             return(false);
         } else {
-            _cnf_set(l, __TRUE__); // l = true  -l = false
+            _cnf_set(l, __TRUE__); // l = true  -l = TRUE XOR TRUE
             cnf_history[cnf_history_top++] = l;
             // push propagation thanks to binary implications
             const int_t _sz_bin_imp = cnf_size_of_binary_implications[l]; // _sz_bin_imp = la taille de la liste d'implication 
@@ -200,7 +200,7 @@ bool cnf_initiate_from_dimacs(void) {
     cnf_size_of_binary_implications[0LL] = cnf_size_of_ternary_implications[0LL] = cnf_size_of_quaternary_implications[0LL] = 0LL;
     cnf_binary_implication[0LL] = cnf_ternary_implication[0LL] = cnf_quaternary_implication[0LL] = NULL;
     for(i = 1LL; i <= _n_v; ++i) {
-        _cnf_unset(i);
+        _cnf_unset(i); // cnf_assignment[i] et cnf_assignment[-i] sont set à __UNDEF__
         cnf_size_of_binary_implications[i] = cnf_size_of_binary_implications[-i] = 0LL;
 		cnf_size_of_ternary_implications[i] = cnf_size_of_ternary_implications[-i] = 0LL;
 		cnf_size_of_quaternary_implications[i] = cnf_size_of_quaternary_implications[-i] = 0LL;
