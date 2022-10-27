@@ -92,7 +92,9 @@ void dimacs_generate_meaning() {
 	}
 }
 
-#ifdef __XG_ENHANCED__
+// Si le fichier utilisé contient une formule sous la forme anf
+// On trouvera dans les structures les OR-Clauses qui seront générés
+#ifdef __XG_ENHANCED__ 
 void dimacs_read_formula(FILE *f) {
 	char str_clause[__STATIC_CLAUSE_STRING_SIZE__] = {0};
 	int_t l, i, j, deg, a_temp, d, k;
@@ -274,7 +276,7 @@ void dimacs_read_formula(FILE *f) {
 	assert(dimacs_nb_of_vars <= __ID_SIZE__);
 }
 void dimacs_read_header(FILE *f) {}
-#else
+#else // Si le fichier utilisé contient une formule sous la forme dimacs
 
 void dimacs_print_assigned_meaning() {
     const int_t nbv = dimacs_nb_of_vars;
