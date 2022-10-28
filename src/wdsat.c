@@ -475,9 +475,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		return false;
 	}
 	cpy_from_dimacs();
-	//cnf_fprint();
+	// cnf_fprint();
 	//xorset_fprint();
 	//xorgauss_fprint();
+	// dimacs_print_formula();
 	
 	//check allocated memory
 	if(dimacs_nb_vars() < __MAX_ID__)

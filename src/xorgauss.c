@@ -309,6 +309,7 @@ bool xorgauss_from_dimacs() {
 	return(true);
 }
 
+// ?????
 bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 {
 	static uint_t i, _to_subst;

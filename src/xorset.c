@@ -281,7 +281,7 @@ void xorset_undo() {
 //CHECK**
 /// @fn int_t xorset_last_assigned_breakpoint(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
-/// the last breakpoint
+/// the last breakpointxorset_history_top
 /// @param up_stack is the list that will be filled
 /// @return the last element in the stack 
 int_t xorset_last_assigned_breakpoint(int_t *up_stack) { // Not used
