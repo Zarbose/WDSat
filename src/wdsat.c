@@ -214,9 +214,9 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	printf("\n");
 #endif
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
-}*/
+}
 
-/*bool go_left(int_t h, int_t h_end, bool search_prune_point, int_t conf[])
+bool go_left(int_t h, int_t h_end, bool search_prune_point, int_t conf[])
 {
 	conf[0]++;
 	if(!wdsat_set_true(-set[h]))
@@ -373,8 +373,8 @@ bool wdsat_solve_rest_XG_sym(int_t h, int_t h_end, bool search_prune_point, int_
 	}
 	return go_right_XG(h, h_end, search_prune_point, conf);
 }
-
-bool wdsat_infer(const int_t l) {
+*/
+/*bool wdsat_infer(const int_t l) {
 	bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
@@ -414,18 +414,17 @@ bool wdsat_infer(const int_t l) {
 	return true;
 }*/
 
-// Déduction ?????
-bool wdsat_infer_unitary() {
-	/*bool _loop_pass = true;
+/*bool wdsat_infer_unitary() {
+	bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
 	int_t cnf_history_last = cnf_history_top;
 	int_t xorgauss_history_it;wdsat_set_unitary
 	int_t xorgauss_history_last = xorgauss_history_top;
-	int_t _l;*/
+	int_t _l;
 	
 	if(!wdsat_set_unitary()) return false; // Affectation avec les modules CNF et XORSET ?????
-	/*while(_loop_pass) {
+	while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;
 		cnf_history_it = cnf_history_top;
@@ -451,9 +450,9 @@ bool wdsat_infer_unitary() {
 			}
 			xorgauss_history_last = xorgauss_history_top;
 		}
-	}*/
+	}
 	return true;
-}
+}*/
 
 /// @fn solve();
 /// @return false if formula is unsatisfiable and true otherwise
@@ -495,7 +494,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	// end code for multithread (this has to be done before wdsat_infer_unitary();
 	
-	wdsat_infer_unitary();
+	// wdsat_infer_unitary();
 	if(strlen(mvc_graph) > 0)
 	{
 		nb_min_vars = 0;
