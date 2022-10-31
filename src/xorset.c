@@ -90,11 +90,6 @@ bool xorset_set_unitary(void) {
 	return(xorset_infer());
 }
 
-/*int_t xorset_occurrence(int_t l) // Not used
-{
-    return xorset_size_of_index[l];
-}*/
-
 bool xorset_infer() {
     static int_t l, i, j, c, up_l;
     while(xorset_up_top_stack) {
@@ -156,24 +151,6 @@ bool xorset_infer() {
     if(xorset_history_top == xorset_nb_of_vars) xorset_status = __TRUE__;
     return(true);
 }
-
-/*void xorset_set_deg(int_t l) { // Not used
-	static int_t i, c;
-			_xorset_set(l, __TRUE__)
-			const int_t xt_sz = xorset_size_of_index[l];
-			int_t * const idx_t = xorset_index[l];
-			for(i = 0; i < xt_sz; ++i) {
-				c = idx_t[i];
-				++xorset_degree_s[c];
-			}
-			// for clauses where _l is assigned to FALSE
-			const int_t xf_sz = xorset_size_of_index[-l];
-			int_t * const idx_f = xorset_index[-l];
-			for(i = 0; i < xf_sz; ++i) {
-				c = idx_f[i];
-				++xorset_degree_u[c];
-			}
-}*/
 
 // Initialise et remplie les structures pour le module XORSET
 bool xorset_initiate_from_dimacs() {
@@ -310,12 +287,6 @@ int_t xorset_last_assigned(int_t *up_stack) {
 	}
 	return up_stack_top;
 }
-
-/*
-/// @fn const int_t xorset_number_of_assigned_variables();
-/// @brief return the number of assigned variables.
-inline const int_t xorset_number_of_assigned_variables() { return xorset_history_top; } // Not used
-*/
 
 void cpy_from_dimacs()
 {

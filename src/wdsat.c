@@ -70,7 +70,7 @@ bool wdsat_set_true(const int_t l) {
     return true;
 }
 
-bool wdsat_set_unitary(void) {
+/*bool wdsat_set_unitary(void) {
 	bool _next_loop;
 	int_t _l;
 	wdsat_cnf_up_top_stack = 0LL;
@@ -97,7 +97,7 @@ bool wdsat_set_unitary(void) {
 		wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
 	}
 	return true;
-}
+}*/
 
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	if(l > set_end)
@@ -256,12 +256,12 @@ bool wdsat_infer(const int_t l) {
 	return true;
 }
 
-bool wdsat_infer_unitary() {
+/*bool wdsat_infer_unitary() {
 	bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
 	int_t cnf_history_last = cnf_history_top;
-	int_t xorgauss_history_it;wdsat_set_unitary;
+	int_t xorgauss_history_it;
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 	
@@ -294,7 +294,7 @@ bool wdsat_infer_unitary() {
 		}
 	}
 	return true;
-}
+}*/
 
 /// @fn solve();
 /// @return false if formula is unsatisfiable and true otherwise
@@ -312,8 +312,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	cpy_from_dimacs();
 	// cnf_fprint();
-	//xorset_fprint();
-	//xorgauss_fprint();
+	// xorset_fprint();
+	// xorgauss_fprint();
 	// dimacs_print_formula();
 	
 	//check allocated memory
@@ -336,7 +336,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	// end code for multithread (this has to be done before wdsat_infer_unitary();
 	
-	wdsat_infer_unitary();
+	// wdsat_infer_unitary();
 	if(strlen(mvc_graph) > 0)
 	{
 		nb_min_vars = 0;

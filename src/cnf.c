@@ -92,21 +92,6 @@ void cnf_fprint() {
 	}
 }
 
-/*int_t cnf_occurrence_binary(int_t l) // Not used
-{
-    return cnf_size_of_binary_implications[l];
-}
-
-int_t cnf_occurrence_ternary(int_t l) // Not used
-{
-    return cnf_size_of_ternary_implications[l]/2;
-}
-
-int_t cnf_occurrence_quaternary(int_t l) // Not used
-{
-	return cnf_size_of_quaternary_implications[l]/3;
-}*/
-
 inline bool cnf_infer(void) {
     static int_t l, i, l1, l2, l3;
     static boolean_t t1, t2, t3;
@@ -334,6 +319,7 @@ void cnf_undo() {
 	cnf_history_top_it = cnf_history_top;
 }
 
+/*
 /// @fn int_t cnf_last_assigned_breakpoint(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
 /// the last breakpoint
@@ -349,6 +335,7 @@ int_t cnf_last_assigned_breakpoint(int_t *up_stack) { // Not used
 	}
 	return up_stack_top;
 }
+*/
 
 /// @fn int_t cnf_last_assigned(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
@@ -365,9 +352,10 @@ int_t cnf_last_assigned(int_t *up_stack) {
 	return up_stack_top;
 }
 
+/*
 /// @fn const int_t cnf_number_of_assigned_variables();
 /// @brief return the number of assigned variables.
 inline const int_t cnf_number_of_assigned_variables() { return cnf_history_top; } // Not used
-
+*/
 
 
