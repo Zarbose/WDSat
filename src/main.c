@@ -113,7 +113,7 @@ int main(int argc, char * argv[]) {
 	byte_t exit_value = (byte_t) EXIT_SUCCESS;
 	
 	char *syntax =
-	"c          -x : to enable Gaussian Elimination\n"
+	"c          -x : to enable Gaussian Elimination (Not implemented)\n"
 	"c          -i file    : where file is the input file\n"
 	"c          -g mvc    : where mvc is a string of comma-separated variables that defines statically the branching order\n"
 	"c          -h : help (shows the argument list)\n"
@@ -133,7 +133,8 @@ on_break:
 	goto end;
 	
 on_continue:
-	if(scan_opt(argc, argv, "i:o:a:n:l:xbcshm:g:t:")) goto on_break;
+	// if(scan_opt(argc, argv, "i:o:a:n:l:xbcshm:g:t:")) goto on_break;
+	if(scan_opt(argc, argv, "i:o:a:n:l:bcshm:g:t:")) goto on_break;
 	
 	
 	if(!generate(input_filename, output_filename)) {
