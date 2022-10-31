@@ -86,15 +86,14 @@ bool xorset_set_true(const int_t v) {
     return(xorset_infer());
 }
 
-// Lance la unit propagation sur les XOR-clauses ?????
 bool xorset_set_unitary(void) {
 	return(xorset_infer());
 }
 
-int_t xorset_occurrence(int_t l) // Not used
+/*int_t xorset_occurrence(int_t l) // Not used
 {
     return xorset_size_of_index[l];
-}
+}*/
 
 bool xorset_infer() {
     static int_t l, i, j, c, up_l;
@@ -158,7 +157,7 @@ bool xorset_infer() {
     return(true);
 }
 
-void xorset_set_deg(int_t l) { // Not used
+/*void xorset_set_deg(int_t l) { // Not used
 	static int_t i, c;
 			_xorset_set(l, __TRUE__)
 			const int_t xt_sz = xorset_size_of_index[l];
@@ -174,7 +173,7 @@ void xorset_set_deg(int_t l) { // Not used
 				c = idx_f[i];
 				++xorset_degree_u[c];
 			}
-}
+}*/
 
 // Initialise et remplie les structures pour le module XORSET
 bool xorset_initiate_from_dimacs() {
@@ -278,6 +277,7 @@ void xorset_undo() {
         --xorset_degree_u[xorset_history_u[--xorset_history_u_top]];
 }
 
+/*
 //CHECK**
 /// @fn int_t xorset_last_assigned_breakpoint(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
@@ -293,9 +293,7 @@ int_t xorset_last_assigned_breakpoint(int_t *up_stack) { // Not used
 		up_stack[up_stack_top++] = _l;
 	}
 	return up_stack_top;
-}
-
-// LAST_ASSIGNED_IN_XORSET()
+}*/
 
 //CHECK**
 /// @fn int_t xorset_last_assigned(int_t *up_stack);
@@ -313,9 +311,11 @@ int_t xorset_last_assigned(int_t *up_stack) {
 	return up_stack_top;
 }
 
+/*
 /// @fn const int_t xorset_number_of_assigned_variables();
 /// @brief return the number of assigned variables.
 inline const int_t xorset_number_of_assigned_variables() { return xorset_history_top; } // Not used
+*/
 
 void cpy_from_dimacs()
 {

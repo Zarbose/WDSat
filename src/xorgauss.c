@@ -6,6 +6,8 @@
 //  Copyright © 2018 Gilles Dequen. All rights reserved.
 //
 
+/*
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -800,4 +802,4 @@ void xorgauss_undo() {
 	}
 #endif
 }
-
+*/

@@ -17,15 +17,9 @@
 #include "xorgauss.h"
 #include "dimacs.h"
 
-#define _LA_LEVEL_ 17
-
-int_t l;
-int_t m;
-int test[100] = {0};
-
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
-static int_t nb_of_vars; // Not used
+// static int_t nb_of_vars; // Not used
 	
 /// @var int_t wdsat_cnf_up_stack[__ID_SIZE__];
 /// @brief unit propagation cnf stack
@@ -45,6 +39,7 @@ static int_t wdsat_xorset_up_top_stack;
 
 static int_t set[__ID_SIZE__];
 
+// assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
     /*printf("Setting:%ld\n",l);
 	for(int i = 1; i <= 15; i++)
@@ -146,7 +141,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 }
 
-bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
+/*bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	if(l > nb_min_vars)
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -219,9 +214,9 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	printf("\n");
 #endif
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
-}
+}*/
 
-bool go_left(int_t h, int_t h_end, bool search_prune_point, int_t conf[])
+/*bool go_left(int_t h, int_t h_end, bool search_prune_point, int_t conf[])
 {
 	conf[0]++;
 	if(!wdsat_set_true(-set[h]))
@@ -417,20 +412,20 @@ bool wdsat_infer(const int_t l) {
 		}
 	}
 	return true;
-}
+}*/
 
 // Déduction ?????
 bool wdsat_infer_unitary() {
-	bool _loop_pass = true;
+	/*bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
 	int_t cnf_history_last = cnf_history_top;
-	int_t xorgauss_history_it;
+	int_t xorgauss_history_it;wdsat_set_unitary
 	int_t xorgauss_history_last = xorgauss_history_top;
-	int_t _l;
+	int_t _l;*/
 	
 	if(!wdsat_set_unitary()) return false; // Affectation avec les modules CNF et XORSET ?????
-	while(_loop_pass) {
+	/*while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;
 		cnf_history_it = cnf_history_top;
@@ -456,24 +451,24 @@ bool wdsat_infer_unitary() {
 			}
 			xorgauss_history_last = xorgauss_history_top;
 		}
-	}
+	}*/
 	return true;
 }
 
 /// @fn solve();
 /// @return false if formula is unsatisfiable and true otherwise
 bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t xg, char mvc_graph[1000], char thread[1000]) {
-	int_t i, j;
+	int_t j;
 	int_t nb_min_vars;
 	int_t conf[1]={0};
-	bool seen[50]={0};
+	// bool seen[50]={0};
 	cnf_initiate_from_dimacs();
 	xorset_initiate_from_dimacs();
-	if(!xorgauss_initiate_from_dimacs())
-	{
-		printf("UNSAT on XORGAUSS init\n");
-		return false;
-	}
+	// if(!xorgauss_initiate_from_dimacs())
+	// {
+	// 	printf("UNSAT on XORGAUSS init\n");
+	// 	return false;
+	// }
 	cpy_from_dimacs();
 	// cnf_fprint();
 	//xorset_fprint();
@@ -532,10 +527,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	{
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
 	}
-	if(xg == 1)
+	/*if(xg == 1)
 	{
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
-	}
+	}*/
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
 		printf("%d", cnf_assignment[j]);

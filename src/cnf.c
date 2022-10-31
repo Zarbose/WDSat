@@ -92,7 +92,7 @@ void cnf_fprint() {
 	}
 }
 
-int_t cnf_occurrence_binary(int_t l) // Not used
+/*int_t cnf_occurrence_binary(int_t l) // Not used
 {
     return cnf_size_of_binary_implications[l];
 }
@@ -105,7 +105,7 @@ int_t cnf_occurrence_ternary(int_t l) // Not used
 int_t cnf_occurrence_quaternary(int_t l) // Not used
 {
 	return cnf_size_of_quaternary_implications[l]/3;
-}
+}*/
 
 inline bool cnf_infer(void) {
     static int_t l, i, l1, l2, l3;
@@ -172,7 +172,6 @@ inline bool cnf_set_true(const int_t l) {
     return(cnf_infer());
 }
 
-// Lance la unit propagation sur les OR-clauses ?????
 bool cnf_set_unitary(void) {
 	return(cnf_infer());
 }
@@ -334,8 +333,6 @@ void cnf_undo() {
     }
 	cnf_history_top_it = cnf_history_top;
 }
-
-// LAST_ASSIGNED_IN_CNF()
 
 /// @fn int_t cnf_last_assigned_breakpoint(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
