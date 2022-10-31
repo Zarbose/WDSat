@@ -6,8 +6,6 @@
 //  Copyright © 2018 Gilles Dequen. All rights reserved.
 //
 
-/*
-
 #ifndef xorgauss_h
 #define xorgauss_h
 
@@ -102,9 +100,9 @@ xorgauss_step_mask_top && --xorgauss_step_mask_top; \
 #define _xorgauss_unset(_v) xorgauss_assignment[_v] = xorgauss_assignment[-_v] = __UNDEF__
 
 #define _xorgauss_set(_v, _tv) \
-{ \ */
+{ \
 /*printf("--------Setting %d to %d\n", _v, _tv);*/ \
-/*xorgauss_assignment[_v] = (boolean_t) _tv; \
+xorgauss_assignment[_v] = (boolean_t) _tv; \
 xorgauss_assignment[-_v] = (boolean_t) _tv ^ (boolean_t) __TRUE__; \
 }
 
@@ -144,6 +142,4 @@ if(!_boolean_vector_fprint_i) fprintf(stdout, " F"); \
 } \
 } \
 }
-*/
-// #endif /* xorgauss_h */
-
+#endif /* xorgauss_h */

@@ -1,6 +1,6 @@
 
 //enable the XG-ext module (must use anf as input)
-// #define __XG_ENHANCED__
+#define __XG_ENHANCED__
 
 
 //find all solutions instead of only one
