@@ -27,7 +27,7 @@ static uint_t xorgauss_nb_of_equations;
 
 /// @var uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__];
 /// @brief equivalency list according to variable
-uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__];
+uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__]; // ==> EC structure
 bool xorgauss_equivalent[__ID_SIZE__];
 
 boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
@@ -310,6 +310,7 @@ bool xorgauss_from_dimacs() {
 	return(true);
 }
 
+// Fonction qui effectue la substitution
 bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 {
 	static uint_t i, _to_subst;
@@ -602,6 +603,8 @@ bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 	return true;
 }
 
+// _tf = truth value of _v
+// _uv = propositional variable
 bool xorgauss_set_true(const int_t v)
 {
 	assert(abs((int) v) <= xorgauss_nb_of_vars);
@@ -609,8 +612,8 @@ bool xorgauss_set_true(const int_t v)
 	xorgauss_up_stack[xorgauss_up_top_stack++] = v;
 	while(xorgauss_up_top_stack)
 	{
-		_v = xorgauss_up_stack[--xorgauss_up_top_stack];
-		if(!xorgauss_infer(_v)) return false;
+		_v = xorgauss_up_stack[--xorgauss_up_top_stack]; // l <-- top element from XG_propagation_stack
+		if(!xorgauss_infer(_v)) return false; // Le double if ???
 #ifdef __XG_ENHANCED__
 		const bool _tf = (_v < 0) ? false : true;
 		const uint_t _uv = (uint_t) ((_v < 0) ? -_v : _v);
@@ -619,13 +622,15 @@ bool xorgauss_set_true(const int_t v)
 			if(_tf == true)
 			{
 				int_t i = 0;
-				while(monomials_to_column[_uv][i][0] > 0)
+				while(monomials_to_column[_uv][i][0] > 0) // for each m in list_monomial[ul] do
 				{
 					xorgauss_current_degree[monomials_to_column[_uv][i][0]]--;
 					if(xorgauss_current_degree[monomials_to_column[_uv][i][0]] == 1)
 					{
 						int_t j = 1;
 						while(_xorgauss_is_true(monomials_to_column[_uv][i][j])) j++;
+
+						// if degree_monomial[m] == 1 then
 						if(j > __MAX_DEGREE__ - 2 || monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
 						{
 							xorgauss_up_stack[xorgauss_up_top_stack++] = monomials_to_column[_uv][i][0]; //so set monomial to 1
@@ -633,6 +638,8 @@ bool xorgauss_set_true(const int_t v)
 						}
 						else
 						{
+							// printf("%lu %lu %lu\n",monomials_to_column[_uv][i][0],monomials_to_column[_uv][i][j],monomials_to_column[_uv][i][1]);
+							// printf("Dans le else avec j=%ld\n",j);
 							if(!xorgauss_replace(monomials_to_column[_uv][i][0], monomials_to_column[_uv][i][j]))
 							{
 								xorgauss_up_top_stack = 0;
