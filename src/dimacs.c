@@ -144,7 +144,7 @@ void dimacs_read_formula(FILE *f) {
 				{
 					deg = str_l[1] - '0'; //att if __MAX_DEGREE__ > 9
 					assert(deg < __MAX_DEGREE__);
-					for(i = 0; i < deg; i++)
+					for(i = 0; i < deg; i++) // On trie les termes
 					{
 						str_l = strtok (NULL, " ");
 						assert(str_l != NULL);

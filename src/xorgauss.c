@@ -16,6 +16,8 @@
 #include "dimacs.h"
 
 
+static int_t nb_equation;
+
 int_t xorgauss_up_stack[__ID_SIZE__];
 int_t xorgauss_up_top_stack;
 
@@ -54,6 +56,28 @@ int_t xorgauss_mask_list[__ID_SIZE__][__ID_SIZE__ + 1];
 int_t xorgauss_mask_list_top;
 int_t xorgauss_reset[__ID_SIZE__];
 int_t xorgauss_reset_top;
+#endif
+
+void xorgauss_fprint_nb_equation(){
+	uint_t v, cpt=0ULL;
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
+		
+		if(xorgauss_equivalent[v]){
+			cpt++;
+		}
+	}
+	nb_equation=cpt;
+	printf("%lld\n",cpt);
+}
+
+#ifdef __XG_ENHANCED__
+// Affiche le degré d'un littéral
+void xorgauss_fprint_degree(){
+	uint_t v;
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
+		printf("[%lld] %d\n",v,xorgauss_current_degree[v]);
+	}
+}
 #endif
 
 void xorgauss_fprint() {
@@ -614,10 +638,11 @@ bool xorgauss_set_true(const int_t v)
 	{
 		_v = xorgauss_up_stack[--xorgauss_up_top_stack]; // l <-- top element from XG_propagation_stack
 		if(!xorgauss_infer(_v)) return false; // Le double if ???
+		// xorgauss_fprint_nb_equation();	
 #ifdef __XG_ENHANCED__
 		const bool _tf = (_v < 0) ? false : true;
 		const uint_t _uv = (uint_t) ((_v < 0) ? -_v : _v);
-		if(_uv <= dimacs_nb_unary_vars())
+		if(_uv <= dimacs_nb_unary_vars()) // if ul is an unary variable
 		{
 			if(_tf == true)
 			{
@@ -638,8 +663,6 @@ bool xorgauss_set_true(const int_t v)
 						}
 						else
 						{
-							// printf("%lu %lu %lu\n",monomials_to_column[_uv][i][0],monomials_to_column[_uv][i][j],monomials_to_column[_uv][i][1]);
-							// printf("Dans le else avec j=%ld\n",j);
 							if(!xorgauss_replace(monomials_to_column[_uv][i][0], monomials_to_column[_uv][i][j]))
 							{
 								xorgauss_up_top_stack = 0;
@@ -661,6 +684,7 @@ bool xorgauss_set_true(const int_t v)
 			}
 		}
 #endif
+	
 	}
 	return true;
 }

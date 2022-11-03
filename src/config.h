@@ -8,7 +8,7 @@
 
 
 //outputs some intermediate results for fixing errors
-//#define __DEBUG__
+// #define __DEBUG__
 
 
 /*** static allocation ***/

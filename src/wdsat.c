@@ -213,6 +213,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
+
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
 }
 
@@ -313,7 +314,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	cpy_from_dimacs();
 	// cnf_fprint();
 	// xorset_fprint();
+	
 	// xorgauss_fprint();
+	// xorgauss_fprint_degree();
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint_system();
 	// dimacs_print_formula();
@@ -372,7 +375,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	if(xg == 1)
 	{
+		// xorgauss_fprint_nb_equation();
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
+		// xorgauss_fprint_nb_equation();
 	}
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
