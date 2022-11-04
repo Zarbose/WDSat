@@ -71,16 +71,6 @@ void xorgauss_fprint_nb_equation(){
 	// printf("%lld\n",cpt);
 }
 
-#ifdef __XG_ENHANCED__
-// Affiche le degré d'un littéral
-void xorgauss_fprint_degree(){
-	uint_t v;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
-		printf("[%lld] %d\n",v,xorgauss_current_degree[v]);
-	}
-}
-#endif
-
 void xorgauss_fprint() {
 	uint_t v;
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
@@ -703,7 +693,7 @@ bool xorgauss_infer(int_t v) {
 	uint_t _to_subst, i;
 	_is_unary_subst = false;
 	// is it equivalent to a constant or not ?
-	if(xorgauss_equivalent[_uv]) { // Si _uv est un représentant ligne 11 algo 4.9
+	if(xorgauss_equivalent[_uv]) { // Ligne 11 algo 4.9 ==> Si _uv est un représentant 
 		uint_t * const _xeq_uv = xorgauss_equivalency[_uv]; // _xeq_uv = l'équation xor
 		if(xorgauss_is_constant(_xeq_uv))
 		{
@@ -740,7 +730,10 @@ bool xorgauss_infer(int_t v) {
 #endif
 	}
 	xorgauss_history[xorgauss_history_top++] = v;
-	_xorgauss_set(v, true); // Ligne 5 algo 4.7
+	_xorgauss_set(v, true); // Ligne 8 algo 4.9
+
+	/*Début de INFER_NON_REPRESENTATIVE ou INFER_REPRESENTATIVE*/
+	
 	// proceed substitution
 	uint_t * const _xeq = xorgauss_equivalency[_to_subst]; // _xeq = l'équation xor qui à comme représentant _to_subst
 #ifndef __XG_ENHANCED__
@@ -776,6 +769,7 @@ bool xorgauss_infer(int_t v) {
 		assert(xorgauss_history_top < __ID_SIZE__);
 		assert(xorgauss_up_top_stack < __ID_SIZE__);
 	}
+	/*Fin de INFER_NON_REPRESENTATIVE ou INFER_REPRESENTATIVE*/
 	return true;
 }
 
