@@ -15,8 +15,6 @@
 #include "xorgauss.h"
 #include "dimacs.h"
 
-int max=0;
-
 static int_t nb_equation;
 
 int_t xorgauss_up_stack[__ID_SIZE__];
@@ -627,12 +625,8 @@ bool xorgauss_set_true(const int_t v)
 	xorgauss_up_stack[xorgauss_up_top_stack++] = v;
 	while(xorgauss_up_top_stack)
 	{
-		// if(max >=2) exit(3);
-		// max++;
-
 		_v = xorgauss_up_stack[--xorgauss_up_top_stack]; // l <-- top element from XG_propagation_stack
 		if(!xorgauss_infer(_v)) return false; // SET_IN_XG version non améliorer
-		// xorgauss_fprint();
 		// xorgauss_fprint_nb_equation();
 		
 #ifdef __XG_ENHANCED__
