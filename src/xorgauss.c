@@ -15,6 +15,7 @@
 #include "xorgauss.h"
 #include "dimacs.h"
 
+int max=0;
 
 static int_t nb_equation;
 
@@ -67,7 +68,7 @@ void xorgauss_fprint_nb_equation(){
 		}
 	}
 	nb_equation=cpt;
-	printf("%lld\n",cpt);
+	// printf("%lld\n",cpt);
 }
 
 #ifdef __XG_ENHANCED__
@@ -636,9 +637,14 @@ bool xorgauss_set_true(const int_t v)
 	xorgauss_up_stack[xorgauss_up_top_stack++] = v;
 	while(xorgauss_up_top_stack)
 	{
+		// if(max >=2) exit(3);
+		// max++;
+
 		_v = xorgauss_up_stack[--xorgauss_up_top_stack]; // l <-- top element from XG_propagation_stack
-		if(!xorgauss_infer(_v)) return false; // Le double if ???
-		// xorgauss_fprint_nb_equation();	
+		if(!xorgauss_infer(_v)) return false; // SET_IN_XG version non améliorer
+		// xorgauss_fprint();
+		// xorgauss_fprint_nb_equation();
+		
 #ifdef __XG_ENHANCED__
 		const bool _tf = (_v < 0) ? false : true;
 		const uint_t _uv = (uint_t) ((_v < 0) ? -_v : _v);
@@ -647,15 +653,14 @@ bool xorgauss_set_true(const int_t v)
 			if(_tf == true)
 			{
 				int_t i = 0;
-				while(monomials_to_column[_uv][i][0] > 0) // for each m in list_monomial[ul] do
+				while(monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
 				{
-					xorgauss_current_degree[monomials_to_column[_uv][i][0]]--;
-					if(xorgauss_current_degree[monomials_to_column[_uv][i][0]] == 1)
+					xorgauss_current_degree[monomials_to_column[_uv][i][0]]--; // Ligne 19 algo 4.10
+					if(xorgauss_current_degree[monomials_to_column[_uv][i][0]] == 1) // Ligne 20 algo 4.10
 					{
 						int_t j = 1;
 						while(_xorgauss_is_true(monomials_to_column[_uv][i][j])) j++;
 
-						// if degree_monomial[m] == 1 then
 						if(j > __MAX_DEGREE__ - 2 || monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
 						{
 							xorgauss_up_stack[xorgauss_up_top_stack++] = monomials_to_column[_uv][i][0]; //so set monomial to 1
@@ -663,7 +668,7 @@ bool xorgauss_set_true(const int_t v)
 						}
 						else
 						{
-							if(!xorgauss_replace(monomials_to_column[_uv][i][0], monomials_to_column[_uv][i][j]))
+							if(!xorgauss_replace(monomials_to_column[_uv][i][0], monomials_to_column[_uv][i][j])) // Ligne 21 algo 4.10
 							{
 								xorgauss_up_top_stack = 0;
 								return false;
@@ -673,10 +678,10 @@ bool xorgauss_set_true(const int_t v)
 					i++;
 				}
 			}
-			else
+			else // Ligne 24 algo 4.10
 			{
 				int_t i = 0;
-				while(monomials_to_column[_uv][i][0] > 0)
+				while(monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
 				{
 					xorgauss_current_degree[monomials_to_column[_uv][i][0]] = 0;
 					i++;
@@ -684,11 +689,11 @@ bool xorgauss_set_true(const int_t v)
 			}
 		}
 #endif
-	
 	}
 	return true;
 }
 
+// SET_IN_XG version non améliorée
 bool xorgauss_infer(int_t v) {
 	// get the literal to assign and its truth value
 	const bool _tf = (v < 0) ? false : true;
@@ -698,8 +703,8 @@ bool xorgauss_infer(int_t v) {
 	uint_t _to_subst, i;
 	_is_unary_subst = false;
 	// is it equivalent to a constant or not ?
-	if(xorgauss_equivalent[_uv]) {
-		uint_t * const _xeq_uv = xorgauss_equivalency[_uv];
+	if(xorgauss_equivalent[_uv]) { // Si _uv est un représentant ligne 11 algo 4.9
+		uint_t * const _xeq_uv = xorgauss_equivalency[_uv]; // _xeq_uv = l'équation xor
 		if(xorgauss_is_constant(_xeq_uv))
 		{
 			if(((_boolean_vector_get_constant(_xeq_uv)) == __XOR_CONSTANT_MASK__) == _tf) return true;
@@ -710,7 +715,7 @@ bool xorgauss_infer(int_t v) {
 			}
 		}
 		_to_subst = xorgauss_get_first_id_from_boolean_vector(_xeq_uv);
-		//printf("%lu->%lu\n",_uv,_to_subst);
+		// printf("%lu->%lu\n",_uv,_to_subst);
 		uint_t * const _xeq_to_subst = xorgauss_equivalency[_to_subst];
 		_boolean_vector_reset(_xeq_uv, _to_subst);
 		if(xorgauss_xor_it_and_check(_xeq_to_subst, _xeq_uv)) _is_unary_subst = true;
@@ -725,7 +730,7 @@ bool xorgauss_infer(int_t v) {
 		xorgauss_mask_list[xorgauss_mask_list_top][0] = 2; ///undo
 #endif
 		// if there is a no current equivalency (unassigned variable)
-	} else {
+	} else { // Ligne 13 algo 4.9
 		uint_t * const _xeq_to_subst = xorgauss_equivalency[_uv];
 		_boolean_vector_set(_xeq_to_subst, _uv);
 		if(_tf) _boolean_vector_flip_constant(_xeq_to_subst);
@@ -735,25 +740,25 @@ bool xorgauss_infer(int_t v) {
 #endif
 	}
 	xorgauss_history[xorgauss_history_top++] = v;
-	_xorgauss_set(v, true);
+	_xorgauss_set(v, true); // Ligne 5 algo 4.7
 	// proceed substitution
-	uint_t * const _xeq = xorgauss_equivalency[_to_subst];
+	uint_t * const _xeq = xorgauss_equivalency[_to_subst]; // _xeq = l'équation xor qui à comme représentant _to_subst
 #ifndef __XG_ENHANCED__
 	xorgauss_reset[xorgauss_reset_top++] = _to_subst; ///undo
 	memcpy(xorgauss_mask[xorgauss_mask_top++], xorgauss_equivalency[_to_subst], __SZ_GAUSS__ * sizeof(uint_t)); ///undo
 #endif
 	for(i = xorgauss_nb_of_vars; i > 0ULL; --i) {
-		if(!xorgauss_equivalent[i]) continue;
-		uint_t * const _xeq_i = xorgauss_equivalency[i];
-		if(!_boolean_vector_get(_xeq_i, _to_subst)) continue;
+		if(!xorgauss_equivalent[i]) continue; // Si c'est pas un représentant ==> continue
+		uint_t * const _xeq_i = xorgauss_equivalency[i]; // _xeq_i = l'équation xor à l'indice i
+		if(!_boolean_vector_get(_xeq_i, _to_subst)) continue; // Ligne 7 algo 4.7
 #ifndef __XG_ENHANCED__
 		xorgauss_mask_list[xorgauss_mask_list_top][xorgauss_mask_list[xorgauss_mask_list_top][0]++] = i; ///undo
 #endif
-		if(xorgauss_xor_it_and_check(_xeq_i, _xeq)) {
+		if(xorgauss_xor_it_and_check(_xeq_i, _xeq)) { // Ligne 8 et 9 algo 4.7 ????
 			const bool _tv_i = ((_boolean_vector_get_constant(_xeq_i)) == __XOR_CONSTANT_MASK__);
 			xorgauss_history[xorgauss_history_top++] = (_tv_i ? (int_t) i : -(int_t) i);
 			_xorgauss_set(i, _tv_i);
-			xorgauss_up_stack[xorgauss_up_top_stack++] = (_tv_i ? (int_t) i : -(int_t) i);
+			xorgauss_up_stack[xorgauss_up_top_stack++] = (_tv_i ? (int_t) i : -(int_t) i); // Ligne 11 et 13 algo 4.7
 			//assert(xorgauss_history_top < __ID_SIZE__);
 			assert(xorgauss_up_top_stack < __ID_SIZE__);
 		}
@@ -761,13 +766,13 @@ bool xorgauss_infer(int_t v) {
 #ifndef __XG_ENHANCED__
 	xorgauss_mask_list_top++;
 #endif
-	xorgauss_equivalent[_to_subst] = true;
+	xorgauss_equivalent[_to_subst] = true; // Ligne 18 algo 4.7
 	_boolean_vector_reset(_xeq, _to_subst);
-	if(_is_unary_subst) {
+	if(_is_unary_subst) { // Ligne 22 et 23 algo 4.8
 		const bool _tv_to_subst = ((_boolean_vector_get_constant(_xeq)) == __XOR_CONSTANT_MASK__);
 		xorgauss_history[xorgauss_history_top++] = (_tv_to_subst ? (int_t) _to_subst : -(int_t) _to_subst);
 		_xorgauss_set(_to_subst, _tv_to_subst);
-		xorgauss_up_stack[xorgauss_up_top_stack++] = (_tv_to_subst ? (int_t) _to_subst : -(int_t) _to_subst);
+		xorgauss_up_stack[xorgauss_up_top_stack++] = (_tv_to_subst ? (int_t) _to_subst : -(int_t) _to_subst); // Ligne 24 et 26 algo 4.8
 		assert(xorgauss_history_top < __ID_SIZE__);
 		assert(xorgauss_up_top_stack < __ID_SIZE__);
 	}
