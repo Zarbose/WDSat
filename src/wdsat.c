@@ -367,17 +367,30 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			set[j - 1] = j;
 		}
 	}
-	
+
+	// xorgauss_fprint_nb_equation();
+	// xorset_fprint();
+	// xorgauss_fprint_for_xorset();
+	// xorgauss_fprint();
+
+	// printf("------------------------------------------------------\n");
+
 	if(xg == 0)
 	{
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
 	}
 	if(xg == 1)
 	{
-		// xorgauss_fprint_nb_equation();
+		
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
-		// xorgauss_fprint_nb_equation();
+		
 	}
+	
+	// xorgauss_fprint();
+	// xorgauss_fprint_for_xorset();
+	// xorset_fprint();
+	// xorgauss_fprint_nb_equation();
+
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
 		printf("%d", cnf_assignment[j]);

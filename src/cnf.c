@@ -69,6 +69,7 @@ void cnf_fprint() {
         }
         printf("\n");
     }
+    
     for(_i = -_n_v; _i <= _n_v; ++_i) {
         const int_t _t_sz = cnf_size_of_ternary_implications[_i];
        _cid_cout("Ternary[%ld].[%s]{#%ld}:", _i, _cnf_is_true(_i) ? "T" : _cnf_is_false(_i) ? "F" : "?", _t_sz);
@@ -79,7 +80,7 @@ void cnf_fprint() {
         }
         printf("\n");
     }
-	for(_i = -_n_v; _i <= _n_v; ++_i) {
+	/*for(_i = -_n_v; _i <= _n_v; ++_i) {
 		const int_t _t_sz = cnf_size_of_quaternary_implications[_i];
 		_cid_cout("Quaternary[%ld].[%s]{#%ld}:", _i, _cnf_is_true(_i) ? "T" : _cnf_is_false(_i) ? "F" : "?", _t_sz);
 		for(_j = 0; _j < _t_sz; _j += 3) {
@@ -89,7 +90,7 @@ void cnf_fprint() {
 			printf(" { %lld.[%s] %lld.[%s] %lld.[%s] }", _l1, _cnf_is_true(_l1) ? "T" : _cnf_is_false(_l1) ? "F" : "?", _l2, _cnf_is_true(_l2) ? "T" : _cnf_is_false(_l2) ? "F" : "?", _l3, _cnf_is_true(_l3) ? "T" : _cnf_is_false(_l3) ? "F" : "?");
 		}
 		printf("\n");
-	}
+	}*/
 }
 
 inline bool cnf_infer(void) {
