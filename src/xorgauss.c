@@ -15,7 +15,7 @@
 #include "xorgauss.h"
 #include "dimacs.h"
 
-// static int_t nb_equation;
+static int_t nb_equation;
 
 int_t xorgauss_up_stack[__ID_SIZE__];
 int_t xorgauss_up_top_stack;
@@ -57,13 +57,13 @@ int_t xorgauss_reset[__ID_SIZE__];
 int_t xorgauss_reset_top;
 #endif
 
-void xorgauss_fprint_nb_equation(){
+void xorgauss_fprint_nb_equationxor(){
 	uint_t v, cpt=0ULL;
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
 		if(xorgauss_equivalent[v]){ cpt++; }
 
-	// nb_equation=cpt;
-	printf("%lld\n",cpt);
+	nb_equation=cpt;
+	// printf("%lld\n",cpt);
 }
 
 void xorgauss_fprint() {
@@ -618,13 +618,14 @@ bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 bool xorgauss_set_true(const int_t v)
 {
 	assert(abs((int) v) <= xorgauss_nb_of_vars);
+	// xorgauss_fprint_nb_equationxor();
 	int_t _v;
 	xorgauss_up_stack[xorgauss_up_top_stack++] = v;
 	while(xorgauss_up_top_stack)
 	{
 		_v = xorgauss_up_stack[--xorgauss_up_top_stack]; // l <-- top element from XG_propagation_stack
 		if(!xorgauss_infer(_v)) return false; // SET_IN_XG version non améliorer
-		// xorgauss_fprint_nb_equation();
+		// xorgauss_fprint_nb_equationxor();
 		
 #ifdef __XG_ENHANCED__
 		const bool _tf = (_v < 0) ? false : true;
@@ -724,7 +725,7 @@ bool xorgauss_infer(int_t v) {
 	_xorgauss_set(v, true); // Ligne 8 algo 4.9
 
 	/*Début de INFER_NON_REPRESENTATIVE ou INFER_REPRESENTATIVE*/
-	
+
 	// proceed substitution
 	uint_t * const _xeq = xorgauss_equivalency[_to_subst]; // _xeq = l'équation xor qui à comme représentant _to_subst
 #ifndef __XG_ENHANCED__

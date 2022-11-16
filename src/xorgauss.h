@@ -57,7 +57,7 @@ bool xorgauss_is_constant(uint_t *);
 void xorgauss_xor_it(uint_t *, uint_t *);
 bool xorgauss_xor_it_and_check(uint_t *, uint_t *);
 void xorgauss_fprint(void);
-void xorgauss_fprint_nb_equation(void);
+void xorgauss_fprint_nb_equationxor(void);
 bool xorgauss_set_true(const int_t);
 void aff_bin(uint_t v);
 void xorgauss_undo(void);

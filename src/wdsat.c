@@ -368,8 +368,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
-	// xorgauss_fprint_nb_equation();
-	// xorset_fprint();
+	// xorgauss_fprint_nb_equationxor();
+	xorset_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
 
@@ -389,7 +389,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// xorgauss_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorset_fprint();
-	// xorgauss_fprint_nb_equation();
+	// xorgauss_fprint_nb_equationxor();
 
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
