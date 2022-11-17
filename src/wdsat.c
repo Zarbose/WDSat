@@ -369,9 +369,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 
 	// xorgauss_fprint_nb_equationxor();
-	xorset_fprint();
+	// xorset_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
+	// xorset_index_structure_fprintf();
 
 	// printf("------------------------------------------------------\n");
 
@@ -386,6 +387,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		
 	}
 	
+	xorset_index_structure_fprintf();
 	// xorgauss_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorset_fprint();

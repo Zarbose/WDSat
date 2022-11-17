@@ -62,6 +62,32 @@ extern byte_t thread_digits;
 static bool exists_xor_equation[__MAX_XEQ__];
 static int_t const_xor_equation[__MAX_XEQ__];
 
+
+void xorset_clause_id_fprint(int_t id){
+    assert(id < __MAX_XEQ__);
+    int_t i,l;
+    const int_t log_n_x = fast_int_log10(xorset_nb_of_equations);
+    _cid_cout("[%0*ld] s[%ld] u[%ld]:", log_n_x, i, xorset_degree_s[id], xorset_degree_u[id]);
+    for(i = 0; i < size_of_xor_equation[i]; ++i) {
+        l = xor_equation[id][i];
+		printf(" %lld.[%s]", l, _xorset_is_true(l) ? "T" : _xorset_is_false(l) ? "F" : "?");
+    }
+    printf("\n");
+}
+
+void xorset_index_structure_fprintf(){
+    int_t i,j,c,l;
+    for(i = 1LL; i <= xorset_nb_of_vars; ++i){
+        const int_t xt_sz = xorset_size_of_index[i];
+        int_t * const idx_t = xorset_index[i];
+        printf("[%lld] [%lld] ",i,xorset_size_of_index[i]);
+        for(j=0LL; j<xt_sz; j++){
+            printf("%lld ",idx_t[j]);
+        }
+        printf("\n");
+    }
+}
+
 void xorset_fprint() {
     static int_t i, j, l;
     const int_t n_x = xorset_nb_of_equations;

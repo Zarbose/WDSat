@@ -78,6 +78,7 @@ extern int_t xorset_up_top_stack;
 
 bool xorset_initiate_from_dimacs(void);
 void xorset_fprint(void);
+void xorset_index_structure_fprintf(void);
 bool xorset_infer(void);
 void xorset_undo(void);
 bool xorset_set_true(const int_t);
