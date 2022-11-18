@@ -1,4 +1,4 @@
 result1.txt :
-
+25_1.anf
 result2.txt :
-xorgausse 1 fois sur 4
+25_2.anf

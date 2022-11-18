@@ -1,0 +1,4 @@
+conf;temps(en milliseconde);condition_activation
+62802;1849;conf[0] >= 0 && conf[0] <= 3000 || conf[0] >= 30000 
+35802;1692;100% des cas
+25296642;130858;jamais activer

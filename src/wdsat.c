@@ -40,14 +40,14 @@ static int_t wdsat_xorset_up_top_stack;
 
 static int_t set[__ID_SIZE__];
 
-int cpt=0;
 
 void save_result(int duree_ml, int_t conf[]){
 	FILE* fichier = NULL;
-	fichier=fopen("result/result1.txt","a+");
+	fichier=fopen("result/result2.txt","a+");
 	if (fichier != NULL){
-
-		fprintf(fichier, "%d;%d\n", conf[0],duree_ml);
+		// fprintf(fichier, "%d;%d conf[0] >= %d && conf[0] <= %d || conf[0] >= %d && conf[0] <= %d\n", conf[0],duree_ml,K1,K2,K3,K4);
+		// fprintf(fichier, "%d;%d conf[0] >= %d && conf[0] <= %d || conf[0] >= %d && conf[0] <= %d || conf[0] >= %d\n", conf[0],duree_ml,K1,K2,K3,K4,K5);
+		fprintf(fichier, "%d;%d conf[0] >= %d && conf[0] <= %d || conf[0] >= %d \n", conf[0],duree_ml,K1,K2,K5);
         fclose(fichier);
     }
     else{
@@ -235,7 +235,6 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 }
 
 bool wdsat_infer(const int_t l, int_t conf[]) {
-	cpt++;
 	bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
@@ -246,8 +245,9 @@ bool wdsat_infer(const int_t l, int_t conf[]) {
 	
 	if(!wdsat_set_true(l)) return false;
 
-	if (cpt % 4 == 0){
-		cpt=0;
+	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <= K4) || (conf[0] >= K5)){
+	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <= K4)){
+	if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K5)){
 		while(_loop_pass) {
 			// finalyse with XORGAUSS
 			_continue = false;
