@@ -59,6 +59,7 @@ int xg = 0;
 int br_sym = 0;
 char mvc_graph[1000] = "";
 char thread[1000] = "";
+int S = 0;
 /**
  * @fn int scan_opt(int argc, char **argv, const char *opt)
  * @brief It scans and checks command line options
@@ -79,6 +80,7 @@ int scan_opt(int argc, char **argv, const char *opt) {
 			case 's': s = 1; break;
 			case 'g': strcpy(mvc_graph, optarg); break;
 			case 't': strcpy(thread, optarg); break;
+			case 'S': S=1;; break;
 			default: return(-1);
 		}
 	return(0);
@@ -105,7 +107,7 @@ boolean_t generate(char *ifn, char *ofn) {
 	
 	if(_l == 0)
 		_l = n;
-	wdsat_solve(n ,_l, _m, irr, X3, xg, mvc_graph, thread);
+	wdsat_solve(n ,_l, _m, irr, X3, xg, mvc_graph, thread,S);
 	return(__ON__);
 }
 
@@ -133,7 +135,7 @@ on_break:
 	goto end;
 	
 on_continue:
-	if(scan_opt(argc, argv, "i:o:a:n:l:xbcshm:g:t:")) goto on_break;
+	if(scan_opt(argc, argv, "i:o:a:n:l:xbcshm:g:t:S")) goto on_break;
 	
 	if(!generate(input_filename, output_filename)) {
 		exit_value = (byte_t) EXIT_FAILURE;

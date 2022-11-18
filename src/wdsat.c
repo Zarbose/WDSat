@@ -10,6 +10,7 @@
 #include<stdio.h>
 #include<time.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "wdsat.h"
 #include "cnf.h"
@@ -38,6 +39,22 @@ static int_t wdsat_xorset_up_stack[__ID_SIZE__];
 static int_t wdsat_xorset_up_top_stack;
 
 static int_t set[__ID_SIZE__];
+
+int cpt=0;
+
+void save_result(int duree_ml, int_t conf[]){
+	FILE* fichier = NULL;
+	fichier=fopen("result/result1.txt","a+");
+	if (fichier != NULL){
+
+		fprintf(fichier, "%d;%d\n", conf[0],duree_ml);
+        fclose(fichier);
+    }
+    else{
+        printf("Impossible d'ouvrir le fichier pour enregistrer les résultats");
+		exit(2);
+    }	
+}
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
@@ -164,7 +181,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	_xorset_breakpoint;
 	_xorgauss_breakpoint;
 	conf[0]++;
-	if(!wdsat_infer(-set[l]))
+	if(!wdsat_infer(-set[l],conf))
 	{
 		cnf_undo();
 		xorset_undo();
@@ -201,7 +218,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 			return true;
 		}
 	}
-	if(!wdsat_infer(set[l]))
+	if(!wdsat_infer(set[l],conf))
 	{
 #ifdef __DEBUG__
 		printf("lev:%d--undo on 1\n",set[l]);
@@ -217,7 +234,8 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
 }
 
-bool wdsat_infer(const int_t l) {
+bool wdsat_infer(const int_t l, int_t conf[]) {
+	cpt++;
 	bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
@@ -227,31 +245,35 @@ bool wdsat_infer(const int_t l) {
 	int_t _l;
 	
 	if(!wdsat_set_true(l)) return false;
-	while(_loop_pass) {
-		// finalyse with XORGAUSS
-		_continue = false;
-		cnf_history_it = cnf_history_top;
-		while(cnf_history_it > cnf_history_last) {
-			_l = cnf_history[--cnf_history_it];
-			if(_xorgauss_is_undef(_l)) {
-				if(!xorgauss_set_true(_l)) return false;
-				_continue = true;
-			}
-		}
-		cnf_history_last = cnf_history_top;
-		_loop_pass = false;
-		if(_continue) {
-			// get list of literal set thanks to XORGAUSS
-			xorgauss_history_it = xorgauss_history_top;
-			while(xorgauss_history_it > xorgauss_history_last) {
-				_l = xorgauss_history[--xorgauss_history_it];
-				if(_cnf_is_false(_l)) return false;
-				if(_cnf_is_undef(_l)) {
-					_loop_pass = true;
-					if(!wdsat_set_true(_l)) return false;
+
+	if (cpt % 4 == 0){
+		cpt=0;
+		while(_loop_pass) {
+			// finalyse with XORGAUSS
+			_continue = false;
+			cnf_history_it = cnf_history_top;
+			while(cnf_history_it > cnf_history_last) {
+				_l = cnf_history[--cnf_history_it];
+				if(_xorgauss_is_undef(_l)) {
+					if(!xorgauss_set_true(_l)) return false;
+					_continue = true;
 				}
 			}
-			xorgauss_history_last = xorgauss_history_top;
+			cnf_history_last = cnf_history_top;
+			_loop_pass = false;
+			if(_continue) {
+				// get list of literal set thanks to XORGAUSS
+				xorgauss_history_it = xorgauss_history_top;
+				while(xorgauss_history_it > xorgauss_history_last) {
+					_l = xorgauss_history[--xorgauss_history_it];
+					if(_cnf_is_false(_l)) return false;
+					if(_cnf_is_undef(_l)) {
+						_loop_pass = true;
+						if(!wdsat_set_true(_l)) return false;
+					}
+				}
+				xorgauss_history_last = xorgauss_history_top;
+			}
 		}
 	}
 	return true;
@@ -299,7 +321,7 @@ bool wdsat_infer(const int_t l) {
 
 /// @fn solve();
 /// @return false if formula is unsatisfiable and true otherwise
-bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t xg, char mvc_graph[1000], char thread[1000]) {
+bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t xg, char mvc_graph[1000], char thread[1000],int S) {
 	int_t j;
 	int_t nb_min_vars;
 	int_t conf[1]={0};
@@ -376,6 +398,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// printf("------------------------------------------------------\n");
 
+
+	clock_t debut = clock();
 	if(xg == 0)
 	{
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
@@ -386,8 +410,13 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
 		
 	}
+	clock_t fin = clock();
+	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
+	if (S == 1)
+		save_result(duree_ml,conf);
 	
-	xorset_index_structure_fprintf();
+	// xorset_index_structure_fprintf();
 	// xorgauss_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorset_fprint();

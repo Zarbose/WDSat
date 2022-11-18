@@ -81,7 +81,7 @@ void xorset_index_structure_fprintf(){
         const int_t xt_sz = xorset_size_of_index[i];
         int_t * const idx_t = xorset_index[i];
         printf("[%lld] [%lld] ",i,xorset_size_of_index[i]);
-        for(j=0LL; j<xt_sz; j++){
+        for(j=0LL; j < xt_sz; ++j){
             printf("%lld ",idx_t[j]);
         }
         printf("\n");
