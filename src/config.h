@@ -5,7 +5,7 @@
 #define K2 10
 #define K3 7000
 #define K4 12000
-#define K5 29000
+#define K5 1000
 
 //find all solutions instead of only one
 //#define __FIND_ALL_SOLUTIONS__

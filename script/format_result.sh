@@ -31,11 +31,11 @@ while true; do
     esac 
 done
 
-path_file=$1
+full_path=$1
 
-nb_ligne=$(wc -l $path_file | cut -d ' ' -f 1)
+nb_ligne=$(wc -l $full_path | cut -d ' ' -f 1)
 nb_ligne=$(($nb_ligne - 1))
 
-header=$(head -n 1 $path_file)
-tail -n $nb_ligne $path_file | sort -t ';' -n -k 1 -r
+header=$(head -n 1 $full_path)
+tail -n $nb_ligne $full_path | sort -t ';' -n -k 1 -r
 
