@@ -15,7 +15,6 @@
 #include "xorgauss.h"
 #include "dimacs.h"
 
-// static int_t nb_equation;
 
 int_t xorgauss_up_stack[__ID_SIZE__];
 int_t xorgauss_up_top_stack;
@@ -57,12 +56,21 @@ int_t xorgauss_reset[__ID_SIZE__];
 int_t xorgauss_reset_top;
 #endif
 
+int_t xorgauss_count_xorequation=0LL;
+inline const uint_t xorgauss_get_nb_xorequation() { return xorgauss_nb_of_equations; }
+
+void xorgauss_count_nb_equationxor(){
+	uint_t v, cpt=0ULL;
+	xorgauss_count_xorequation=0LL;
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
+		if(xorgauss_equivalent[v]){ cpt++; }
+	xorgauss_count_xorequation=cpt;
+}
+
 void xorgauss_fprint_nb_equationxor(){
 	uint_t v, cpt=0ULL;
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
 		if(xorgauss_equivalent[v]){ cpt++; }
-
-	// nb_equation=cpt;
 	printf("%lld\n",cpt);
 }
 

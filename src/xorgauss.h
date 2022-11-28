@@ -25,6 +25,8 @@ extern bool xorgauss_equivalent[__ID_SIZE__];
 extern boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 extern boolean_t *xorgauss_assignment;
 
+extern int_t xorgauss_count_xorequation;
+
 // undo structures
 extern int_t xorgauss_history[__ID_SIZE__];
 extern int_t xorgauss_history_top;
@@ -47,6 +49,8 @@ extern int_t xorgauss_reset[__ID_SIZE__];
 extern int_t xorgauss_reset_top;
 #endif
 
+
+
 bool xorgauss_from_dimacs(void);
 bool xorgauss_initiate_from_dimacs(void);
 void xorgauss_reset_boolean_vector(uint_t *);
@@ -65,6 +69,8 @@ void set_from_outside(void);
 bool xorgauss_infer(int_t v);
 void xorgauss_fprint_system(void);
 void xorgauss_fprint_for_xorset(void);
+void xorgauss_count_nb_equationxor(void);
+const uint_t xorgauss_get_nb_xorequation(void);
 
 #ifdef __XG_ENHANCED__ //if XG-enhanced
 

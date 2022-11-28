@@ -57,6 +57,19 @@ void save_result(int duree_ml, int_t conf[]){
     }	
 }
 
+void fprint_conf(int_t conf[]){
+	FILE* fichier = NULL;
+	fichier=fopen("result/conf.txt","a+");
+	if (fichier != NULL){
+		if(!((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K5))) fprintf(fichier, "%d\n",conf[0]);
+        fclose(fichier);
+    }
+    else{
+        printf("Impossible d'ouvrir le fichier pour enregistrer les résultats");
+		exit(2);
+    }	
+}
+
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
     /*printf("Setting:%ld\n",l);
@@ -235,6 +248,8 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
 }
 
+int_t nb_activation=0LL;
+
 bool wdsat_infer(const int_t l, int_t conf[]) {
 	bool _loop_pass = true;
 	bool _continue;
@@ -245,11 +260,18 @@ bool wdsat_infer(const int_t l, int_t conf[]) {
 	int_t _l;
 	
 	if(!wdsat_set_true(l)) return false;
+	xorgauss_count_nb_equationxor();
 
 	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <= K4) || (conf[0] >= K5)){
 	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <= K4)){
 	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <=K4) || (conf[0] >= K5)){
-	if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K5)){
+	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K5) || (xorgauss_count_xorequation >= xorgauss_get_nb_xorequation()) ){
+	if (xorgauss_count_xorequation >= xorgauss_get_nb_xorequation()){
+	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K5) ) {
+
+		// fprint_conf(conf);
+		nb_activation++;
+
 		while(_loop_pass) {
 			// finalyse with XORGAUSS
 			_continue = false;
@@ -416,6 +438,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
 	if (S == 1) save_result(duree_ml,conf);
+	printf("nb_activation = %lld\n",nb_activation);
 	
 	// xorset_index_structure_fprintf();
 	// xorgauss_fprint();
