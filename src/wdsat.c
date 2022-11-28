@@ -47,7 +47,8 @@ void save_result(int duree_ml, int_t conf[]){
 	if (fichier != NULL){
 		// fprintf(fichier, "%d;%d conf[0] >= %d && conf[0] <= %d || conf[0] >= %d && conf[0] <= %d\n", conf[0],duree_ml,K1,K2,K3,K4);
 		// fprintf(fichier, "%d;%d conf[0] >= %d && conf[0] <= %d || conf[0] >= %d && conf[0] <= %d || conf[0] >= %d\n", conf[0],duree_ml,K1,K2,K3,K4,K5);
-		fprintf(fichier, "%d;%d conf[0] >= %d && conf[0] <= %d || conf[0] >= %d \n", conf[0],duree_ml,K1,K2,K5);
+		// fprintf(fichier, "%d;%d (conf[0] >= %d && conf[0] <= %d) || (conf[0] >= %d && conf[0] <= %d) || (conf[0] >= %d) \n", conf[0],duree_ml,K1,K2,K3,K4,K5);
+		fprintf(fichier, "%d;%d (conf[0] >= %d && conf[0] <= %d) || (conf[0] >= %d) \n", conf[0],duree_ml,K1,K2,K5);
         fclose(fichier);
     }
     else{
@@ -247,6 +248,7 @@ bool wdsat_infer(const int_t l, int_t conf[]) {
 
 	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <= K4) || (conf[0] >= K5)){
 	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <= K4)){
+	// if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K3 && conf[0] <=K4) || (conf[0] >= K5)){
 	if ((conf[0] >= K1 && conf[0] <=K2) || (conf[0] >= K5)){
 		while(_loop_pass) {
 			// finalyse with XORGAUSS
@@ -413,8 +415,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	clock_t fin = clock();
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
-	if (S == 1)
-		save_result(duree_ml,conf);
+	if (S == 1) save_result(duree_ml,conf);
 	
 	// xorset_index_structure_fprintf();
 	// xorgauss_fprint();
