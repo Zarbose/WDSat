@@ -1,4 +1,0 @@
-result1.txt :
-25_1.anf
-result2.txt :
-25_2.anf
