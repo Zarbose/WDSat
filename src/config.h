@@ -2,8 +2,8 @@
 //enable the XG-ext module (must use anf as input)
 #define __XG_ENHANCED__
 #define K1 0
-#define K2 10
-#define K3 7000
+#define K2 5
+#define K3 7
 #define K4 12000
 #define K5 30000
 
