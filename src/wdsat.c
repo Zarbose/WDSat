@@ -43,16 +43,16 @@ static int_t set[__ID_SIZE__];
 int_t nb_activation=0LL;
 
 
-void save_result(int duree_ml, int_t conf[], int_t d){
-	int type=3;
+void save_result(int duree_ml, int_t conf[]){
+	int type=4;
 	FILE* fichier = NULL;
-	fichier=fopen("result/result3.txt","a+");
+	fichier=fopen("result/result4.txt","a+");
 	if (fichier != NULL){
 		if (type == 3)
 			fprintf(fichier, "%d;%d;%d;%d;%d;%d (conf[0] >= %d && conf[0] <= %d) || (conf[0] >= %d) \n", conf[0],nb_activation,K1,K2,K5,duree_ml,K1,K2,K5);
 
 		if (type == 4)
-			fprintf(fichier, "%d;%d;%d;%d;%d;%d \n",d,nb_activation,K1,K2,K5,duree_ml);
+			fprintf(fichier, "%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,K1,K2,K3,duree_ml);
 
         fclose(fichier);
     }
@@ -166,8 +166,8 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 
-    if (d < 10) 
-		printf(" %d\n", d);
+    // if (d < 10) 
+	// printf("%d\n", d);
 
 	if(l > nb_min_vars)
 	{
@@ -255,8 +255,8 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t _l;
 	
 	if(!wdsat_set_true(l)) return false;
-
-	// if ( (d >= K1 && d <= K2) || d >= K3){
+	xorgauss_count_nb_equationxor();
+	if ( (d >= K1 && d <= K2) || d >= K3 ){
 		nb_activation++;
 
 		while(_loop_pass) {
@@ -286,7 +286,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_last = xorgauss_history_top;
 			}
 		}
-	// }
+	}
 	return true;
 }
 
@@ -423,7 +423,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			clock_t fin = clock();
 			int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
-			// if (S == 1) save_result(duree_ml,conf,d);
+			if (S == 1) save_result(duree_ml,conf);
 			return false;
 		}
 	}
@@ -431,7 +431,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
 	printf("nb_activation = %lld\n",nb_activation);
-	// if (S == 1) save_result(duree_ml,conf,d);
+	// if (S == 1) save_result(duree_ml,conf);
 	
 	
 	// xorset_index_structure_fprintf();

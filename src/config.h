@@ -4,11 +4,11 @@
 #define K1 0
 #define K2 5
 #define K3 7
-#define K4 12000
 #define K5 30000
 
+
 //find all solutions instead of only one
-// #define __FIND_ALL_SOLUTIONS__
+#define __FIND_ALL_SOLUTIONS__
 
 
 //outputs some intermediate results for fixing errors
