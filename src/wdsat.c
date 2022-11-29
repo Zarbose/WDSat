@@ -43,13 +43,17 @@ static int_t set[__ID_SIZE__];
 int_t nb_activation=0LL;
 
 
-void save_result(int duree_ml, int_t conf[]){
+void save_result(int duree_ml, int_t conf[], int_t d){
 	int type=3;
 	FILE* fichier = NULL;
 	fichier=fopen("result/result3.txt","a+");
 	if (fichier != NULL){
 		if (type == 3)
 			fprintf(fichier, "%d;%d;%d;%d;%d;%d (conf[0] >= %d && conf[0] <= %d) || (conf[0] >= %d) \n", conf[0],nb_activation,K1,K2,K5,duree_ml,K1,K2,K5);
+
+		if (type == 4)
+			fprintf(fichier, "%d;%d;%d;%d;%d;%d \n",d,nb_activation,K1,K2,K5,duree_ml);
+
         fclose(fichier);
     }
     else{
@@ -160,7 +164,10 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 }
 
-bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
+bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
+
+    // if (d < 10) printf(" %d\n", d);
+
 	if(l > nb_min_vars)
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -178,12 +185,12 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
-	if(!_cnf_is_undef(set[l])) return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
+	if(!_cnf_is_undef(set[l])) return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 	_cnf_breakpoint;
 	_xorset_breakpoint;
 	_xorgauss_breakpoint;
 	conf[0]++;
-	if(!wdsat_infer(-set[l],conf))
+	if(!wdsat_infer(-set[l],conf,d))
 	{
 		cnf_undo();
 		xorset_undo();
@@ -197,7 +204,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	}
 	else
 	{
-		if(!wdsat_solve_rest_XG(l + 1, nb_min_vars, conf))
+		if(!wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1))
 		{
 			cnf_undo();
 			xorset_undo();
@@ -220,7 +227,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 			return true;
 		}
 	}
-	if(!wdsat_infer(set[l],conf))
+	if(!wdsat_infer(set[l],conf,d))
 	{
 #ifdef __DEBUG__
 		printf("lev:%d--undo on 1\n",set[l]);
@@ -233,10 +240,10 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[]) {
 	printf("\n");
 #endif
 
-	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf);
+	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 }
 
-bool wdsat_infer(const int_t l, int_t conf[]) {
+bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	bool _loop_pass = true;
 	bool _continue;
 	int_t cnf_history_it;
@@ -404,7 +411,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
 	// xorset_index_structure_fprintf();
-
+	int_t d=0;
 	clock_t debut = clock();
 	if(xg == 0)
 	{
@@ -413,13 +420,13 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	if(xg == 1)
 	{
 		
-		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
+		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, d)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
 		
 	}
 	clock_t fin = clock();
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
-	if (S == 1) save_result(duree_ml,conf);
+	if (S == 1) save_result(duree_ml,conf,d);
 	printf("nb_activation = %lld\n",nb_activation);
 	
 	// xorset_index_structure_fprintf();
