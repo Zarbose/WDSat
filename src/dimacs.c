@@ -114,7 +114,7 @@ void dimacs_read_formula(FILE *f) {
 	dimacs_nb_of_unary_vars = atoi(str_l);
 	str_l = strtok (NULL, " ");
 	dimacs_nb_of_eq = atoi(str_l);
-	
+	// printf("%lld\n",dimacs_nb_of_unary_vars);
 	assert(dimacs_nb_of_unary_vars <= __MAX_ANF_ID__);
 	
 	/// start reading the file

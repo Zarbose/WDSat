@@ -256,7 +256,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	
 	if(!wdsat_set_true(l)) return false;
 	xorgauss_count_nb_equationxor();
-	if ( (d >= K1 && d <= K2) || d >= K3 ){
+	// if ( (d >= K1 && d <= K2) || d >= K3 ){
 		nb_activation++;
 
 		while(_loop_pass) {
@@ -286,7 +286,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_last = xorgauss_history_top;
 			}
 		}
-	}
+	// }
 	return true;
 }
 

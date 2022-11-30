@@ -107,7 +107,7 @@
  #define __MAX_XEQ_SIZE__ 200*/
 
 /** MQ : n=25 m=50 **/
-#ifdef __XG_ENHANCED__
+/*#ifdef __XG_ENHANCED__
 #define __MAX_ANF_ID__ 26 // make it +1
 #define __MAX_DEGREE__ 3 // make it +1
 #endif
@@ -116,18 +116,18 @@
 #define __MAX_EQ__ 950
 #define __MAX_EQ_SIZE__ 4 //make it +1
 #define __MAX_XEQ__ 50
-#define __MAX_XEQ_SIZE__ 900
+#define __MAX_XEQ_SIZE__ 900*/
 
 /** MQ : n=55 m=110 **/
-/*#ifdef __XG_ENHANCED__
+#ifdef __XG_ENHANCED__
 #define __MAX_ANF_ID__ 56 // make it +1
 #define __MAX_DEGREE__ 3 // make it +1
 #endif
-#define __MAX_ID__ 1541
+#define __MAX_ID__ 1540
 #define __MAX_BUFFER_SIZE__ 100000
 #define __MAX_EQ__ 4456
 #define __MAX_EQ_SIZE__ 4 //make it +1
 #define __MAX_XEQ__ 110
-#define __MAX_XEQ_SIZE__ 1500*/
+#define __MAX_XEQ_SIZE__ 1596
 
 /*** END static allocation ***/
