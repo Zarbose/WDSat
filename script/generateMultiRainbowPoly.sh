@@ -15,7 +15,7 @@ nbf=$2
 o2=$3
 
 for (( i = 0; i < $nbf; i++));do
-    echo $i+1
+    echo `expr $i + 1`
     ./generateRainbowPoly.sh $start_seed $o2
     ((start_seed+=1))
 done

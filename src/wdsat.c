@@ -44,16 +44,10 @@ int_t nb_activation=0LL;
 
 
 void save_result(int duree_ml, int_t conf[]){
-	int type=4;
 	FILE* fichier = NULL;
-	fichier=fopen("result/result4.txt","a+");
+	fichier=fopen("result/Rainbow/result_N_25_M_53_K3_5.csv","a+");
 	if (fichier != NULL){
-		if (type == 3)
-			fprintf(fichier, "%d;%d;%d;%d;%d;%d (conf[0] >= %d && conf[0] <= %d) || (conf[0] >= %d) \n", conf[0],nb_activation,K1,K2,K5,duree_ml,K1,K2,K5);
-
-		if (type == 4)
-			fprintf(fichier, "%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,K1,K2,K3,duree_ml);
-
+		fprintf(fichier, "%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3);
         fclose(fichier);
     }
     else{
@@ -256,7 +250,8 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	
 	if(!wdsat_set_true(l)) return false;
 	xorgauss_count_nb_equationxor();
-	if ( (d >= K1 && d <= K2) || d >= K3 ){
+	// if ( (d >= K1 && d <= K2) || d >= K3 ){
+	if ( d >= K3 ){
 		nb_activation++;
 
 		while(_loop_pass) {
