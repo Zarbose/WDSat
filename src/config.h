@@ -95,7 +95,7 @@
 #define __MAX_XEQ_SIZE__ 800*/
 
 /** MQ : n=20 m=40 **/
-#ifdef __XG_ENHANCED__
+/*#ifdef __XG_ENHANCED__
  #define __MAX_ANF_ID__ 21 // make it +1
  #define __MAX_DEGREE__ 3 // make it +1
  #endif
@@ -104,7 +104,7 @@
  #define __MAX_EQ__ 600
  #define __MAX_EQ_SIZE__ 4 //make it +1
  #define __MAX_XEQ__ 40
- #define __MAX_XEQ_SIZE__ 200
+ #define __MAX_XEQ_SIZE__ 200*/
 
 /** MQ : n=25 m=50 **/
 /*#ifdef __XG_ENHANCED__
@@ -131,3 +131,15 @@
 #define __MAX_XEQ_SIZE__ 1596*/
 
 /*** END static allocation ***/
+
+/** Rainbow : N=25 M=53 **/
+# ifdef __XG_ENHANCED__
+# define __MAX_ANF_ID__ 26 // make it +1
+# define __MAX_DEGREE__ 3 // make it +1
+# endif
+# define __MAX_ID__ 325
+# define __MAX_BUFFER_SIZE__ 200000
+# define __MAX_EQ__ 1378
+# define __MAX_EQ_SIZE__ 4 //make it +1
+# define __MAX_XEQ__ 53
+# define __MAX_XEQ_SIZE__ 650
