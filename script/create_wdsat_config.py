@@ -1,6 +1,6 @@
 # def create_wdsat_config(wdsat_path, M, N):
-N=25
-M=53
+N=30
+M=63
 with open("../src/config.h", 'a') as f:
         f.write("""
 
