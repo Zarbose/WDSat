@@ -5,7 +5,7 @@ import numpy as np
 
 def path_file():
     # return 'test'
-    return 'challenge-1-55-0'
+    return '/home/simon/Documents/WDSat/benchmarks/toy_example/ToyExample-type1-n20-seed0'
 
 def dest_file():
     return path_file()+'.anf'
@@ -77,9 +77,6 @@ def gen_seq_X(n):
 
     return seq_X
 
-def nb_elm(val):
-    return len(val.split(" "))
-
 def init_vector(val,n):
     tmp=val.split(" ")
     vec=[]
@@ -110,9 +107,9 @@ def compare_monomial(alpha,beta,n):
         if sub_vector[i] != 0:
             cpt=i
 
-    if sub_vector[cpt] < 0: # alpha > beta
+    if sub_vector[cpt] < 0: # alpha < beta
         return 1
-    else: # alpha < beta
+    else: # alpha > beta
         return 0
     
 
@@ -138,7 +135,8 @@ def sort_seq(list,n):
 def remove_undesirable_elm(list):
     for i in range(len(list)):
         if list[i].count('d') == 1:
-            list[i]=list[i][0]
+            tmp=list[i].split("d")
+            list[i]=tmp[0]
 
     return list
 
@@ -158,6 +156,9 @@ def find_degree_monomial(elm):
 
 def generate_anf(seq_X):
     i=0
+
+    print(seq_X)
+
     file = open(path_file(), "r")
     destination = open(dest_file(),'a')
 
@@ -187,6 +188,8 @@ def generate_anf(seq_X):
 param=extract_param()
 seq=gen_seq_X(param[0])
 seq_sort=sort_seq(seq[1],param[0])
+# print(seq_sort)
+# print(seq[0])
 seq_sort=remove_undesirable_elm(seq_sort)
 clean_destination()
 add_header(param[0],param[1])
