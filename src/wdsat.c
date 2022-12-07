@@ -45,7 +45,12 @@ int_t nb_activation=0LL;
 
 void save_result(int duree_ml, int_t conf[]){
 	FILE* fichier = NULL;
-	fichier=fopen("result/Rainbow/result_N_25_M_53_K1_0_K2_4_K3_9.csv","a+");
+
+	char path_file[1000];
+	// sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
+	sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d.csv",K1,K2);
+
+	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
 		fprintf(fichier, "%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3);
         fclose(fichier);
@@ -249,8 +254,10 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t _l;
 	
 	if(!wdsat_set_true(l)) return false;
-	xorgauss_count_nb_equationxor();
-	if ( (d >= K1 && d <= K2) || d >= K3 ){
+	// xorgauss_count_nb_equationxor();
+	// if ( (d >= K1 && d <= K2) || d >= K3 ){
+	// printf("%d\n",d);
+	if ( (d >= K1 && d <= K2) ){
 	// if ( d >= K3 ){
 		nb_activation++;
 
