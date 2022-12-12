@@ -1,5 +1,7 @@
 #!/bin/bash -u
 
+### This script initializes everything we need to generate a rainbow sequence based on o2
+
 err() {
     echo "[$(date +'%Y-%m-%d')]: $*" >&2
 }
