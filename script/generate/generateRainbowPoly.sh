@@ -17,7 +17,7 @@ let val1=$2*2
 let val2=$2*3
 let val3=$val1-1
 let val4=$2-2
-file=$src/systems/rainbow_diff_s_${1}_q_2_o2_${2}_m_${val1}_n_${val2}_M_${val3}_N_${val4}.magma
+file=$src/systems/rainbow_diff_s_${1}_q_2_o2_${2}_m_${val1}_n_${val2}_M_${val3}_N_${val4}.anf
 if [ -f "$file" ]; then
 	echo "Polynomial system of seed $1 and o2 $2 already exist !"
 else
