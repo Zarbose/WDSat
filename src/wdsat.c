@@ -48,7 +48,7 @@ void save_result(int duree_ml, int_t conf[]){
 
 	char path_file[1000];
 	// sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
-	sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d.csv",K1,K2);
+	sprintf(&path_file,"result/Rainbow/to_analyse/result_N_25_M_53_K1_%d_K2_%d.csv",K1,K2);
 
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
