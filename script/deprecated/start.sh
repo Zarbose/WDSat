@@ -17,6 +17,7 @@ path="$HOME/Documents/WDSat"
 ### Gestion des paramètres
 options=$(getopt -o hd -l help -- "$@")
 eval set -- "$options" # eval for remove simple quote
+echo $options
 
 while true; do
     case "$1" in 

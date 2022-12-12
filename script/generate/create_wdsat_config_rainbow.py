@@ -1,7 +1,7 @@
 # def create_wdsat_config(wdsat_path, M, N):
 N=30
 M=63
-with open("../src/config.h", 'a') as f:
+with open("../../src/config.h", 'a') as f:
         f.write("""
 
 /** Rainbow : N={0} M={1} **/
