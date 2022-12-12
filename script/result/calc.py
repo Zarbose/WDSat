@@ -5,7 +5,7 @@ from statistics import mean, pstdev
 import sys
 
 def saveEnvironment():
-    return "../../result/Rainbow/big_Tables/all_calc.txt"
+    return "../../result/Rainbow/experimentation_in_progress/big_tables/all_calc.txt"
 
 
 if len( sys.argv ) < 2:
