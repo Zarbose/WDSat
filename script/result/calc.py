@@ -56,10 +56,11 @@ def calcul():
 def save_calcul(vars):
     i=0
     with open(saveEnvironment(), 'a') as f:
-        f.write("FILE_NAME;"+strparam+"\n")
+        # f.write("FILE_NAME;"+strparam+"\n")
         for elm in vars:
             if (i == 0):
-                to_write="MOYENNE;"
+                # to_write="MOYENNE;"
+                to_write=""
                 for cpt in range(len(elm)):
                     # print(elm[cpt])
                     if cpt == len(elm)-1:
@@ -70,7 +71,8 @@ def save_calcul(vars):
                 f.write(to_write)
 
             if (i == 1):
-                to_write="ECARTYPE;"
+                # to_write="ECARTYPE;"
+                to_write=""
                 for cpt in range(len(elm)):
                     # print(elm[cpt])
                     if cpt == len(elm)-1:
@@ -81,12 +83,14 @@ def save_calcul(vars):
                 f.write(to_write)
 
             if (i == 2):
-                to_write="CONF_ML;"
-                to_write+=str(elm)+"\n"
+                # to_write="CONF_ML;"
+                to_write=""
+                to_write+=str(elm)+";;\n"
                 # print(to_write)
                 f.write(to_write)
                 
             i+=1
+        f.write("---------------\n")
 
 
 var=calcul()

@@ -41,18 +41,18 @@ static int_t wdsat_xorset_up_top_stack;
 static int_t set[__ID_SIZE__];
 
 int_t nb_activation=0LL;
-
+int d_arbre=0;
 
 void save_result(int duree_ml, int_t conf[]){
 	FILE* fichier = NULL;
 
 	char path_file[1000];
 	// sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
-	sprintf(&path_file,"result/Rainbow/experimentation_in_progress/to_analyse/result_N_25_M_53_K1_%d_K2_%d.csv",K1,K2);
+	sprintf(&path_file,"result/Rainbow/experimentation_in_progress/to_analyse/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
 
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
-		fprintf(fichier, "%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3);
+		fprintf(fichier, "%d;%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3,d_arbre);
         fclose(fichier);
     }
     else{
@@ -253,11 +253,13 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 	
+	if (d > d_arbre) d_arbre=d;
+
 	if(!wdsat_set_true(l)) return false;
 	// xorgauss_count_nb_equationxor();
 	// if ( (d >= K1 && d <= K2) || d >= K3 ){
 	// printf("%d\n",d);
-	if ( (d >= K1 && d <= K2) ){
+	if ( (d >= K1 && d <= K2) || d >= K3){
 	// if ( d >= K3 ){
 		nb_activation++;
 

@@ -1,6 +1,6 @@
 #!/bin/bash -u
 
-mydir=result/Rainbow/big_tables
+mydir=result/Rainbow/experimentation_in_progress/big_tables
 home_project=Documents/WDSat
 src=$HOME/$home_project/$mydir
 
