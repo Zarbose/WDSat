@@ -264,6 +264,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	// if ( (d >= K1 && d <= K2) || d >= K3 ){
 	// printf("%d\n",d);
 	// if ( (d >= K1 && d <= K2)){
+	// if (xorgauss_count_xorequation >= xorgauss_count_nb_var_xor) printf("%lld %lld\n",xorgauss_count_xorequation,xorgauss_count_nb_var_xor);
 	if ( (d >= K1 && d <= K2) || d >= K3){
 	// if ( xorgauss_count_xorequation == xorgauss_count_nb_var_xor){
 		// printf("%d\n",d);

@@ -61,6 +61,11 @@ int_t xorgauss_count_nb_var_xor=0LL;
 inline const uint_t xorgauss_get_nb_xorequation() { return xorgauss_nb_of_equations; }
 static int_t list_var[__ID_SIZE__];
 
+void resetTable(){
+	for (int_t i = 0; i < __ID_SIZE__ ;i++){
+		list_var[i]=0;
+	}
+}
 
 int insideTable(uint_t id){
 	if (list_var[id] != 0) return 0;
@@ -77,7 +82,7 @@ int insideTable(uint_t id){
 void xorgauss_count_nb_var(){
 	uint_t v, cpt=0ULL;
 	xorgauss_count_nb_var_xor=0LL;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v){
 		if(xorgauss_equivalent[v]){ 
 			cpt++;
 
@@ -85,14 +90,19 @@ void xorgauss_count_nb_var(){
 			{
 				if(_boolean_vector_get(xorgauss_equivalency[v], _boolean_vector_fprint_i))
 				{
-					if (insideTable(_boolean_vector_fprint_i) == 1) cpt++;
+					if (insideTable(_boolean_vector_fprint_i) == 1) {
+						// printf("ICI ");
+						cpt++;
+					}
 					// printf("%llu ", _boolean_vector_fprint_i);
 				}
 				
 			}
 
+		}
 	}
 	xorgauss_count_nb_var_xor=cpt;
+	resetTable();
 	// printf(" %lld ",cpt);
 }
 
