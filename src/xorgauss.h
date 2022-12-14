@@ -26,6 +26,7 @@ extern boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 extern boolean_t *xorgauss_assignment;
 
 extern int_t xorgauss_count_xorequation;
+extern int_t xorgauss_count_nb_var_xor;
 
 // undo structures
 extern int_t xorgauss_history[__ID_SIZE__];
@@ -61,6 +62,8 @@ bool xorgauss_is_constant(uint_t *);
 void xorgauss_xor_it(uint_t *, uint_t *);
 bool xorgauss_xor_it_and_check(uint_t *, uint_t *);
 void xorgauss_fprint(void);
+void xorgauss_count_nb_var(void);
+void xorgauss_count_nb_equationxor(void);
 void xorgauss_fprint_nb_equationxor(void);
 bool xorgauss_set_true(const int_t);
 void aff_bin(uint_t v);

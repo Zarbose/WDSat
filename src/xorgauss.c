@@ -57,13 +57,51 @@ int_t xorgauss_reset_top;
 #endif
 
 int_t xorgauss_count_xorequation=0LL;
+int_t xorgauss_count_nb_var_xor=0LL;
 inline const uint_t xorgauss_get_nb_xorequation() { return xorgauss_nb_of_equations; }
+static int_t list_var[__ID_SIZE__];
+
+
+int insideTable(uint_t id){
+	if (list_var[id] != 0) return 0;
+
+	list_var[id]=1;
+	// for (int_t i=0LL; i < __ID_SIZE__; i++){
+	// 	if (list_var[i] != 0)
+	// 		printf("%d ",i);
+	// }
+	// printf("\n");
+	return 1;
+}
+
+void xorgauss_count_nb_var(){
+	uint_t v, cpt=0ULL;
+	xorgauss_count_nb_var_xor=0LL;
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
+		if(xorgauss_equivalent[v]){ 
+			cpt++;
+
+			for(uint_t _boolean_vector_fprint_i = 1ULL; _boolean_vector_fprint_i <= xorgauss_nb_of_vars; ++_boolean_vector_fprint_i)
+			{
+				if(_boolean_vector_get(xorgauss_equivalency[v], _boolean_vector_fprint_i))
+				{
+					if (insideTable(_boolean_vector_fprint_i) == 1) cpt++;
+					// printf("%llu ", _boolean_vector_fprint_i);
+				}
+				
+			}
+
+	}
+	xorgauss_count_nb_var_xor=cpt;
+	// printf(" %lld ",cpt);
+}
 
 void xorgauss_count_nb_equationxor(){
 	uint_t v, cpt=0ULL;
 	xorgauss_count_xorequation=0LL;
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
 		if(xorgauss_equivalent[v]){ cpt++; }
+	// printf("%lld\n",cpt);
 	xorgauss_count_xorequation=cpt;
 }
 

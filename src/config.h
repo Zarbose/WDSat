@@ -3,7 +3,7 @@
 #define __XG_ENHANCED__
 #define K1 0
 #define K2 14
-#define K3 23
+#define K3 20
 #define K5 30000
 
 

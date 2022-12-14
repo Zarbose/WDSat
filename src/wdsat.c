@@ -256,10 +256,17 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	if (d > d_arbre) d_arbre=d;
 
 	if(!wdsat_set_true(l)) return false;
+	// xorgauss_fprint_nb_equationxor();
+
+	// xorgauss_count_nb_var();
 	// xorgauss_count_nb_equationxor();
+
 	// if ( (d >= K1 && d <= K2) || d >= K3 ){
 	// printf("%d\n",d);
+	// if ( (d >= K1 && d <= K2)){
 	if ( (d >= K1 && d <= K2) || d >= K3){
+	// if ( xorgauss_count_xorequation == xorgauss_count_nb_var_xor){
+		// printf("%d\n",d);
 	// if ( d >= K3 ){
 		nb_activation++;
 
@@ -376,6 +383,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 	// end code for multithread (this has to be done before wdsat_infer_unitary();
+
 	// wdsat_infer_unitary();
 
 	if(strlen(mvc_graph) > 0)
@@ -405,10 +413,12 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
+	// xorgauss_count_nb_equationxor();
 	// xorgauss_fprint_nb_equationxor();
 	// xorset_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
+	// xorgauss_count_nb_var();
 	// xorset_index_structure_fprintf();
 	int_t d=0;
 	clock_t debut = clock();
@@ -428,11 +438,12 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
 			if (S == 1) save_result(duree_ml,conf);
+			
+			// xorgauss_count_nb_equationxor();
+			
 			return false;
 		}
 	}
-	clock_t fin = clock();
-	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
 	printf("nb_activation = %lld\n",nb_activation);
 	// if (S == 1) save_result(duree_ml,conf);
@@ -443,6 +454,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// xorgauss_fprint_for_xorset();
 	// xorset_fprint();
 	// xorgauss_fprint_nb_equationxor();
+	
 
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
