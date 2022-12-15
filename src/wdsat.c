@@ -48,7 +48,7 @@ void save_result(int duree_ml, int_t conf[]){
 
 	char path_file[1000];
 	// sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
-	sprintf(&path_file,"result/Rainbow/experimentation_in_progress/to_analyse/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
+	sprintf(path_file,"result/Rainbow/experimentation_in_progress/to_analyse/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
 
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
@@ -254,20 +254,18 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t _l;
 	
 	if (d > d_arbre) d_arbre=d;
+	// printf("%d\n",d);
 
 	if(!wdsat_set_true(l)) return false;
 	// xorgauss_fprint_nb_equationxor();
 
-	// xorgauss_count_nb_var();
-	// xorgauss_count_nb_equationxor();
+	xorgauss_count_nb_var_nb_equation();
 
-	// if ( (d >= K1 && d <= K2) || d >= K3 ){
-	// printf("%d\n",d);
-	// if ( (d >= K1 && d <= K2)){
 	// if (xorgauss_count_xorequation >= xorgauss_count_nb_var_xor) printf("%lld %lld\n",xorgauss_count_xorequation,xorgauss_count_nb_var_xor);
-	if ( (d >= K1 && d <= K2) || d >= K3){
+
 	// if ( xorgauss_count_xorequation == xorgauss_count_nb_var_xor){
-		// printf("%d\n",d);
+	// if ( (d >= K1 && d <= K2) || d >= K3 ){
+	// if ( (d >= K1 && d <= K2)){	
 	// if ( d >= K3 ){
 		nb_activation++;
 
@@ -298,7 +296,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_last = xorgauss_history_top;
 			}
 		}
-	}
+	// }
 	return true;
 }
 
@@ -357,14 +355,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		return false;
 	}
 	cpy_from_dimacs();
-	// cnf_fprint();
-	// xorset_fprint();
-	
-	// xorgauss_fprint();
-	// xorgauss_fprint_for_xorset();
-	// xorgauss_fprint_system();
-	// dimacs_print_formula();
-	
+
 	//check allocated memory
 	if(dimacs_nb_vars() < __MAX_ID__)
 		printf("\n!!! Running times are not optimal with these parameters. Set the __MAX_ID__ constant to %d !!!\n\n", dimacs_nb_vars());
@@ -414,13 +405,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
-	// xorgauss_count_nb_equationxor();
-	// xorgauss_fprint_nb_equationxor();
-	// xorset_fprint();
+	// xorgauss_count_nb_var_nb_equation();
+
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
-	// xorgauss_count_nb_var();
-	// xorset_index_structure_fprintf();
+
 	int_t d=0;
 	clock_t debut = clock();
 	if(xg == 0)
@@ -440,21 +429,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 			if (S == 1) save_result(duree_ml,conf);
 			
-			// xorgauss_count_nb_equationxor();
+			// xorgauss_count_nb_var_nb_equation();
 			
 			return false;
 		}
 	}
-
-	printf("nb_activation = %lld\n",nb_activation);
-	// if (S == 1) save_result(duree_ml,conf);
-	
-	
-	// xorset_index_structure_fprintf();
-	// xorgauss_fprint();
-	// xorgauss_fprint_for_xorset();
-	// xorset_fprint();
-	// xorgauss_fprint_nb_equationxor();
 	
 
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
