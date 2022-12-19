@@ -57,6 +57,7 @@ void dimacs_print_header(void);
 
 void dimacs_read_formula(FILE * f);
 void dimacs_print_formula(void);
+void dimacs_print_equivalency(void);
 
 void dimacs_free_meaning(void);
 void dimacs_generate_meaning(void);

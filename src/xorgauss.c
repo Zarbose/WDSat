@@ -78,7 +78,7 @@ void xorgauss_count_nb_var_nb_equation(){
 	xorgauss_count_nb_var_xor=0ULL;
 	xorgauss_count_xorequation=0ULL;
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v){
-		if(xorgauss_equivalent[v]){ 
+		if(xorgauss_equivalent[v]){
 			cpt_var++;
 			cpt_equa++;
 			for(uint_t _boolean_vector_fprint_i = 1ULL; _boolean_vector_fprint_i <= xorgauss_nb_of_vars; ++_boolean_vector_fprint_i)

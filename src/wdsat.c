@@ -17,6 +17,7 @@
 #include "xorset.h"
 #include "xorgauss.h"
 #include "dimacs.h"
+#include "substitution.h"
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -259,13 +260,16 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	if(!wdsat_set_true(l)) return false;
 	// xorgauss_fprint_nb_equationxor();
 
-	xorgauss_count_nb_var_nb_equation();
+	// xorgauss_count_nb_var_nb_equation();
 
 	// if (xorgauss_count_xorequation >= xorgauss_count_nb_var_xor) printf("%lld %lld\n",xorgauss_count_xorequation,xorgauss_count_nb_var_xor);
 
 	// if ( xorgauss_count_xorequation == xorgauss_count_nb_var_xor){
 	// if ( (d >= K1 && d <= K2) || d >= K3 ){
-	// if ( (d >= K1 && d <= K2)){	
+	// if ( (d >= K1 && d <= K2)){		
+	
+
+	
 	// if ( d >= K3 ){
 		nb_activation++;
 
@@ -296,6 +300,10 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_last = xorgauss_history_top;
 			}
 		}
+	// }
+	// if(d == 1){
+	// 	xorgauss_fprint_for_xorset();
+	// 	exit(0);
 	// }
 	return true;
 }
@@ -349,6 +357,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// bool seen[50]={0};
 	cnf_initiate_from_dimacs();
 	xorset_initiate_from_dimacs();
+	substitution_initiate_from_dimacs();
+
 	if(!xorgauss_initiate_from_dimacs())
 	{
 		printf("UNSAT on XORGAUSS init\n");
@@ -409,6 +419,14 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
+
+	// xorset_fprint();
+
+	// dimacs_print_formula();
+	// dimacs_print_equivalency();
+
+	// substitution_print_equivalency();
+	// substitution_fprint();
 
 	int_t d=0;
 	clock_t debut = clock();

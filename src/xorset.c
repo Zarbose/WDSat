@@ -281,24 +281,6 @@ void xorset_undo() {
         --xorset_degree_u[xorset_history_u[--xorset_history_u_top]];
 }
 
-/*
-//CHECK**
-/// @fn int_t xorset_last_assigned_breakpoint(int_t *up_stack);
-/// @brief return the list of literals that have been assigned since
-/// the last breakpointxorset_history_top
-/// @param up_stack is the list that will be filled
-/// @return the last element in the stack 
-int_t xorset_last_assigned_breakpoint(int_t *up_stack) { // Not used
-	int_t up_stack_top = 0LL;
-	int_t _l;
-	xorset_history_top_it = (xorset_step_top) ? xorset_step[xorset_step_top - 1LL] : 0;
-	while(xorset_history_top_it < xorset_history_top) {
-		_l = xorset_history[xorset_history_top_it++];
-		up_stack[up_stack_top++] = _l;
-	}
-	return up_stack_top;
-}*/
-
 //CHECK**
 /// @fn int_t xorset_last_assigned(int_t *up_stack);
 /// @brief return the list of literals that have been assigned since
