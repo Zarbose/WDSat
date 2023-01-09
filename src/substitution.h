@@ -18,6 +18,10 @@ extern uint_t substitution_values[__SZ_VAR__][__MAX_ID__];
 extern bool substitution_index[__SZ_VAR__];
 
 bool substitution_initiate_from_dimacs(void);
-void substitution_fprint(void);
+void substitution_set_true(const int_t v);
+
+void substitution_fprint_equivalency(void);
+void substitution_fprint_values(void);
+
 void substitution_reset_boolean_vector(uint_t *, uint_t sz);
 #endif

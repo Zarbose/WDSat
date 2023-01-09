@@ -17,9 +17,9 @@ bool substitution_index[__SZ_VAR__];
 static uint_t substitution_nb_of_equations;
 
 // substitution
-void substitution_fprint() {
+void substitution_fprint_equivalency() {
 	uint_t v;
-	for(v = 0LL; v <= substitution_nb_of_equations; ++v) {
+	for(v = 0LL; v < substitution_nb_of_equations; ++v) {
         if (substitution_equivalent[v]){
             printf(" %lld <=> ",v);
             for (int_t j=0LL; j< __SZ_SUB__; j++) printf("%lld ",substitution_equivalency[v][j]);
@@ -27,6 +27,22 @@ void substitution_fprint() {
         }
         
 	}
+}
+
+void substitution_fprint_values() {
+    uint_t v;
+
+    // for(v = 1LL; v < substitution_nb_of_equations; ++v) {
+    //     printf("%lld : %s \n",v, substitution_index[v] ? "T" : "U");
+    // }
+    // printf("\n");
+
+    for(v = 1LL; v < substitution_nb_of_equations; ++v) {
+        printf("%lld - ",v);
+        for (int_t j=0LL; substitution_values[v][j] != 0; j++) printf("%lld ",substitution_values[v][j]);
+        printf("\n");
+    }
+
 }
 
 inline void substitution_reset_boolean_vector(uint_t *v, uint_t sz) {
@@ -59,6 +75,40 @@ bool substitution_initiate_from_dimacs() {
         }
 	}
     return (true);
+}
+
+int_t substitution_end_vector(const int_t v){
+    int_t i;
+    for(i = 0LL; substitution_values[v][i] != 0; i++);
+
+    return i;
+}
+
+void substitution_set_true(const int_t v){
+    uint_t w;
+    substitution_index[v]=true;
+    
+	for(w = 0LL; w < substitution_nb_of_equations; ++w) {
+        if (substitution_equivalent[w]){
+            uint_t _y = w;
+            for (int_t j=0LL; j< __SZ_SUB__; j++) {
+                if (substitution_equivalency[_y][j] == v){
+                    int_t _x, _end_x;
+                    int_t _end_y = substitution_end_vector(_y);
+
+                    if ( j == 0LL )
+                        _x = substitution_equivalency[_y][1];
+                    else
+                        _x = substitution_equivalency[_y][0];
+
+                    _end_x = substitution_end_vector(_x); 
+
+                    substitution_values[_x][_end_x]=_y;
+                    substitution_values[_y][_end_y]=_x;
+                }
+            }
+        }
+	}
 }
 
 /*
