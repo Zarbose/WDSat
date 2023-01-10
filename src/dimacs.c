@@ -53,7 +53,7 @@ inline const int_t dimacs_nb_unary_vars() { return dimacs_nb_of_unary_vars; }
 #ifdef __XG_ENHANCED__
 static int_t dimacs_nb_of_eq = 0LL;
 //monomials degree > 1
-uint_t monomials_to_column[__MAX_ANF_ID__][__ID_SIZE__][__MAX_DEGREE__ - 1];
+uint_t dimacs_monomials_to_column[__MAX_ANF_ID__][__ID_SIZE__][__MAX_DEGREE__ - 1];
 boolean_t dimacs_current_degree[__ID_SIZE__];
 #endif
 
@@ -105,7 +105,7 @@ void dimacs_read_formula(FILE *f) {
 	
 	//set all values to 0. 0 will be used to delimit a list
 	//this can cause a problem if __MAX_DEGREE__ is not set properly
-	memset(monomials_to_column, 0, sizeof(uint_t)*__MAX_ANF_ID__*__ID_SIZE__*(__MAX_DEGREE__ - 1));
+	memset(dimacs_monomials_to_column, 0, sizeof(uint_t)*__MAX_ANF_ID__*__ID_SIZE__*(__MAX_DEGREE__ - 1));
 	
 	fgets(str_clause, sizeof(str_clause), f);
 	str_l = strtok (str_clause, " ");
@@ -167,20 +167,20 @@ void dimacs_read_formula(FILE *f) {
 					//check if monomial already occured
 					l = 0;
 					i = 0;
-					while(monomials_to_column[a[0]][i][0])
+					while(dimacs_monomials_to_column[a[0]][i][0])
 					{
 						for(j = 1; j < deg; j++)
 						{
-							if(monomials_to_column[a[0]][i][j] != a[j])
+							if(dimacs_monomials_to_column[a[0]][i][j] != a[j])
 							{
 								break;
 							}
 						}
 						if(j == deg)
 						{
-							if(j == __MAX_DEGREE__ - 1 || monomials_to_column[a[0]][i][j] == 0) //check if right degree monomial
+							if(j == __MAX_DEGREE__ - 1 || dimacs_monomials_to_column[a[0]][i][j] == 0) //check if right degree monomial
 							{
-								l = monomials_to_column[a[0]][i][0];
+								l = dimacs_monomials_to_column[a[0]][i][0];
 								break;
 							}
 						}
@@ -194,14 +194,14 @@ void dimacs_read_formula(FILE *f) {
 						for(j = 0; j < deg; j++)
 						{
 							i = 0;
-							while(monomials_to_column[a[j]][i][0] > 0) i++;
-							monomials_to_column[a[j]][i][0] = l;
+							while(dimacs_monomials_to_column[a[j]][i][0] > 0) i++;
+							dimacs_monomials_to_column[a[j]][i][0] = l;
 							k = 1;
 							for(d = 0; d < deg; d++)
 							{
 								if(d != j)
 								{
-									monomials_to_column[a[j]][i][k] = a[d];
+									dimacs_monomials_to_column[a[j]][i][k] = a[d];
 									k++;
 								}
 							}
@@ -994,4 +994,15 @@ void dimacs_print_equivalency() {
         }
 		printf("\n");
 	}
+}
+
+void dimacs_print_table() {
+    for (int_t i = 0LL; i < __MAX_ANF_ID__; i++){
+        printf("%lld : \n",i);
+        for (int_t j = 0LL; j < __ID_SIZE__; j++){
+            printf("    %lld - ",j);
+            for (int_t k = 0LL; k < __MAX_DEGREE__ - 1; k++) printf("%lld ",dimacs_monomials_to_column[i][j][k]);
+            printf("\n");
+        }
+    }
 }

@@ -49,7 +49,7 @@
 
 
 #ifdef __XG_ENHANCED__
-extern uint_t monomials_to_column[__MAX_ANF_ID__][__ID_SIZE__][__MAX_DEGREE__ - 1];
+extern uint_t dimacs_monomials_to_column[__MAX_ANF_ID__][__ID_SIZE__][__MAX_DEGREE__ - 1];
 #endif
 
 void dimacs_read_header(FILE * f);
@@ -58,6 +58,7 @@ void dimacs_print_header(void);
 void dimacs_read_formula(FILE * f);
 void dimacs_print_formula(void);
 void dimacs_print_equivalency(void);
+void dimacs_print_table(void);
 
 void dimacs_free_meaning(void);
 void dimacs_generate_meaning(void);

@@ -123,6 +123,7 @@ bool wdsat_set_true(const int_t l) {
 }*/
 
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
+	// printf("l = %lld\n",l);
 	if(l > set_end)
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -424,11 +425,12 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// dimacs_print_formula();
 	// dimacs_print_equivalency();
+	// dimacs_print_table();
 
 	// substitution_fprint_equivalency();
-	substitution_set_true(12);
-	substitution_set_true(1);
-	substitution_fprint_values();
+	// substitution_set_true(12);
+	// substitution_set_true(1);
+	// substitution_fprint_values();
 
 	int_t d=0;
 	clock_t debut = clock();
@@ -450,6 +452,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			if (S == 1) save_result(duree_ml,conf);
 			
 			// xorgauss_count_nb_var_nb_equation();
+			// dimacs_print_table();
 			
 			return false;
 		}

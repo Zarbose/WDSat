@@ -676,22 +676,22 @@ bool xorgauss_set_true(const int_t v)
 			if(_tf == true)
 			{
 				int_t i = 0;
-				while(monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
+				while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
 				{
-					xorgauss_current_degree[monomials_to_column[_uv][i][0]]--; // Ligne 19 algo 4.10
-					if(xorgauss_current_degree[monomials_to_column[_uv][i][0]] == 1) // Ligne 20 algo 4.10
+					xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]]--; // Ligne 19 algo 4.10
+					if(xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]] == 1) // Ligne 20 algo 4.10
 					{
 						int_t j = 1;
-						while(_xorgauss_is_true(monomials_to_column[_uv][i][j])) j++;
+						while(_xorgauss_is_true(dimacs_monomials_to_column[_uv][i][j])) j++;
 
-						if(j > __MAX_DEGREE__ - 2 || monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
+						if(j > __MAX_DEGREE__ - 2 || dimacs_monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
 						{
-							xorgauss_up_stack[xorgauss_up_top_stack++] = monomials_to_column[_uv][i][0]; //so set monomial to 1
+							xorgauss_up_stack[xorgauss_up_top_stack++] = dimacs_monomials_to_column[_uv][i][0]; //so set monomial to 1
 							assert(xorgauss_up_top_stack < __ID_SIZE__);
 						}
 						else
 						{
-							if(!xorgauss_replace(monomials_to_column[_uv][i][0], monomials_to_column[_uv][i][j])) // Ligne 21 algo 4.10
+							if(!xorgauss_replace(dimacs_monomials_to_column[_uv][i][0], dimacs_monomials_to_column[_uv][i][j])) // Ligne 21 algo 4.10
 							{
 								xorgauss_up_top_stack = 0;
 								return false;
@@ -704,9 +704,9 @@ bool xorgauss_set_true(const int_t v)
 			else // Ligne 24 algo 4.10
 			{
 				int_t i = 0;
-				while(monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
+				while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
 				{
-					xorgauss_current_degree[monomials_to_column[_uv][i][0]] = 0;
+					xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]] = 0;
 					i++;
 				}
 			}
