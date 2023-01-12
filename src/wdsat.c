@@ -428,9 +428,16 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_table();
 
 	// substitution_fprint_equivalency();
-	// substitution_set_true(12);
-	// substitution_set_true(1);
+
+	// substitution_subt(12);
+	// substitution_subt(1);
+
+	// for (int i = 1; i < 26; ++i)
+	// 	substitution_subt(i);
+
 	// substitution_fprint_values();
+
+	return true;
 
 	int_t d=0;
 	clock_t debut = clock();

@@ -7,18 +7,33 @@
 #include "dimacs.h"
 #include "xorset.h"
 
+#define __SIGNED_SZ_T__ ((__SZ_VAR__ + 1) << 1)
+
+int_t substitution_up_stack[__SZ_VAR__];
+int_t substitution_up_top_stack;
+
+boolean_t substitution_assignment_buffer[__SIGNED_SZ_T__];
+boolean_t *substitution_assignment;
+
+
 // Structure pour connaitre les équivalences
-uint_t substitution_equivalency[__SZ_VAR__][__SZ_SUB__];
+int_t substitution_equivalency[__SZ_VAR__][__SZ_SUB__];
 bool substitution_equivalent[__SZ_VAR__];
 
 
-uint_t substitution_values[__SZ_VAR__][__MAX_ID__];
-bool substitution_index[__SZ_VAR__];
+// uint_t substitution_values[__SIGNED_SZ_T__][__MAX_ID__];
+// bool substitution_index[__SIGNED_SZ_T__];
+
+/*static int_t substitution_main_buffer[__SZ_VAR__];
+static int_t substitution_main_val_buffer;
+
+static int_t *substitution_values_buffer[__SIGNED_SZ_T__];
+static int_t **substitution_values;*/
+
+
+static int_t substitution_values[__SZ_VAR__][__SZ_VAR__];
 
 static uint_t substitution_nb_of_equations;
-boolean_t substitution_current_degree[__ID_SIZE__];
-
-boolean_t substitution_current_degree_history[__MAX_ANF_ID__][__ID_SIZE__];
 
 // substitution
 void substitution_fprint_equivalency() {
@@ -49,11 +64,11 @@ void substitution_fprint_values() {
 
 }
 
-inline void substitution_reset_boolean_vector(uint_t *v, uint_t sz) {
+inline void substitution_reset_boolean_vector(int_t *v, uint_t sz) {
 	for(uint_t i = 0ULL; i < sz; ++i){
 		/// different writing for same aim
-		/// v[i] = 0ULL;
-		v[i] ^= v[i];
+		v[i] = 0ULL;
+		// v[i] ^= v[i];
     }
 }
 
@@ -64,119 +79,92 @@ int_t substitution_end_vector(const int_t v){
     return i;
 }
 
-bool substitution_replace(const int_t v_bin, const int_t v_mon){
-
-    return true;
-}
-
-bool substitution_subt(const int_t v){
-    int_t _v=v;
-    const bool _tf = (_v < 0) ? false : true;
-	const uint_t _uv = (uint_t) ((_v < 0) ? -_v : _v);
-	if(_uv <= dimacs_nb_unary_vars()) // if ul is an unary variable
-	{
-		if(_tf == true)
-		{
-			int_t i = 0;
-			while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
-			{
-				substitution_current_degree[dimacs_monomials_to_column[_uv][i][0]]--; // Ligne 19 algo 4.10
-				if(substitution_current_degree[dimacs_monomials_to_column[_uv][i][0]] == 1) // Ligne 20 algo 4.10
-				{
-					int_t j = 1;
-					while(_xorset_is_true(dimacs_monomials_to_column[_uv][i][j])) j++;
-
-					if(j > __MAX_DEGREE__ - 2 || dimacs_monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
-					{
-						xorset_up_stack[xorset_up_top_stack++] = dimacs_monomials_to_column[_uv][i][0]; //so set monomial to 1
-						assert(xorset_up_top_stack < __ID_SIZE__);
-					}
-					else
-					{
-						if(!substitution_replace(dimacs_monomials_to_column[_uv][i][0], dimacs_monomials_to_column[_uv][i][j])) // Ligne 21 algo 4.10
-						{
-							xorset_up_top_stack = 0;
-							return false;
-						}
-					}
-				}
-				i++;
-			}
-		}
-		else // Ligne 24 algo 4.10
-		{
-			int_t i = 0;
-			while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
-			{
-				substitution_current_degree[dimacs_monomials_to_column[_uv][i][0]] = 0;
-				i++;
-			}
-		}
-	}
-	return true;
-}
-
 bool substitution_initiate_from_dimacs() {
-    const int_t _n_v = dimacs_nb_vars();
+    // const int_t _n_v = dimacs_nb_vars();
     const int_t _n_e = dimacs_nb_equations(); // Ici _n_e = 900
+    // int_t sz = _n_e;
 	substitution_nb_of_equations = _n_e;
 
+    // Init tab qui contient les équivalence : y <=> x1 x2
     for(int_t i = 0LL; i <= _n_e; ++i) {
         substitution_reset_boolean_vector(substitution_equivalency[i],__SZ_SUB__);
 		substitution_equivalent[i] = false;
-        
-        substitution_reset_boolean_vector(substitution_values[i],__SZ_SUB__);
-		substitution_index[i] = false;
 	}
-
-    // for(int_t i = 0LL; i <= _n_v; ++i) {
-	// 	substitution_current_degree[i] = dimacs_get_current_degree(i);
-	// }
 
     for(int_t i = 0LL; i < _n_e; ++i) {
         int_t _s_e = dimacs_size_of_equation(i);
         int_t * equation_buffer = dimacs_equation(i);
         if (_s_e == 3){
-            substitution_equivalent[i]=true;
-            substitution_equivalency[i][0LL] = -equation_buffer[0LL];
-            substitution_equivalency[i][1LL] = -equation_buffer[1LL];
+            int_t j=equation_buffer[2LL];
+            substitution_equivalent[j]=true;
+            substitution_equivalency[j][0LL] = -equation_buffer[0LL];
+            substitution_equivalency[j][1LL] = -equation_buffer[1LL];
         }
 	}
+
+    substitution_up_top_stack=0LL;
+
+    substitution_assignment = substitution_assignment_buffer + _n_e + 1LL; // substitution_assignment_buffer = 1802, _n_e = 900
+    substitution_assignment[0LL] = __UNDEF__;
+
+    // Init tab qui permet de retenir les valeurs utiles à la substitution
+    /*substitution_main_val_buffer = 0LL;
+    substitution_values = substitution_values_buffer + _n_e +1LL;
+    for(int_t i = 1LL; i <= _n_e; ++i) {
+        substitution_values[i] = substitution_values[-i] = NULL;
+    }
+
+    for(int_t i = 1LL; i <= _n_e; ++i) {
+        substitution_reset_boolean_vector(substitution_main_buffer,__SZ_VAR__);
+        substitution_values[i] = substitution_main_buffer;
+        substitution_main_val_buffer+=sz;
+    }
+    // printf("%lld ",substitution_main_val_buffer);
+    for(int_t i = 1LL; i <= _n_e; ++i) {
+        substitution_reset_boolean_vector(substitution_main_buffer,__SZ_VAR__);
+        substitution_values[-i] = substitution_main_buffer;
+        substitution_main_val_buffer+=sz;
+    }*/
+
+    // Print de test
+    // for (int_t j = 1LL; j < _n_e; ++j) {
+    //     printf("%lld|%lld ",substitution_values[j],substitution_values[-j]);
+    // }
     return (true);
 }
 
 void substitution_undo() {
 
-    memcpy(substitution_current_degree, substitution_current_degree_history[xorset_step_top], sizeof(boolean_t)*__ID_SIZE__);
-
 }
 
+bool substitution_subt(const int_t v){ // Le problème vient de la déclaration du tableau ou de la ligne d'affectation dans le tableau
+    const bool _tf = (v < 0) ? false : true;
+    // substitution_index[v]=true;
 
+    if (_tf){ // Si x1 == true
+        // x2 subst y, x1 = true
 
-/*bool substitution_set_true(const int_t v){
-    uint_t w;
-    substitution_index[v]=true;
-    
-	for(w = 0LL; w < substitution_nb_of_equations; ++w) {
-        if (substitution_equivalent[w]){
-            uint_t _y = w;
-            for (int_t j=0LL; j< __SZ_SUB__; j++) {
-                if (substitution_equivalency[_y][j] == v){
-                    int_t _x, _end_x;
-                    int_t _end_y = substitution_end_vector(_y);
+        for(int_t w = 0LL; w < substitution_nb_of_equations; ++w) { // y <=> x1 x2
+            if (substitution_equivalent[w]){ 
+                int_t _y = w;
+                for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
+                    if (substitution_equivalency[_y][j] == v){
+                        int_t _x;
+                        int_t _end_y = substitution_end_vector(_y);
 
-                    if ( j == 0LL )
-                        _x = substitution_equivalency[_y][1];
-                    else
-                        _x = substitution_equivalency[_y][0];
-
-                    _end_x = substitution_end_vector(_x); 
-
-                    substitution_values[_x][_end_x]=_y;
-                    substitution_values[_y][_end_y]=_x;
+                        if ( j == 0LL )
+                            _x = substitution_equivalency[_y][1];
+                        else
+                            _x = substitution_equivalency[_y][0];
+                        substitution_values[_y][_end_y]=_x;
+                    }
                 }
             }
-        }
-	}
+	    }
+
+    }
+    else{
+        // y = false, x1 = false
+    }
     return true;
-}*/
+}
