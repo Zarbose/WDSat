@@ -59,7 +59,7 @@ void save_result(int duree_ml, int_t conf[]){
     else{
         printf("Impossible d'ouvrir le fichier pour enregistrer les résultats\n");
 		exit(2);
-    }	
+    }
 }
 
 // assign and propagate l to true using CNF and XORSET modules.
@@ -429,13 +429,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_equivalency();
 
-	// substitution_subt(12);
+	substitution_subt(12);
 	// substitution_subt(1);
 
-	// for (int i = 1; i < 26; ++i)
-	// 	substitution_subt(i);
-
-	// substitution_fprint_values();
+	substitution_fprint_values();
 
 	return true;
 
