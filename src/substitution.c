@@ -16,8 +16,8 @@ boolean_t *substitution_assignment;
 
 
 // Structure pour connaitre les équivalences
-int_t substitution_equivalency[__ID_SIZE__][__SZ_SUB__];
-bool substitution_equivalent[__ID_SIZE__];
+int_t substitution_equivalency[__ID_SIZE__][__SZ_SUB__]; // Tableau qui contient les équivalences
+bool substitution_equivalent[__ID_SIZE__]; // Index pour parcourir le tableau d'équivalence plus rapidement
 
 
 /*static int_t substitution_main_top_buffer;
@@ -26,11 +26,11 @@ static int_t substitution_main_buffer[__MAX_BUFFER_SIZE__];
 static int_t *substitution_values_buffer[__SZ_SUB__];
 static int_t **substitution_values;*/
 
+// Structure de la table d'équivalence
+static int_t substitution_values[__ID_SIZE__][__SZ_SUB__]; // Table de transition pour la substitution
+static bool substitution_index[__ID_SIZE__]; // Index pour parcourir plus vite substitution_values
 
-static int_t substitution_values[__ID_SIZE__][__SZ_SUB__];
-static bool substitution_index[__ID_SIZE__];
-
-static uint_t substitution_nb_of_var;
+static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
 
 // substitution
 void substitution_fprint_equivalency() {
@@ -180,14 +180,14 @@ bool substitution_subt(const int_t v){ // Le problème vient de la déclaration 
                         else
                             _x = substitution_equivalency[_y][0];
 
-                        if (_substitution_is_true(_x)) continue; // Génère une erreur avec les 2 lignes d'affectation de la fin ?
-                        else if (_substitution_is_false(_x)){
+                        if (_substitution_is_false(_x)){ // x1 = true
                             return false;
                         }
-                        else {
+                        else if (_substitution_is_undef(_x)){
                             _substitution_set(_x,__TRUE__)
                         }
 
+                        // x2 subst y
                         substitution_index[_y]=true;
                         substitution_values[_y][_end_y]=_x;
                     }
@@ -210,11 +210,10 @@ bool substitution_subt(const int_t v){ // Le problème vient de la déclaration 
                 int_t _y = w;
                 for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
                     if (substitution_equivalency[_y][j] == v){
-                        if (_substitution_is_false(_y)) continue;
-                        else if (_substitution_is_true(_y)){
+                        if (_substitution_is_true(_y)){
                             return false;
                         }
-                        else {
+                        else if (_substitution_is_undef(_y)){
                             _substitution_set(_y,__FALSE__)
                         }
                     }
