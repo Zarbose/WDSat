@@ -9,16 +9,14 @@
 
 // substitution
 #define __SZ_SUB__ (__MAX_DEGREE__ - 1)
-#define __SZ_VAR__ (900)
-#define __SIGNED_SZ_T__ ((__SZ_VAR__ + 1) << 1)
 
-extern int_t substitution_equivalency[__SZ_VAR__][__SZ_SUB__];
-extern bool substitution_equivalent[__SZ_VAR__];
+extern int_t substitution_equivalency[__ID_SIZE__][__SZ_SUB__];
+extern bool substitution_equivalent[__ID_SIZE__];
 
-extern int_t substitution_up_stack[__SZ_VAR__];
+extern int_t substitution_up_stack[__ID_SIZE__];
 extern int_t substitution_up_top_stack;
 
-extern boolean_t substitution_assignment_buffer[__SIGNED_SZ_T__];
+extern boolean_t substitution_assignment_buffer[__SIGNED_ID_SIZE__];
 extern boolean_t *substitution_assignment;
 
 

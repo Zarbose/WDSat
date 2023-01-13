@@ -979,11 +979,6 @@ void dimacs_print_formula() {
 
 void dimacs_print_equivalency() {
 	int_t i, j;
-	int_t n_besz = fast_int_log10(dimacs_nb_of_boolean_equations);
-	int_t n_xesz = fast_int_log10(dimacs_nb_of_xor_equations);
-	int_t mx_xesz = fast_int_log10(dimacs_size_max_among_xor_equations);
-	int_t mx_besz = fast_int_log10(dimacs_size_max_among_boolean_equations);
-
 
     for(i = 0LL; i < dimacs_nb_of_boolean_equations; ++i) {
         if (dimacs_size_of_boolean_equation[i] == 3){

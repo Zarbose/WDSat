@@ -429,8 +429,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_equivalency();
 
-	substitution_subt(12);
-	// substitution_subt(1);
+	if(substitution_subt(12)) printf("True 12\n");
+	// if(substitution_subt(1)) printf("True 1\n");
+
 
 	substitution_fprint_values();
 

@@ -7,18 +7,17 @@
 #include "dimacs.h"
 #include "xorset.h"
 
-#define __SIGNED_SZ_T__ ((__SZ_VAR__ + 1) << 1)
 
-int_t substitution_up_stack[__SZ_VAR__];
+int_t substitution_up_stack[__ID_SIZE__];
 int_t substitution_up_top_stack;
 
-boolean_t substitution_assignment_buffer[__SIGNED_SZ_T__];
+boolean_t substitution_assignment_buffer[__SIGNED_ID_SIZE__];
 boolean_t *substitution_assignment;
 
 
 // Structure pour connaitre les équivalences
-int_t substitution_equivalency[__SZ_VAR__][__SZ_SUB__];
-bool substitution_equivalent[__SZ_VAR__];
+int_t substitution_equivalency[__ID_SIZE__][__SZ_SUB__];
+bool substitution_equivalent[__ID_SIZE__];
 
 
 /*static int_t substitution_main_top_buffer;
@@ -28,8 +27,8 @@ static int_t *substitution_values_buffer[__SZ_SUB__];
 static int_t **substitution_values;*/
 
 
-static int_t substitution_values[__SZ_VAR__][__SZ_SUB__];
-static bool substitution_index[__SZ_VAR__];
+static int_t substitution_values[__ID_SIZE__][__SZ_SUB__];
+static bool substitution_index[__ID_SIZE__];
 
 static uint_t substitution_nb_of_var;
 
@@ -80,11 +79,12 @@ int_t substitution_end_vector(const int_t v){
 bool substitution_initiate_from_dimacs() {
     // const int_t _n_v = dimacs_nb_vars();
     const int_t _n_e = dimacs_nb_equations(); // Ici _n_e = 900
+    const int_t _n_v = dimacs_nb_vars(); // Ici _n_v = 325
     int_t sz = __SZ_SUB__;
-	substitution_nb_of_var = _n_e;
+	substitution_nb_of_var = _n_v;
 
     // Init tab qui contient les équivalence : y <=> x1 x2
-    for(int_t i = 0LL; i <= _n_e; ++i) {
+    for(int_t i = 0LL; i <= _n_v; ++i) {
         substitution_reset_boolean_vector(substitution_equivalency[i],__SZ_SUB__);
 		substitution_equivalent[i] = false;
 	}
@@ -103,10 +103,10 @@ bool substitution_initiate_from_dimacs() {
     substitution_up_top_stack=0LL;
 
     // Init tab assignment
-    substitution_assignment = substitution_assignment_buffer + _n_e + 1LL; // substitution_assignment_buffer = 1802, _n_e = 900
+    substitution_assignment = substitution_assignment_buffer + _n_v + 1LL; // substitution_assignment_buffer = 652, _n_v = 325
     substitution_assignment[0LL] = __UNDEF__;
 
-    for (int_t i = 1LL; i < _n_e; ++i)
+    for (int_t i = 1LL; i < _n_v; ++i)
         _substitution_unset(i)
 
     // Init tab qui permet de retenir les valeurs utiles à la substitution
