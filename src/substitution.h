@@ -7,6 +7,8 @@
 
 #include "wdsat_utils.h"
 
+#define CLEAR(ptr, size) memset((ptr), 0, (size)*sizeof(*ptr))
+
 // substitution
 #define __SZ_SUB__ (__MAX_DEGREE__ - 1)
 
@@ -15,6 +17,8 @@ extern bool substitution_equivalent[__ID_SIZE__];
 
 extern int_t substitution_up_stack[__ID_SIZE__];
 extern int_t substitution_up_top_stack;
+extern int_t substitution_index_stack[__ID_SIZE__];
+extern int_t substitution_tag;
 
 extern boolean_t substitution_assignment_buffer[__SIGNED_ID_SIZE__];
 extern boolean_t *substitution_assignment;
@@ -41,8 +45,11 @@ void substitution_fprint_equivalency(void);
 
 void substitution_reset_boolean_vector(int_t *, uint_t sz);
 
-bool substitution_subt(const int_t v);
+bool substitution_subt();
 
 bool substitution_initiate_from_dimacs(void);
+
+void substitution_add_check_stack(int_t v);
+void substitution_reset_stack(void);
 
 #endif

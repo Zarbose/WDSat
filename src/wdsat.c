@@ -360,13 +360,19 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_equivalency();
 
-	if(substitution_subt(-12)) printf("True 12\n");
-	// if(substitution_subt(1)) printf("True 1\n");
+	// substitution_add_check_stack(1);
+	// substitution_add_check_stack(1);
 
-	// for (int i = 0; i < 26; ++i)
-	// 	substitution_subt(i);
+	for (int i = 0; i < 26; ++i)
+		substitution_add_check_stack(i);
 
-	substitution_fprint_values();
+	for (int i = 0; i < 26; ++i) // index n'est pas a indice négatif donc ERREUR !!!!!!!!!!!!!!!!!!
+		substitution_add_check_stack(-i);
+
+
+	// substitution_subt();
+
+	// substitution_fprint_values();
 
 	return true;
 
