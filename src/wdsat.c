@@ -93,35 +93,6 @@ bool wdsat_set_true(const int_t l) {
     return true;
 }
 
-/*bool wdsat_set_unitary(void) {
-	bool _next_loop;
-	int_t _l;
-	wdsat_cnf_up_top_stack = 0LL;
-	wdsat_xorset_up_top_stack = 0LL;
-	
-	if(!cnf_set_unitary()) return false;
-	if(!xorset_set_unitary()) return false;
-	wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
-	wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
-	_next_loop = true;
-	while(_next_loop) {
-		_next_loop = false;
-		while(wdsat_cnf_up_top_stack) {
-			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
-			if(_cnf_is_undef(_l)) _next_loop = true;
-			if(!cnf_set_true(_l)) return false;
-		}
-		while(wdsat_xorset_up_top_stack) {
-			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
-			if(_xorset_is_undef(_l)) _next_loop = true;
-			if(!xorset_set_true(_l)) return false;
-		}
-		wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
-		wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
-	}
-	return true;
-}*/
-
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	// printf("l = %lld\n",l);
 	if(l > set_end)
@@ -309,46 +280,6 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	return true;
 }
 
-/*bool wdsat_infer_unitary() {
-	bool _loop_pass = true;
-	bool _continue;
-	int_t cnf_history_it;
-	int_t cnf_history_last = cnf_history_top;
-	int_t xorgauss_history_it;
-	int_t xorgauss_history_last = xorgauss_history_top;
-	int_t _l;
-	
-	if(!wdsat_set_unitary()) return false;
-	while(_loop_pass) {
-		// finalyse with XORGAUSS
-		_continue = false;
-		cnf_history_it = cnf_history_top;
-		while(cnf_history_it > cnf_history_last) {
-			_l = cnf_history[--cnf_history_it];
-			if(_xorgauss_is_undef(_l)) {
-				if(!xorgauss_set_true(_l)) return false;
-				_continue = true;
-			}
-		}
-		cnf_history_last = cnf_history_top;
-		_loop_pass = false;
-		if(_continue) {
-			// get list of literal set thanks to XORGAUSS
-			xorgauss_history_it = xorgauss_history_top;
-			while(xorgauss_history_it > xorgauss_history_last) {
-				_l = xorgauss_history[--xorgauss_history_it];
-				if(_cnf_is_false(_l)) return false;
-				if(_cnf_is_undef(_l)) {
-					_loop_pass = true;
-					if(!wdsat_set_true(_l)) return false;
-				}
-			}
-			xorgauss_history_last = xorgauss_history_top;
-		}
-	}
-	return true;
-}*/
-
 /// @fn solve();
 /// @return false if formula is unsatisfiable and true otherwise
 bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t xg, char mvc_graph[1000], char thread[1000],int S) {
@@ -429,11 +360,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_equivalency();
 
-	// if(substitution_subt(12)) printf("True 12\n");
+	if(substitution_subt(-12)) printf("True 12\n");
 	// if(substitution_subt(1)) printf("True 1\n");
 
-	for (int i = 0; i < 26; ++i)
-		substitution_subt(i);
+	// for (int i = 0; i < 26; ++i)
+	// 	substitution_subt(i);
 
 	substitution_fprint_values();
 

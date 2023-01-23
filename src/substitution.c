@@ -55,6 +55,7 @@ void substitution_fprint_values() {
     }
 
     printf("\nPrinting substitution_assignment \n");
+    printf("x : i -i\n");
     for (int i = 1; i < substitution_nb_of_var; ++i){
         if (substitution_assignment[i] == 2 && substitution_assignment[-i] == 2) continue;
         printf("%d : %d %d\n",i,substitution_assignment[i],substitution_assignment[-i]);
@@ -160,66 +161,69 @@ void substitution_check(const int_t v){ // Utile ?
     // La variable n'a pas de substitut 
 }
 
-
 bool substitution_subt(const int_t v){ // Le problème vient de la déclaration du tableau ou de la ligne d'affectation dans le tableau
     const bool _tf = (v < 0) ? false : true;
+    const uint_t _uv = (uint_t) ((v < 0) ? -v : v);
+
+    printf("%lld \n",_uv);
 
     if (_tf){ // Si x1 == true
         // x2 subst y, x1 = true
-        for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // y <=> x1 x2
-            if (substitution_equivalent[w]){ 
-                int_t _y = w;
-                for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
-                    if (substitution_equivalency[_y][j] == v){
-                        int_t _x;
-                        int_t _end_y = substitution_end_vector(_y);
-
-                        // Ici _x == v
-                        if ( j == 0LL )
-                            _x = substitution_equivalency[_y][1];
-                        else
-                            _x = substitution_equivalency[_y][0];
-
-                        if (_substitution_is_false(_x)){ // x1 = true
-                            return false;
-                        }
-                        else if (_substitution_is_undef(_x)){
-                            _substitution_set(_x,__TRUE__)
-                        }
-
-                        // x2 subst y
-                        substitution_index[_y]=true;
-                        substitution_values[_y][_end_y]=_x;
-                    }
-                }
-            }
-	    }
-    }
-    else{
-        // printf("ICI\n");
-        // y = false, x1 = false
-        if (_substitution_is_true(v)){
+        if (_substitution_is_false(_uv)){
             return false;
         }
-        else if (_substitution_is_undef(v)){
-            _substitution_set(v,__FALSE__)
-        }
+        else if(_substitution_is_undef(_uv)){
+            _substitution_set(_uv,__TRUE__) // x1 = true
+        
+            for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // y <=> x1 x2
+                if (substitution_equivalent[w]){ 
+                    int_t _y = w;
+                    for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
+                        if (substitution_equivalency[_y][j] == v){
+                            int_t _x;
+                            int_t _end_y = substitution_end_vector(_y);
 
-        for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // y <=> x1 x2
-            if (substitution_equivalent[w]){ 
-                int_t _y = w;
-                for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
-                    if (substitution_equivalency[_y][j] == v){
-                        if (_substitution_is_true(_y)){
-                            return false;
-                        }
-                        else if (_substitution_is_undef(_y)){
-                            _substitution_set(_y,__FALSE__)
+                            // Ici _x == _uv
+                            if ( j == 0LL )
+                                _x = substitution_equivalency[_y][1];
+                            else
+                                _x = substitution_equivalency[_y][0];
+
+                            // x2 subst y
+                            substitution_index[_y]=true;
+                            substitution_values[_y][_end_y]=_x;
                         }
                     }
                 }
             }
-	    }
+        }
+    }
+    else{
+        // y = false, x1 = false
+        if (_substitution_is_true(_uv)){
+            return false;
+        }
+        else if (_substitution_is_undef(_uv)){
+            _substitution_set(_uv,__FALSE__)
+        
+
+            for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // y <=> x1 x2
+                if (substitution_equivalent[w]){ 
+                    int_t _y = w;
+                    for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
+                        if (substitution_equivalency[_y][j] == _uv){
+                            if (_substitution_is_true(_y)){
+                                return false;
+                            }
+                            else if (_substitution_is_undef(_y)){
+                                _substitution_set(_y,__FALSE__)
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
     }
     return true;
 }
