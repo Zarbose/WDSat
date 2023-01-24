@@ -39,6 +39,10 @@ static int_t wdsat_xorset_up_stack[__ID_SIZE__];
 /// @brief unit propagation cnf stack top
 static int_t wdsat_xorset_up_top_stack;
 
+
+static int_t wdsat_substitution_up_stack[__ID_SIZE__];
+static int_t wdsat_substitution_up_top_stack;
+
 static int_t set[__ID_SIZE__];
 
 int_t nb_activation=0LL;
@@ -64,16 +68,22 @@ void save_result(int duree_ml, int_t conf[]){
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
+
     /*printf("Setting:%ld\n",l);
 	for(int i = 1; i <= 15; i++)
 		printf("-%d%d-",cnf_assignment[i], xorset_assignment[i]);
 	printf("\n");*/
+	// printf("%lld \n",l);
     bool _next_loop;
     int_t _l;
     wdsat_cnf_up_top_stack = 0LL;
     wdsat_cnf_up_stack[wdsat_cnf_up_top_stack++] = l;
     wdsat_xorset_up_top_stack = 0LL;
     wdsat_xorset_up_stack[wdsat_xorset_up_top_stack++] = l;
+
+	wdsat_substitution_up_top_stack = 0LL;
+	wdsat_substitution_up_stack[wdsat_substitution_up_top_stack++] = l;
+
     _next_loop = true;
     while(_next_loop) {
 		_next_loop = false;
@@ -87,8 +97,15 @@ bool wdsat_set_true(const int_t l) {
 			if(_xorset_is_undef(_l)) _next_loop = true;
 			if(!xorset_set_true(_l)) {/*printf("xor contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
 		}
+		// while (wdsat_substitution_up_top_stack) {
+		// 	_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
+		// 	if(_substitution_is_undef(_l)) _next_loop = true;
+		// 	if(!substitution_set_true(_l)) {return false;}
+		// }
+		
 		wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
 		wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
+		// wdsat_substitution_up_top_stack = substitution_last_assigned(wdsat_substitution_up_stack);
 	}
     return true;
 }
@@ -112,6 +129,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	conf[0]++;
 	if(!wdsat_set_true(-set[l]))
 	{
+		// printf("BBBBBBBBBB\n");
 		cnf_undo();
 		xorset_undo();
 		if(!wdsat_set_true(set[l])) return false;
@@ -122,6 +140,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	{
 		if(!wdsat_solve_rest(l + 1, set_end,conf))
 		{
+			// printf("BBBBBBBBBB\n");
 			cnf_undo();
 			xorset_undo();
 			if(!wdsat_set_true(set[l])) return false;
@@ -137,7 +156,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
-
     // if (d < 10) 
 	// printf("%d\n", d);
 
@@ -360,20 +378,24 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_equivalency();
 
-	// substitution_add_check_stack(1);
-	// substitution_add_check_stack(1);
+	int tab[26]= {-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0};
+	for (int i = 1; i<26; i++){
+		// int val = (tab[i] == 0) ? -i : i;
+		int val = i;
+		if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		else printf("Failure %d\n",val);
+	}
 
-	for (int i = 0; i < 26; ++i)
-		substitution_add_check_stack(i);
+	// if(substitution_set_true(1) == true) printf("Success\n");
+	// else printf("Failure 1\n");
+	
+	// if(substitution_set_true(12) == true) printf("Success\n");
+	// else printf("Failure 1\n");
 
-	for (int i = 0; i < 26; ++i) // index n'est pas a indice négatif donc ERREUR !!!!!!!!!!!!!!!!!!
-		substitution_add_check_stack(-i);
+	// if(substitution_set_true(-1)) printf("True -1\n");
+	// else printf("False -1\n");
 
-
-	// substitution_subt();
-
-	// substitution_fprint_values();
-
+	substitution_fprint_values();
 	return true;
 
 	int_t d=0;

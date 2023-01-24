@@ -17,7 +17,7 @@ extern bool substitution_equivalent[__ID_SIZE__];
 
 extern int_t substitution_up_stack[__ID_SIZE__];
 extern int_t substitution_up_top_stack;
-extern int_t substitution_index_stack[__ID_SIZE__];
+extern int_t *substitution_index_stack;
 extern int_t substitution_tag;
 
 extern boolean_t substitution_assignment_buffer[__SIGNED_ID_SIZE__];
@@ -51,5 +51,7 @@ bool substitution_initiate_from_dimacs(void);
 
 void substitution_add_check_stack(int_t v);
 void substitution_reset_stack(void);
+
+bool substitution_set_true(const int_t l);
 
 #endif
