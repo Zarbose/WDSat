@@ -146,7 +146,7 @@ bool substitution_initiate_from_dimacs() {
             substitution_values[i] = NULL;
             continue;
         }
-        int_t _sub_size = 10;
+        int_t _sub_size = 300;
         substitution_values[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
         CLEAR(substitution_values[i],_sub_size);
     }
@@ -215,26 +215,46 @@ bool substitution_subt(){ // Le problème vient de la déclaration du tableau ou
                         int_t _y = w;
                         for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
                             if (substitution_equivalency[_y][j] == _uv){
-                                int_t _x,_end_y;
+                                int_t _x1,_x2,_end_y,_end_x;
 
                                 // Ici _x == x2
-                                if ( j == 0LL )
-                                    _x = substitution_equivalency[_y][1];
-                                else
-                                    _x = substitution_equivalency[_y][0];
+                                if ( j == 0LL ){
+                                    _x1 = substitution_equivalency[_y][1];
+                                    _x2 = substitution_equivalency[_y][0];
+                                } else {
+                                    _x1 = substitution_equivalency[_y][0];
+                                    _x2 = substitution_equivalency[_y][1];
+                                }
+
+
 
                                 // x2 subst y
                                 _end_y = substitution_end_vector(_y);
-                                substitution_values[_y][_end_y]=_x;
+                                substitution_values[_y][_end_y]=_x1;
                                 substitution_index[_y]=true;
-                                substitution_add_check_stack(_x);
+
+                                _end_x = substitution_end_vector(_x1);
+                                substitution_values[_x1][_end_x]=_y;
+                                substitution_index[_x1]=true;
+
+                                // _end_x = substitution_end_vector(_x2);
+                                // substitution_values[_x2][_end_x]=_y;
+                                // substitution_index[_x2]=true;
+
 
                                 _end_y = substitution_end_vector(-_y);
-                                substitution_values[-_y][_end_y]=-_x;
+                                substitution_values[-_y][_end_y]=-_x1;
                                 substitution_index[-_y]=true;
-                                substitution_add_check_stack(-_x);
+
+                                _end_x = substitution_end_vector(-_x1);
+                                substitution_values[-_x1][_end_x]=-_y;
+                                substitution_index[-_x1]=true;
+
+                                // _end_x = substitution_end_vector(-_x2);
+                                // substitution_values[-_x2][_end_x]=-_y;
+                                // substitution_index[-_x2]=true;
                                 
-                                printf("add [%lld] = %lld    [%lld] = %lld \n",_y,_x,-_y,-_x);
+                                // printf("add [%lld] = %lld    [%lld] = %lld \n",_y,_x,-_y,-_x);
                             }
                         }
                     }
@@ -245,12 +265,48 @@ bool substitution_subt(){ // Le problème vient de la déclaration du tableau ou
                     if (substitution_equivalent[w]){ 
                         int_t _y = w;
                         for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
-                            if (substitution_equivalency[_y][j] == _uv){
-                                substitution_add_check_stack(-_y); // on ajoute y
+                            if (substitution_equivalency[_y][j] == _uv){ // x1 = undef x2 = 1
+                                if (_substitution_is_undef(-_y)){
+                                    substitution_add_check_stack(-_y); // on ajoute y
+
+                                    int_t _x1 = substitution_equivalency[_y][0]; // 1
+                                    int_t _x2 = substitution_equivalency[_y][1]; // 2
+
+                                    if(_substitution_is_undef(_x1)){
+                                        if( _substitution_is_true(_x2))
+                                            substitution_add_check_stack(-_x1);
+
+                                        continue;
+                                    }
+                                    else if(_substitution_is_undef(_x2)){
+                                        if( _substitution_is_true(_x1))
+                                            substitution_add_check_stack(-_x2);
+
+                                        continue;
+                                    }
+                                    
+                                    _x1 = (int_t) (_substitution_is_true(_x1) ? _x1 : -_x1);
+                                    _x2 = (int_t) (_substitution_is_true(_x2) ? _x2 : -_x2);
+
+                                    if ( !( (_substitution_is_false(_x1) && _substitution_is_false(_x2)) || (_substitution_is_true(_x1) && _substitution_is_false(-_x2)) ||  (_substitution_is_true(-_x1) && _substitution_is_false(_x2)) ) ){
+                                        printf("For : %lld with x1 = %lld{%d,%d} x2 = %lld{%d,%d}\n",_y,_x1,substitution_assignment[_x1],substitution_assignment[-_x1],_x2,substitution_assignment[_x2],substitution_assignment[-_x2]);
+                                        substitution_reset_stack();
+                                        return false;
+                                    }
+                                }
                             }
                         }
                     }
                 }
+            }
+            // printf("Testing : %lld\n",l);
+            int_t i =0;
+            while (substitution_values[l][i] != 0){
+                int_t _v = substitution_values[l][i];
+                if (_substitution_is_undef(_v)){
+                    substitution_add_check_stack(_v);
+                }
+                i++;
             }
 
         }

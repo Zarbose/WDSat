@@ -129,7 +129,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	conf[0]++;
 	if(!wdsat_set_true(-set[l]))
 	{
-		// printf("BBBBBBBBBB\n");
 		cnf_undo();
 		xorset_undo();
 		if(!wdsat_set_true(set[l])) return false;
@@ -140,7 +139,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	{
 		if(!wdsat_solve_rest(l + 1, set_end,conf))
 		{
-			// printf("BBBBBBBBBB\n");
 			cnf_undo();
 			xorset_undo();
 			if(!wdsat_set_true(set[l])) return false;
@@ -378,22 +376,14 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_equivalency();
 
-	int tab[26]= {-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0};
+	// int tab[26]= {-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0}; // Ok
+	int tab[26]= {-1,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,1,1,0,0,1,0,1,0,0,0}; // Test	
 	for (int i = 1; i<26; i++){
-		// int val = (tab[i] == 0) ? -i : i;
-		int val = i;
+		int val = (tab[i] == 0) ? -i : i;
+		// int val = i;
 		if(substitution_set_true(val) == true) printf("Success %d\n",val);
 		else printf("Failure %d\n",val);
 	}
-
-	// if(substitution_set_true(1) == true) printf("Success\n");
-	// else printf("Failure 1\n");
-	
-	// if(substitution_set_true(12) == true) printf("Success\n");
-	// else printf("Failure 1\n");
-
-	// if(substitution_set_true(-1)) printf("True -1\n");
-	// else printf("False -1\n");
 
 	substitution_fprint_values();
 	return true;
