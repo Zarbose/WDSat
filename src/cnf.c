@@ -352,11 +352,3 @@ int_t cnf_last_assigned(int_t *up_stack) {
 	}
 	return up_stack_top;
 }
-
-/*
-/// @fn const int_t cnf_number_of_assigned_variables();
-/// @brief return the number of assigned variables.
-inline const int_t cnf_number_of_assigned_variables() { return cnf_history_top; } // Not used
-*/
-
-

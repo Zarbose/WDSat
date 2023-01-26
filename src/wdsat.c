@@ -126,6 +126,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	if(!_cnf_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf);
 	_cnf_breakpoint;
 	_xorset_breakpoint;
+	_substitution_breakpoint;
 	conf[0]++;
 	if(!wdsat_set_true(-set[l]))
 	{
@@ -148,6 +149,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		{
 			_cnf_mergepoint;
 			_xorset_mergepoint;
+			_substitution_mergepoint;
 			return true;
 		}
 	}
@@ -374,19 +376,28 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
-	// substitution_fprint_equivalency();
+	substitution_fprint_equivalency();
+
 
 	// int tab[26]= {-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0}; // Ok
-	int tab[26]= {-1,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,1,1,0,0,1,0,1,0,0,0}; // Test	
-	for (int i = 1; i<26; i++){
-		int val = (tab[i] == 0) ? -i : i;
-		// int val = i;
-		if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		else printf("Failure %d\n",val);
-	}
+	// int tab[26]= {-1,1,1,1,0,0,0,1,0,1,0,0,0,0,0,1,1,1,0,0,1,0,1,0,0,0}; // Test	
+	// for (int i = 1; i<26; i++){
+	// 	int val = (tab[i] == 0) ? -i : i;
+	// 	// int val = i;
+	// 	if(substitution_set_true(val) == true) printf("Success %d\n",val);
+	// 	else printf("Failure %d\n",val);
+	// }
 
-	substitution_fprint_values();
+	if(substitution_set_true(1) == true) printf("Success %d\n",1);
+		else printf("Failure %d\n",1);
+
+
+	substitution_free_structure();
 	return true;
+
+
+
+
 
 	int_t d=0;
 	clock_t debut = clock();

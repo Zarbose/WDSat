@@ -991,6 +991,7 @@ void dimacs_print_equivalency() {
 	}
 }
 
+#ifdef __XG_ENHANCED__ 
 void dimacs_print_table() {
     for (int_t i = 0LL; i < __MAX_ANF_ID__; i++){
         printf("%lld : \n",i);
@@ -1001,3 +1002,4 @@ void dimacs_print_table() {
         }
     }
 }
+#endif
