@@ -60,7 +60,7 @@ extern int_t substitution_step_top;
 // print functions
 void substitution_fprint_values(void);
 void substitution_fprint_equivalency(void);
-void substitution_fprint_assignement(void);
+void substitution_fprint_assignment(void);
 void substitution_fprint_static_values(void);
 void substitution_fprint_dynamic_values(void);
 
@@ -70,6 +70,7 @@ void substitution_add_check_stack(int_t v);
 void substitution_reset_stack(void);
 int_t substitution_last_assigned(int_t *up_stack);
 void substitution_free_structure(void);
+void substitution_reset_dynamic_table(void);
 
 // init functions
 bool substitution_initiate_from_dimacs(void);
@@ -77,5 +78,7 @@ bool substitution_initiate_from_dimacs(void);
 // "main" functions
 bool substitution_set_true(const int_t l);
 bool substitution_subt();
+
+void substitution_undo();
 
 #endif

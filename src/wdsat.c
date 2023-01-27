@@ -100,7 +100,7 @@ bool wdsat_set_true(const int_t l) {
 		// while (wdsat_substitution_up_top_stack) {
 		// 	_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
 		// 	if(_substitution_is_undef(_l)) _next_loop = true;
-		// 	if(!substitution_set_true(_l)) {return false;}
+		// 	if(!substitution_set_true(_l)) {/*printf("subt contr %lld\n",_l);*/return false;}
 		// }
 		
 		wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
@@ -126,12 +126,13 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	if(!_cnf_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf);
 	_cnf_breakpoint;
 	_xorset_breakpoint;
-	_substitution_breakpoint;
+	// _substitution_breakpoint;
 	conf[0]++;
 	if(!wdsat_set_true(-set[l]))
 	{
 		cnf_undo();
 		xorset_undo();
+		// substitution_undo();
 		if(!wdsat_set_true(set[l])) return false;
 		return wdsat_solve_rest(l + 1, set_end,conf);
 		
@@ -142,6 +143,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		{
 			cnf_undo();
 			xorset_undo();
+			// substitution_undo();
 			if(!wdsat_set_true(set[l])) return false;
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		}
@@ -149,7 +151,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		{
 			_cnf_mergepoint;
 			_xorset_mergepoint;
-			_substitution_mergepoint;
+			// _substitution_mergepoint;
 			return true;
 		}
 	}
@@ -376,7 +378,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
-	substitution_fprint_equivalency();
+	// substitution_fprint_equivalency();
 
 
 	// int tab[26]= {-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0}; // Ok
@@ -388,12 +390,15 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// 	else printf("Failure %d\n",val);
 	// }
 
-	if(substitution_set_true(1) == true) printf("Success %d\n",1);
-		else printf("Failure %d\n",1);
+
+	// if(substitution_set_true(1) == true) printf("Success %d\n",1);
+	// 	else printf("Failure %d\n",1);
+	// if(substitution_set_true(-2) == true) printf("Success %d\n",-2);
+	// 	else printf("Failure %d\n",-2);
 
 
-	substitution_free_structure();
-	return true;
+	// substitution_free_structure();
+	// return true;
 
 
 
@@ -403,7 +408,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	clock_t debut = clock();
 	if(xg == 0)
 	{
-		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);return false;}
+		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);substitution_free_structure();return false;}
+		substitution_free_structure();
 	}
 	if(xg == 1)
 	{

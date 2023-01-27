@@ -5,7 +5,6 @@
 #include "wdsat_utils.h"
 #include "substitution.h"
 #include "dimacs.h"
-#include "xorset.h"
 
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
@@ -77,17 +76,37 @@ void substitution_fprint_dynamic_values(){
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
         if (substitution_index_dynamic[v] != true) continue;
-        printf("%lld - ",v);
+        printf("%lld : ",v);
         for (int_t j=0LL; substitution_values_dynamic[v][j] != 0 ; j++) printf("%lld ",substitution_values_dynamic[v][j]);
         printf("\n");
     }
 }
 
-void substitution_fprint_assignement(){
+void substitution_fprint_assignment(){
     const int_t _v = substitution_nb_of_var;
     for (int_t i = 1LL; i <= _v; ++i){
         printf("%ld  %ld: %d %d\n",-i,i,substitution_assignment[-i],substitution_assignment[i]);
     }
+}
+
+void substitution_fprint_inline_assignment(){
+    const int_t _v = substitution_nb_of_var;
+    for (int_t i = 1LL; i <= _v; ++i){
+        printf("%d",substitution_assignment[-i]);
+    }
+    printf("\n");
+    for (int_t i = 1LL; i <= _v; ++i){
+        printf("%d",substitution_assignment[i]);
+    }
+    printf("\n");
+}
+
+void substitution_fprint_unary_var_assignment(){
+    const int_t _v = substitution_nb_unary_vars;
+    for (int_t i = 1LL; i <= _v; ++i){
+        printf("%d",substitution_assignment[i]);
+    }
+    printf("\n");
 }
 
 // Utils functions
@@ -152,6 +171,7 @@ void substitution_reset_dynamic_table(){
         }
         int_t _sub_size = _n_v;
         CLEAR(substitution_values_dynamic[i],_sub_size);
+        substitution_index_dynamic[i]=false;
     }
 }
 
@@ -184,6 +204,7 @@ void substitution_init_static_table(){
         }
         
 	}
+    // substitution_fprint_static_values();
 }
 
 bool substitution_is_unary_var(const int_t _l){
@@ -319,7 +340,7 @@ bool substitution_initiate_from_dimacs() {
 }
 
 // "main" functions
-inline bool substitution_set_true(const int_t l) {
+bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
 
     substitution_reset_stack();
@@ -330,34 +351,35 @@ inline bool substitution_set_true(const int_t l) {
     const bool _tf = (l < 0) ? false : true;
     if (substitution_is_unary_var(l)){
         if (_tf){
-            // printf("Ici\n");
             substitution_update_dynamic_values(l);
-            substitution_fprint_dynamic_values();
+            // substitution_fprint_dynamic_values();
         }
     }
     else{
-        // La régle x26 = false
+        if (!_tf){ /* La régle x26 = false */ }
     }
 
     return(substitution_subt());
 }
 
 bool substitution_subt(){
-
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
+            // printf("Return false : %ld is set to false\n",l);
             substitution_reset_stack();
             return false;
         }
         else{
             _substitution_set(l,__TRUE__)
+            substitution_history[substitution_history_top++] = l;
 
             for (int_t i = 0; substitution_values_static[l][i] != 0; ++i){
                 const int_t _e = substitution_values_static[l][i];
                 if(_substitution_is_false(_e)){
+                    // printf("Return false : %ld is set to false\n",l);
                     substitution_reset_stack();
                     return false;
                 }
@@ -370,6 +392,8 @@ bool substitution_subt(){
             for (int_t i = 0; substitution_values_dynamic[l][i] != 0; ++i){
                 const int_t _e = substitution_values_dynamic[l][i];
                 if(_substitution_is_false(_e)){
+                    // printf("%d %d\n",substitution_assignment[-_e],substitution_assignment[_e]);
+                    // printf("Return false : %ld is set to false\n",l);
                     substitution_reset_stack();
                     return false;
                 }
@@ -388,20 +412,18 @@ bool substitution_subt(){
                 else if(_substitution_is_undef(_e)){
                     substitution_add_check_stack(_e);
                 }
-
             }
             
         }
 
     }
 
-
     return true;
 }
 
 
 /*
-bool substitution_subt(){ // Le problème vient de la déclaration du tableau ou de la ligne d'affectation dans le tableau
+bool substitution_subt(){
     // const bool _tf = (v < 0) ? false : true;
     // const uint_t _uv = (uint_t) ((v < 0) ? -v : v);
 
