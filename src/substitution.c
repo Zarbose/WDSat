@@ -50,8 +50,8 @@ void substitution_fprint_equivalency() {
 	uint_t v;
 	for(v = 0LL; v <= substitution_nb_of_var; ++v) {
         if (substitution_equivalent[v]){
-            printf(" %lld <=> ",v);
-            for (int_t j=0LL; j< __SZ_SUB__; j++) printf("%lld ",substitution_equivalency[v][j]);
+            printf(" %ld <=> ",v);
+            for (int_t j=0LL; j< __SZ_SUB__; j++) printf("%ld ",substitution_equivalency[v][j]);
             printf("\n");
         }
         
@@ -64,8 +64,8 @@ void substitution_fprint_static_values(){
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
         if (substitution_index_static[v] != true) continue;
-        printf("%lld - ",v);
-        for (int_t j=0LL; substitution_values_static[v][j] != 0 ; j++) printf("%lld ",substitution_values_static[v][j]);
+        printf("%ld - ",v);
+        for (int_t j=0LL; substitution_values_static[v][j] != 0 ; j++) printf("%ld ",substitution_values_static[v][j]);
         printf("\n");
     }
 }
@@ -76,8 +76,8 @@ void substitution_fprint_dynamic_values(){
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
         if (substitution_index_dynamic[v] != true) continue;
-        printf("%lld : ",v);
-        for (int_t j=0LL; substitution_values_dynamic[v][j] != 0 ; j++) printf("%lld ",substitution_values_dynamic[v][j]);
+        printf("%ld : ",v);
+        for (int_t j=0LL; substitution_values_dynamic[v][j] != 0 ; j++) printf("%ld ",substitution_values_dynamic[v][j]);
         printf("\n");
     }
 }
@@ -204,7 +204,6 @@ void substitution_init_static_table(){
         }
         
 	}
-    // substitution_fprint_static_values();
 }
 
 bool substitution_is_unary_var(const int_t _l){
@@ -342,9 +341,10 @@ bool substitution_initiate_from_dimacs() {
 // "main" functions
 bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
+    // substitution_fprint_static_values();
 
-    substitution_reset_stack();
-    substitution_reset_dynamic_table();
+    // substitution_reset_stack();
+    // substitution_reset_dynamic_table();
 	
     substitution_up_stack[substitution_up_top_stack++] = l;
 
@@ -356,7 +356,33 @@ bool substitution_set_true(const int_t l) {
         }
     }
     else{
-        if (!_tf){ /* La régle x26 = false */ }
+        if (!_tf){ /* La régle x26 = false */ 
+            if (substitution_equivalent[_tf]){
+                int_t x;
+                if (!_substitution_is_undef(substitution_equivalency[_tf][0])){
+                    x=substitution_equivalency[_tf][0];
+                    if (_substitution_is_true(x)){
+                        int_t _end_y = substitution_end_vector_dynamic(_tf);
+                        substitution_values_dynamic[_tf][_end_y]=-x;
+                        substitution_index_dynamic[_tf]=true;
+                    }
+                    else if (_substitution_is_false(x)){
+                        // ??
+                    }
+                }
+                else if (!_substitution_is_undef(substitution_equivalency[_tf][1])){
+                    x=substitution_equivalency[_tf][1];
+                    if (_substitution_is_true(x)){
+                        int_t _end_y = substitution_end_vector_dynamic(_tf);
+                        substitution_values_dynamic[_tf][_end_y]=-x;
+                        substitution_index_dynamic[_tf]=true;
+                    }
+                    else if (_substitution_is_false(x)){
+                        // ??
+                    }
+                }
+            }
+        }
     }
 
     return(substitution_subt());
@@ -420,137 +446,6 @@ bool substitution_subt(){
 
     return true;
 }
-
-
-/*
-bool substitution_subt(){
-    // const bool _tf = (v < 0) ? false : true;
-    // const uint_t _uv = (uint_t) ((v < 0) ? -v : v);
-
-    static int_t l;
-    while(substitution_up_top_stack) {
-        l = substitution_up_stack[--substitution_up_top_stack];    
-        // printf("Propa : %lld\n",l);
-
-        if (_substitution_is_true(l)) continue;
-        else if (_substitution_is_false(l)){
-            printf("Return false : %ld is set to false\n",l);
-            substitution_reset_stack();
-            return false;
-        }
-        else{
-            // printf("Setting %lld to true and %lld to false\n",l,-l);
-            _substitution_set(l,__TRUE__)
-            substitution_history[substitution_history_top++] = l;
-
-            const bool _tf = (l < 0) ? false : true;
-            const uint_t _uv = (uint_t) ((l < 0) ? -l : l);
-
-            if (_tf){ // Si x1 == true
-                for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // On cherche y <=> x1 x2
-                    if (substitution_equivalent[w]){ 
-                        int_t _y = w;
-                        for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
-                            if (substitution_equivalency[_y][j] == _uv){
-                                int_t _x1,_end_y,_end_x;
-
-                                // Ici _x == x2
-                                if ( j == 0LL ){
-                                    _x1 = substitution_equivalency[_y][1];
-                                    // _x2 = substitution_equivalency[_y][0];
-                                } else {
-                                    _x1 = substitution_equivalency[_y][0];
-                                    // _x2 = substitution_equivalency[_y][1];
-                                }
-
-
-
-                                // x2 subst y
-                                _end_y = substitution_end_vector(_y);
-                                substitution_values[_y][_end_y]=_x1;
-                                substitution_index[_y]=true;
-
-                                _end_x = substitution_end_vector(_x1);
-                                substitution_values[_x1][_end_x]=_y;
-                                substitution_index[_x1]=true;
-
-                                // _end_x = substitution_end_vector(_x2);
-                                // substitution_values[_x2][_end_x]=_y;
-                                // substitution_index[_x2]=true;
-
-
-                                _end_y = substitution_end_vector(-_y);
-                                substitution_values[-_y][_end_y]=-_x1;
-                                substitution_index[-_y]=true;
-
-                                _end_x = substitution_end_vector(-_x1);
-                                substitution_values[-_x1][_end_x]=-_y;
-                                substitution_index[-_x1]=true;
-
-                                // _end_x = substitution_end_vector(-_x2);
-                                // substitution_values[-_x2][_end_x]=-_y;
-                                // substitution_index[-_x2]=true;
-                                
-                                // printf("add [%lld] = %lld    [%lld] = %lld \n",_y,_x,-_y,-_x);
-                            }
-                        }
-                    }
-                }
-            }
-            else{ // Si x1 == false
-                for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // On cherche y <=> x1 x2
-                    if (substitution_equivalent[w]){ 
-                        int_t _y = w;
-                        for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
-                            if (substitution_equivalency[_y][j] == _uv){ // x1 = undef x2 = 1
-                                if (_substitution_is_undef(-_y)){
-                                    substitution_add_check_stack(-_y); // on ajoute y
-
-                                    int_t _x1 = substitution_equivalency[_y][0]; // 1
-                                    int_t _x2 = substitution_equivalency[_y][1]; // 2
-
-                                    if(_substitution_is_undef(_x1)){
-                                        if( _substitution_is_true(_x2))
-                                            substitution_add_check_stack(-_x1);
-
-                                        continue;
-                                    }
-                                    else if(_substitution_is_undef(_x2)){
-                                        if( _substitution_is_true(_x1))
-                                            substitution_add_check_stack(-_x2);
-
-                                        continue;
-                                    } else { // x1 et x2 sont deff 
-                                        _x1 = (int_t) (_substitution_is_true(_x1) ? _x1 : -_x1);
-                                        _x2 = (int_t) (_substitution_is_true(_x2) ? _x2 : -_x2);
-
-                                        if ( !( (_substitution_is_false(_x1) && _substitution_is_false(_x2)) || (_substitution_is_true(_x1) && _substitution_is_false(-_x2)) ||  (_substitution_is_true(-_x1) && _substitution_is_false(_x2)) ) ){
-                                            printf("For : %ld with x1 = %ld{%d,%d} x2 = %ld{%d,%d}\n",_y,_x1,substitution_assignment[_x1],substitution_assignment[-_x1],_x2,substitution_assignment[_x2],substitution_assignment[-_x2]);
-                                            substitution_reset_stack();
-                                            return false;
-                                        }
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            // printf("Testing : %lld\n",l);
-            int_t i =0;
-            while (substitution_values[l][i] != 0){
-                int_t _v = substitution_values[l][i];
-                if (_substitution_is_undef(_v)){
-                    substitution_add_check_stack(_v);
-                }
-                i++;
-            }
-
-        }
-    }
-    return true;
-}*/
 
 // Undo functions
 void substitution_undo() {
