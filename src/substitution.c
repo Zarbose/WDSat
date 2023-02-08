@@ -17,6 +17,11 @@ int_t substitution_step[__ID_SIZE__];
 int_t substitution_step_top;
 static int_t substitution_history_top_it;
 
+int_t **substitution_history_values_dynamic;
+int_t **substitution_history_values_dynamic_buffer;
+int_t *substitution_history_index_dynamic;
+int_t *substitution_history_index_dynamic_buffer;
+
 // stack structures
 int_t substitution_up_stack[__ID_SIZE__];
 int_t substitution_up_top_stack;
@@ -38,11 +43,12 @@ static int_t **substitution_values_static_buffer;
 static int_t **substitution_values_dynamic;
 static int_t **substitution_values_dynamic_buffer;
 
-// index for fast reading values table
-static bool *substitution_index_static;
-static bool *substitution_static_index_buffer;
-static bool *substitution_index_dynamic;
-static bool *substitution_dynamic_index_buffer;
+// index tables
+static int_t *substitution_index_static;
+static int_t *substitution_static_index_buffer;
+
+static int_t *substitution_index_dynamic;
+static int_t *substitution_dynamic_index_buffer;
 
 
 // Print functions
@@ -63,7 +69,7 @@ void substitution_fprint_static_values(){
     printf("Printing substitution_values_static \n");
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
-        if (substitution_index_static[v] != true) continue;
+        if (substitution_index_static[v] == 0) continue;
         printf("%ld - ",v);
         for (int_t j=0LL; substitution_values_static[v][j] != 0 ; j++) printf("%ld ",substitution_values_static[v][j]);
         printf("\n");
@@ -75,7 +81,7 @@ void substitution_fprint_dynamic_values(){
     printf("Printing substitution_values_dynamic \n");
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
-        if (substitution_index_dynamic[v] != true) continue;
+        if (substitution_index_dynamic[v] == 0) continue;
         printf("%ld : ",v);
         for (int_t j=0LL; substitution_values_dynamic[v][j] != 0 ; j++) printf("%ld ",substitution_values_dynamic[v][j]);
         printf("\n");
@@ -133,18 +139,6 @@ inline void substitution_reset_boolean_vector(int_t *v, uint_t sz) {
     }
 }
 
-int_t substitution_end_vector_static(const int_t v){
-    int_t i;
-    for(i = 0LL; substitution_values_static[v][i] != 0; i++);
-    return i;
-}
-
-int_t substitution_end_vector_dynamic(const int_t v){
-    int_t i;
-    for(i = 0LL; substitution_values_dynamic[v][i] != 0; i++);
-    return i;
-}
-
 void substitution_free_structure(){
     const int_t _n_v = substitution_nb_of_var;
     for(int_t i = -_n_v; i <= _n_v; ++i) {
@@ -171,13 +165,12 @@ void substitution_reset_dynamic_table(){
         }
         int_t _sub_size = _n_v;
         CLEAR(substitution_values_dynamic[i],_sub_size);
-        substitution_index_dynamic[i]=false;
+        substitution_index_dynamic[i]=0;
     }
 }
 
 void substitution_init_static_table(){
 	uint_t v;
-    int_t end_vector;
 	for(v = 1LL; v <= substitution_nb_of_var; ++v) {
         if (substitution_equivalent[v]){
             uint_t _y = v;
@@ -185,22 +178,14 @@ void substitution_init_static_table(){
             uint_t _x2 = substitution_equivalency[v][1];
 
             // Rules with y is not an unary var and y = true
-            end_vector = substitution_end_vector_static(_y);
-            substitution_values_static[_y][end_vector]=_x1;
-            substitution_index_static[_y]=true;
-
-            end_vector = substitution_end_vector_static(_y);
-            substitution_values_static[_y][end_vector]=_x2;
+            substitution_values_static[_y][substitution_index_static[_y]++]=_x1;
+            substitution_values_static[_y][substitution_index_static[_y]++]=_x2;
 
             // Rules with x1 is an unary var and x1 = false
-            end_vector = substitution_end_vector_static(-_x1);
-            substitution_values_static[-_x1][end_vector]=-_y;
-            substitution_index_static[-_x1]=true;
+            substitution_values_static[-_x1][substitution_index_static[-_x1]++]=-_y;
 
             // Rules with x2 is an unary var and x2 = false
-            end_vector = substitution_end_vector_static(-_x2);
-            substitution_values_static[-_x2][end_vector]=-_y;
-            substitution_index_static[-_x2]=true;
+            substitution_values_static[-_x2][substitution_index_static[-_x2]++]=-_y;
         }
         
 	}
@@ -215,14 +200,13 @@ bool substitution_is_unary_var(const int_t _l){
 }
 
 void substitution_update_dynamic_values(const int_t _l){
-
     const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
     for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // On cherche y <=> x1 x2
         if (substitution_equivalent[w]){ 
             int_t _y = w;
             for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
                 if (substitution_equivalency[_y][j] == _uv){
-                    int_t _x,_end_y,_end_x;
+                    int_t _x;
 
                     // Ici _x == x2
                     if ( j == 0LL ){
@@ -231,21 +215,13 @@ void substitution_update_dynamic_values(const int_t _l){
                         _x = substitution_equivalency[_y][0];
                     }
 
-                    _end_y = substitution_end_vector_dynamic(_y);
-                    substitution_values_dynamic[_y][_end_y]=_x;
-                    substitution_index_dynamic[_y]=true;
+                    substitution_values_dynamic[_y][substitution_index_dynamic[_y]++]=_x;
 
-                    _end_x = substitution_end_vector_dynamic(_x);
-                    substitution_values_dynamic[_x][_end_x]=_y;
-                    substitution_index_dynamic[_x]=true;
+                    substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
 
-                    _end_y = substitution_end_vector_dynamic(-_y);
-                    substitution_values_dynamic[-_y][_end_y]=-_x;
-                    substitution_index_dynamic[-_y]=true;
+                    substitution_values_dynamic[-_y][substitution_index_dynamic[-_y]++]=-_x;
 
-                    _end_x = substitution_end_vector_dynamic(-_x);
-                    substitution_values_dynamic[-_x][_end_x]=-_y;
-                    substitution_index_dynamic[-_x]=true;
+                    substitution_values_dynamic[-_x][substitution_index_dynamic[-_x]++]=-_y;
                 }
             }
         }
@@ -285,9 +261,9 @@ bool substitution_initiate_from_dimacs() {
     substitution_index_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_stack =  substitution_index_stack + _n_v;
     
-    for (int_t i = -_n_v; i <= _n_v; ++i){
-        substitution_index_stack[i]=0;
-    }
+    // for (int_t i = -_n_v; i <= _n_v; ++i){
+    //     substitution_index_stack[i]=0;
+    // }
 
     // init tab assignment
     substitution_assignment = (boolean_t *)malloc(__SIGNED_ID_SIZE__*sizeof(boolean_t));
@@ -295,20 +271,20 @@ bool substitution_initiate_from_dimacs() {
     for (int_t i = 1LL; i <= _n_v; ++i)
         _substitution_unset(i);
 
-    // init index for fast reading tab
-    substitution_static_index_buffer = (bool *)malloc((__SIGNED_ID_SIZE__)*sizeof(bool));
+    // init index tables
+    substitution_static_index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_static =  substitution_static_index_buffer + _n_v;
 
-    for (int_t i = -_n_v; i <= _n_v; ++i){
-        substitution_index_static[i]=false;
-    }
+    // for (int_t i = -_n_v; i <= _n_v; ++i){
+    //     substitution_index_static[i]=0;
+    // }
 
-    substitution_dynamic_index_buffer = (bool *)malloc((__SIGNED_ID_SIZE__)*sizeof(bool));
+    substitution_dynamic_index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_dynamic =  substitution_dynamic_index_buffer + _n_v;
 
-    for (int_t i = -_n_v; i <= _n_v; ++i){
-        substitution_index_dynamic[i]=false;
-    }
+    // for (int_t i = -_n_v; i <= _n_v; ++i){
+    //     substitution_index_dynamic[i]=0;
+    // }
 
     // init "main" structures
     substitution_values_static_buffer = (int_t **)malloc((__SIGNED_ID_SIZE__) * sizeof(int_t *));
@@ -317,10 +293,27 @@ bool substitution_initiate_from_dimacs() {
     substitution_values_dynamic_buffer = (int_t**)malloc((__SIGNED_ID_SIZE__) * sizeof(int_t *));
     substitution_values_dynamic = substitution_values_dynamic_buffer +_n_v;
 
+    // init undo 
+    substitution_step_top = substitution_history_top = substitution_history_top_it = 0LL;
+
+    substitution_history_values_dynamic_buffer = (int_t **)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    substitution_history_values_dynamic =  substitution_history_values_dynamic_buffer + _n_v;
+
+    substitution_history_index_dynamic_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    substitution_history_index_dynamic =  substitution_history_index_dynamic_buffer + _n_v;
+
+    // for (int_t i = -_n_v; i <= _n_v; ++i){
+    //     substitution_history_index_dynamic[i]=0;
+    // }
+
+
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if(!i) {
             substitution_values_static[i] = NULL;
             substitution_values_dynamic[i] = NULL;
+
+            // Undo
+            substitution_history_values_dynamic[i] = NULL;
             continue;
         }
         int_t _sub_size = _n_v;
@@ -328,13 +321,20 @@ bool substitution_initiate_from_dimacs() {
         substitution_values_dynamic[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
         CLEAR(substitution_values_static[i],_sub_size);
         CLEAR(substitution_values_dynamic[i],_sub_size);
+        
+        // Undo
+        substitution_history_values_dynamic[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
+        CLEAR(substitution_history_values_dynamic[i],_sub_size);
+
+        // Index
+        substitution_index_stack[i]=0;
+        substitution_index_static[i]=0;
+        substitution_index_dynamic[i]=0;
+        substitution_history_index_dynamic[i]=0;
     }
 
     substitution_init_static_table();
-
-    // init undo 
-    substitution_step_top = substitution_history_top = substitution_history_top_it = 0LL;
-
+    // substitution_fprint_static_values();
     return (true);
 }
 
@@ -357,7 +357,7 @@ bool substitution_set_true(const int_t l) {
     }
     else{
         if (!_tf){ /* La régle x26 = false */ 
-            if (substitution_equivalent[_tf]){
+            /*if (substitution_equivalent[_tf]){
                 int_t x;
                 if (!_substitution_is_undef(substitution_equivalency[_tf][0])){
                     x=substitution_equivalency[_tf][0];
@@ -381,7 +381,7 @@ bool substitution_set_true(const int_t l) {
                         // ??
                     }
                 }
-            }
+            }*/
         }
     }
 

@@ -33,6 +33,9 @@ extern int_t substitution_history_top;
 extern int_t substitution_step[__ID_SIZE__];
 extern int_t substitution_step_top;
 
+extern int_t **substitution_history_values_dynamic;
+extern int_t *substitution_history_index_dynamic;
+
 
 #define _substitution_set(_v, _tv) \
 { \

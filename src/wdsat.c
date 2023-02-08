@@ -19,7 +19,7 @@
 #include "dimacs.h"
 #include "substitution.h"
 
-// #define SMALL_TEST
+#define SMALL_TEST
 // #define TEST_SUBST
 // #define NO_CNF
 
@@ -93,6 +93,7 @@ bool wdsat_set_true(const int_t l) {
 		// wdsat_substitution_up_top_stack = 0LL;
 		substitution_reset_stack();
     	substitution_reset_dynamic_table();
+		wdsat_substitution_up_top_stack = 0LL;
 		wdsat_substitution_up_stack[wdsat_substitution_up_top_stack++] = l;
 	#endif
 
@@ -158,7 +159,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	#ifndef NO_CNF
 		if(!_cnf_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf); // Ici !!!!!!!
 	#else
-		if(!_xorset_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf); // Ici !!!!!!!
+		if(!_substitution_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf); // Ici !!!!!!!
 	#endif
 	
 	#ifndef NO_CNF
@@ -462,15 +463,12 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
-	// substitution_fprint_equivalency();
-
 
 	#ifdef SMALL_TEST
 		if(substitution_set_true(1) == true) printf("Success %d\n",1);
 			else printf("Failure %d\n",1);
-		// if(substitution_set_true(-2) == true) printf("Success %d\n",-2);
-		// 	else printf("Failure %d\n",-2);	
-
+		// if(substitution_set_true(3) == true) printf("Success %d\n",3);
+		// 	else printf("Failure %d\n",3);	
 
 		substitution_free_structure();
 		return true;
