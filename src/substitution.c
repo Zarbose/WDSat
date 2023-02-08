@@ -260,10 +260,6 @@ bool substitution_initiate_from_dimacs() {
     substitution_tag++;    
     substitution_index_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_stack =  substitution_index_stack + _n_v;
-    
-    // for (int_t i = -_n_v; i <= _n_v; ++i){
-    //     substitution_index_stack[i]=0;
-    // }
 
     // init tab assignment
     substitution_assignment = (boolean_t *)malloc(__SIGNED_ID_SIZE__*sizeof(boolean_t));
@@ -275,16 +271,8 @@ bool substitution_initiate_from_dimacs() {
     substitution_static_index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_static =  substitution_static_index_buffer + _n_v;
 
-    // for (int_t i = -_n_v; i <= _n_v; ++i){
-    //     substitution_index_static[i]=0;
-    // }
-
     substitution_dynamic_index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_dynamic =  substitution_dynamic_index_buffer + _n_v;
-
-    // for (int_t i = -_n_v; i <= _n_v; ++i){
-    //     substitution_index_dynamic[i]=0;
-    // }
 
     // init "main" structures
     substitution_values_static_buffer = (int_t **)malloc((__SIGNED_ID_SIZE__) * sizeof(int_t *));
@@ -302,11 +290,7 @@ bool substitution_initiate_from_dimacs() {
     substitution_history_index_dynamic_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_history_index_dynamic =  substitution_history_index_dynamic_buffer + _n_v;
 
-    // for (int_t i = -_n_v; i <= _n_v; ++i){
-    //     substitution_history_index_dynamic[i]=0;
-    // }
-
-
+    // Filling in tables
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if(!i) {
             substitution_values_static[i] = NULL;
