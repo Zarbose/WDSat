@@ -465,11 +465,14 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 
 	#ifdef SMALL_TEST
-		if(substitution_set_true(1) == true) printf("Success %d\n",1);
-			else printf("Failure %d\n",1);
+		for (int i=1; i<26; i++){
+			if(substitution_set_true(i) == true) printf("Success %d\n",i);
+			else printf("Failure %d\n",i);
+		}
 		// if(substitution_set_true(3) == true) printf("Success %d\n",3);
 		// 	else printf("Failure %d\n",3);	
-
+		
+		substitution_fprint_dynamic_values();
 		substitution_free_structure();
 		return true;
 	#endif

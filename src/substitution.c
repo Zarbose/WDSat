@@ -145,16 +145,21 @@ void substitution_free_structure(){
         if(!i) {
             free(substitution_values_static[i]);
             free(substitution_values_dynamic[i]);
+            free(substitution_history_values_dynamic[i]);
             continue;
         }
         free(substitution_values_static[i]);
         free(substitution_values_dynamic[i]);
+        free(substitution_history_values_dynamic[i]);
     }
     free(substitution_values_static_buffer);
     free(substitution_values_dynamic_buffer);
 
     free(substitution_dynamic_index_buffer);
     free(substitution_static_index_buffer);
+
+    free(substitution_history_index_dynamic_buffer);
+    free(substitution_history_values_dynamic_buffer);
 }
 
 void substitution_reset_dynamic_table(){
@@ -414,6 +419,12 @@ void substitution_undo() {
         _substitution_unset(_l);
     }
 	substitution_history_top_it = substitution_history_top;
+
+    // substitution_history_values_dynamic[][]
+    // substitution_history_index_dynamic[]
+
+    // TODO
+
 }
 
 int_t substitution_last_assigned(int_t *up_stack) {

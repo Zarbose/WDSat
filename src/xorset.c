@@ -30,6 +30,7 @@ int_t xorset_history_s[__ID_SIZE__ * __MAX_XEQ_SIZE__];
 int_t xorset_history_s_top;
 int_t xorset_step_s[__ID_SIZE__];
 int_t xorset_step_s_top;
+
 int_t xorset_history_u[__ID_SIZE__ * __MAX_XEQ_SIZE__];
 int_t xorset_history_u_top;
 int_t xorset_step_u[__ID_SIZE__];
@@ -133,7 +134,7 @@ bool xorset_infer() {
             int_t * const idx_t = xorset_index[l]; // idx_t = la liste des clauses qui possédent le littéral l
             for(i = 0; i < xt_sz; ++i) { // For each C in xorset_index[l]
                 c = idx_t[i];
-                ++xorset_degree_s[c]; // increment degree_T[C]
+                ++xorset_degree_s[c]; // increment degree_T[C]xorset_history_u_top
                 xorset_history_s[xorset_history_s_top++] = c;
                 const int_t d_s = xorset_degree_s[c];
                 const int_t sz_eq = size_of_xor_equation[c];
@@ -273,6 +274,7 @@ void xorset_undo() {
         _xorset_unset(_l);
     }
 	xorset_history_top_it = xorset_history_top;
+    
     const int_t top_step_s = (xorset_step_s_top) ? xorset_step_s[--xorset_step_s_top] : 0;
     while(xorset_history_s_top != top_step_s)
         --xorset_degree_s[xorset_history_s[--xorset_history_s_top]];

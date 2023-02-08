@@ -8,7 +8,7 @@
 
 
 //find all solutions instead of only one
-#define __FIND_ALL_SOLUTIONS__
+// #define __FIND_ALL_SOLUTIONS__
 
 
 //outputs some intermediate results for fixing errors
