@@ -340,33 +340,7 @@ bool substitution_set_true(const int_t l) {
         }
     }
     else{
-        if (!_tf){ /* La régle x26 = false */ 
-            /*if (substitution_equivalent[_tf]){
-                int_t x;
-                if (!_substitution_is_undef(substitution_equivalency[_tf][0])){
-                    x=substitution_equivalency[_tf][0];
-                    if (_substitution_is_true(x)){
-                        int_t _end_y = substitution_end_vector_dynamic(_tf);
-                        substitution_values_dynamic[_tf][_end_y]=-x;
-                        substitution_index_dynamic[_tf]=true;
-                    }
-                    else if (_substitution_is_false(x)){
-                        // ??
-                    }
-                }
-                else if (!_substitution_is_undef(substitution_equivalency[_tf][1])){
-                    x=substitution_equivalency[_tf][1];
-                    if (_substitution_is_true(x)){
-                        int_t _end_y = substitution_end_vector_dynamic(_tf);
-                        substitution_values_dynamic[_tf][_end_y]=-x;
-                        substitution_index_dynamic[_tf]=true;
-                    }
-                    else if (_substitution_is_false(x)){
-                        // ??
-                    }
-                }
-            }*/
-        }
+        if (!_tf){ /* La régle x26 = false */ }
     }
 
     return(substitution_subt());
