@@ -55,11 +55,18 @@ extern int_t substitution_history_step_top;
 
 /// @def _substitution_breakpoint
 /// @brief set a breakpoint during resolution
-#define _substitution_breakpoint substitution_step[substitution_step_top++] = substitution_history_top;
+#define _substitution_breakpoint \
+{ \
+    substitution_step[substitution_step_top++] = substitution_history_top; \
+    substitution_history_step_top++; \
+}
 
 /// @def _substitution_mergepoint
 /// @brief merge last pushed context to previous one
-#define _substitution_mergepoint substitution_step_top && --substitution_step_top
+#define _substitution_mergepoint { \ 
+    substitution_step_top && --substitution_step_top; \
+    substitution_history_step_top && --substitution_history_step_top; \
+}
 
 // print functions
 void substitution_fprint_values(void);
