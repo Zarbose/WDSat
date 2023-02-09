@@ -245,23 +245,16 @@ void substitution_update_dynamic_values(const int_t _l){
                     }
 
                     substitution_values_dynamic[_y][substitution_index_dynamic[_y]++]=_x;
-                    // substitution_history_index_dynamic[_y]++;
 
                     substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
-                    // substitution_history_index_dynamic[_x]++;
 
                     substitution_values_dynamic[-_y][substitution_index_dynamic[-_y]++]=-_x;
-                    // substitution_history_index_dynamic[-_y]++;
 
                     substitution_values_dynamic[-_x][substitution_index_dynamic[-_x]++]=-_y;
-                    // substitution_history_index_dynamic[-_x]++;
                 }
             }
         }
     }
-    // substitution_history_step_top++;
-    // printf("%ld \n",substitution_history_step_top);
-    // substitution_history_save_index();
 }
 
 // Init functions
@@ -364,7 +357,6 @@ bool substitution_initiate_from_dimacs() {
 // "main" functions
 bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
-    // substitution_fprint_static_values();
 
     // substitution_reset_stack();
     // substitution_reset_dynamic_table();
@@ -374,10 +366,8 @@ bool substitution_set_true(const int_t l) {
     const bool _tf = (l < 0) ? false : true;
     if (substitution_is_unary_var(l)){
         if (_tf){
-            // printf("Début\n");
             substitution_update_dynamic_values(l);
             substitution_history_save_index();
-            // printf("Fin\n");
         }
     }
     else{
@@ -390,14 +380,12 @@ bool substitution_set_true(const int_t l) {
 
 bool substitution_subt(){
     static int_t l;
-    // printf("Début\n");
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
             // printf("Return false : %ld is set to false\n",l);
             substitution_reset_stack();
-            // printf("Fin\n");
             return false;
         }
         else{
@@ -410,7 +398,6 @@ bool substitution_subt(){
                 if(_substitution_is_false(_e)){
                     // printf("Return false : %ld is set to false\n",l);
                     substitution_reset_stack();
-                    // printf("Fin\n");
                     return false;
                 }
                 else if(_substitution_is_undef(_e)){
@@ -426,7 +413,6 @@ bool substitution_subt(){
                     // printf("%d %d\n",substitution_assignment[-_e],substitution_assignment[_e]);
                     // printf("Return false : %ld is set to false\n",l);
                     substitution_reset_stack();
-                    // printf("Fin\n");
                     return false;
                 }
                 else if(_substitution_is_undef(_e)){
@@ -439,7 +425,6 @@ bool substitution_subt(){
                 const int_t _e = substitution_values_dynamic[-l][i];
                 if(_substitution_is_false(_e)){
                     substitution_reset_stack();
-                    // printf("Fin\n");
                     return false;
                 }
                 else if(_substitution_is_undef(_e)){
@@ -449,8 +434,6 @@ bool substitution_subt(){
             
         }
     }
-    // printf("Fin\n");
-
     return true;
 }
 
@@ -459,9 +442,8 @@ void substitution_history_save_index(){
     const int_t _n_v = substitution_nb_of_var;
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if(!v) continue;
-        substitution_history_values_dynamic[v][substitution_history_step_top]=substitution_history_index_dynamic[v];
+        substitution_history_values_dynamic[v][substitution_history_step_top]=substitution_index_dynamic[v];
     }
-    printf("%ld \n",substitution_history_step_top);
 }
 
 void substitution_undo() {
@@ -480,7 +462,7 @@ void substitution_undo() {
         if(!v) continue;
         substitution_history_index_dynamic[v]=substitution_history_values_dynamic[v][substitution_history_step_top];
     }
-    // memcpy(substitution_dynamic_index_buffer, substitution_history_index_dynamic_buffer, sizeof(int_t)*__SIGNED_ID_SIZE__);
+    memcpy(substitution_dynamic_index_buffer, substitution_history_index_dynamic_buffer, sizeof(int_t)*__SIGNED_ID_SIZE__);
 
 }
 

@@ -63,7 +63,8 @@ extern int_t substitution_history_step_top;
 
 /// @def _substitution_mergepoint
 /// @brief merge last pushed context to previous one
-#define _substitution_mergepoint { \ 
+#define _substitution_mergepoint \
+{ \
     substitution_step_top && --substitution_step_top; \
     substitution_history_step_top && --substitution_history_step_top; \
 }

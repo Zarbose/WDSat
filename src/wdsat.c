@@ -91,8 +91,8 @@ bool wdsat_set_true(const int_t l) {
 
 	#ifdef TEST_SUBST
 		// wdsat_substitution_up_top_stack = 0LL;
-		substitution_reset_stack();
-    	substitution_reset_dynamic_table();
+		// substitution_reset_stack();
+    	// substitution_reset_dynamic_table();
 		wdsat_substitution_up_top_stack = 0LL;
 		wdsat_substitution_up_stack[wdsat_substitution_up_top_stack++] = l;
 	#endif
@@ -133,17 +133,6 @@ bool wdsat_set_true(const int_t l) {
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 
 	// printf("l = %lld\n",l);
-
-	// if(cpt < 1000){
-	// 	for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
-	// 		printf("%d", cnf_assignment[i]);
-	// 	printf("  conf:%lld\n", conf[0]);
-	// 	// cpt = 0;
-	// 	cpt++;
-	// }
-	// else{
-	// 	cpt++;
-	// }
 
 	if(l > set_end)
 	{
@@ -470,16 +459,25 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			else printf("Failure %d\n",i);
 		}*/
 
+		_substitution_breakpoint;
 		if(substitution_set_true(1) == true) printf("Success %d\n",1);
 		else printf("Failure %d\n",1);
 
+		_substitution_breakpoint;
 		if(substitution_set_true(3) == true) printf("Success %d\n",3);
 		else printf("Failure %d\n",3);	
 		
-		substitution_undo();
+
+		substitution_fprint_dynamic_values();
+		// printf("Step top : %ld \n",substitution_history_step_top);
+		// substitution_fprint_history_values_dynamic();	
+
 		substitution_undo();
 
-		// substitution_fprint_dynamic_values();
+		// substitution_fprint_history_values_dynamic();
+		// printf("Step top : %ld \n",substitution_history_step_top);
+		substitution_fprint_dynamic_values();
+		
 
 		substitution_free_structure();
 		return true;
