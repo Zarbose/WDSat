@@ -35,6 +35,7 @@ extern int_t substitution_step_top;
 
 extern int_t **substitution_history_values_dynamic;
 extern int_t *substitution_history_index_dynamic;
+extern int_t substitution_history_step_top;
 
 
 #define _substitution_set(_v, _tv) \
@@ -66,6 +67,8 @@ void substitution_fprint_equivalency(void);
 void substitution_fprint_assignment(void);
 void substitution_fprint_static_values(void);
 void substitution_fprint_dynamic_values(void);
+void substitution_fprint_history_values_dynamic(void);
+void substitution_fprint_history_index_dynamic(void);
 
 // utils functions
 void substitution_reset_boolean_vector(int_t *, uint_t sz);
@@ -80,8 +83,10 @@ bool substitution_initiate_from_dimacs(void);
 
 // "main" functions
 bool substitution_set_true(const int_t l);
-bool substitution_subt();
+bool substitution_subt(void);
 
-void substitution_undo();
+// undo functions
+void substitution_undo(void);
+void substitution_history_save_index(void);
 
 #endif

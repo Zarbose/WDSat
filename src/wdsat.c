@@ -63,7 +63,7 @@ void save_result(int duree_ml, int_t conf[]){
 
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
-		fprintf(fichier, "%d;%d;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3,d_arbre);
+		fprintf(fichier, "%ld;%ld;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3,d_arbre);
         fclose(fichier);
     }
     else{
@@ -92,7 +92,7 @@ bool wdsat_set_true(const int_t l) {
 	#ifdef TEST_SUBST
 		// wdsat_substitution_up_top_stack = 0LL;
 		substitution_reset_stack();
-    	substitution_reset_dynamic_table();
+    	// substitution_reset_dynamic_table();
 		wdsat_substitution_up_top_stack = 0LL;
 		wdsat_substitution_up_stack[wdsat_substitution_up_top_stack++] = l;
 	#endif
@@ -465,14 +465,19 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 
 	#ifdef SMALL_TEST
-		for (int i=1; i<26; i++){
+		/*for (int i=1; i<26; i++){
 			if(substitution_set_true(i) == true) printf("Success %d\n",i);
 			else printf("Failure %d\n",i);
-		}
+		}*/
+
+		if(substitution_set_true(1) == true) printf("Success %d\n",1);
+		else printf("Failure %d\n",1);
+
 		// if(substitution_set_true(3) == true) printf("Success %d\n",3);
-		// 	else printf("Failure %d\n",3);	
+		// else printf("Failure %d\n",3);	
 		
-		substitution_fprint_dynamic_values();
+		// substitution_fprint_dynamic_values();
+
 		substitution_free_structure();
 		return true;
 	#endif
