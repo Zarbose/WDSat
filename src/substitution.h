@@ -11,6 +11,7 @@
 
 // substitution
 #define __SZ_SUB__ (2)
+#define __SZ_STACK__ 8*(__MAX_ANF_ID__*__MAX_ANF_ID__)
 
 // cnf module equivalence structures
 extern int_t substitution_equivalency[__ID_SIZE__][__SZ_SUB__];
@@ -33,9 +34,15 @@ extern int_t substitution_history_top;
 extern int_t substitution_step[__ID_SIZE__];
 extern int_t substitution_step_top;
 
-extern int_t **substitution_history_values_dynamic;
-extern int_t *substitution_history_index_dynamic;
-extern int_t substitution_history_step_top;
+// nuew undo structures
+extern int_t *substitution_history_inte_stack;
+extern int_t substitution_history_inte_top;
+
+extern int_t *substitution_history_main_stack;
+extern int_t substitution_history_main_top;
+
+extern int_t *substitution_history_inte_index_stack;
+extern int_t substitution_history_tag;
 
 
 #define _substitution_set(_v, _tv) \
@@ -58,7 +65,7 @@ extern int_t substitution_history_step_top;
 #define _substitution_breakpoint \
 { \
     substitution_step[substitution_step_top++] = substitution_history_top; \
-    substitution_history_step_top++; \
+    substitution_history_main_stack[substitution_history_main_top++] = substitution_history_inte_top; \
 }
 
 /// @def _substitution_mergepoint
@@ -77,6 +84,9 @@ void substitution_fprint_static_values(void);
 void substitution_fprint_dynamic_values(void);
 void substitution_fprint_history_values_dynamic(void);
 void substitution_fprint_history_index_dynamic(void);
+void substitution_fprint_history_inte_stack(void);
+void substitution_fprint_dynamic_index(void);
+void substitution_fprint_history_main_stack(void);
 
 // utils functions
 void substitution_reset_boolean_vector(int_t *, uint_t sz);
@@ -85,6 +95,7 @@ void substitution_reset_stack(void);
 int_t substitution_last_assigned(int_t *up_stack);
 void substitution_free_structure(void);
 void substitution_reset_dynamic_table(void);
+void substitution_increase_history_flag(void);
 
 // init functions
 bool substitution_initiate_from_dimacs(void);
@@ -95,6 +106,8 @@ bool substitution_subt(void);
 
 // undo functions
 void substitution_undo(void);
-void substitution_history_save_index(void);
+
+// testing functions
+void substitution_testing_vars(bool writing_status);
 
 #endif

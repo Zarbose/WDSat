@@ -19,8 +19,8 @@
 #include "dimacs.h"
 #include "substitution.h"
 
-// #define SMALL_TEST
-#define TEST_SUBST
+#define SMALL_TEST
+// #define TEST_SUBST
 // #define NO_CNF
 
 int cpt = 0;
@@ -67,19 +67,20 @@ void save_result(int duree_ml, int_t conf[]){
         fclose(fichier);
     }
     else{
-        printf("Impossible d'ouvrir le fichier pour enregistrer les résultats\n");
+        printf("Impossible d'ouvrir le fichier : %s\n",path_file);
 		exit(2);
     }
 }
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
-
     /*printf("Setting:%ld\n",l);
 	for(int i = 1; i <= 15; i++)
 		printf("-%d%d-",cnf_assignment[i], xorset_assignment[i]);
 	printf("\n");*/
-	// printf("%lld \n",l);
+
+	// printf("%ld \n",l);
+
     bool _next_loop;
     int_t _l;
 	#ifndef NO_CNF
@@ -90,7 +91,6 @@ bool wdsat_set_true(const int_t l) {
     wdsat_xorset_up_stack[wdsat_xorset_up_top_stack++] = l;
 
 	#ifdef TEST_SUBST
-		// wdsat_substitution_up_top_stack = 0LL;
 		// substitution_reset_stack();
     	// substitution_reset_dynamic_table();
 		wdsat_substitution_up_top_stack = 0LL;
@@ -127,6 +127,8 @@ bool wdsat_set_true(const int_t l) {
 			wdsat_substitution_up_top_stack = substitution_last_assigned(wdsat_substitution_up_stack);
 		#endif
 	}
+
+	// printf("Return true for %ld \n",l);
     return true;
 }
 
@@ -143,12 +145,19 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		printf("\nconf:%lld\n", conf[0]);
 		return false;
 #endif
-		return true;
+		printf("Test\n");
+		return true;	
 	}
 	#ifndef NO_CNF
-		if(!_cnf_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf); // Ici !!!!!!!
+		if(!_cnf_is_undef(set[l])) {// Ici !!!!!!!
+			// printf("ICI %ld \n",set[l]);
+			return wdsat_solve_rest(l + 1, set_end,conf);
+		} 
 	#else
-		if(!_substitution_is_undef(set[l])) return wdsat_solve_rest(l + 1, set_end,conf); // Ici !!!!!!!
+		if(!_substitution_is_undef(set[l])) {// Ici !!!!!!!
+			printf("ICI\n");
+			return wdsat_solve_rest(l + 1, set_end,conf);
+		} 
 	#endif
 	
 	#ifndef NO_CNF
@@ -159,6 +168,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		_substitution_breakpoint;
 	#endif
 	conf[0]++;
+	// printf("ICI %ld \n",set[l]);
 	if(!wdsat_set_true(-set[l]))
 	{
 		#ifndef NO_CNF
@@ -174,8 +184,10 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 	else
 	{
+		// printf("ICI\n");
 		if(!wdsat_solve_rest(l + 1, set_end,conf))
 		{
+			// printf("ICI\n");
 			#ifndef NO_CNF
 				cnf_undo();
 			#endif
@@ -188,6 +200,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		}
 		else
 		{
+			// printf("ICI\n");
 			#ifndef NO_CNF
 				_cnf_mergepoint;
 			#endif
@@ -452,31 +465,88 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
-
 	#ifdef SMALL_TEST
-		/*for (int i=1; i<26; i++){
-			if(substitution_set_true(i) == true) printf("Success %d\n",i);
-			else printf("Failure %d\n",i);
+		/*srand( time( NULL ) );
+		int tab[26];
+		int stop = true;
+		while(stop == true){
+			printf("--- New gen ---\n");
+			int searchedValue = rand() % 101;
+
+			tab[0]=-1;
+			for (int i=1; i<26; i++){
+				tab[i]=searchedValue % 2;
+				searchedValue = rand() % 101;
+			}
+
+			// substitution_fprint_static_values();
+			// int tab[26]={-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0};
+			// int tab[26]={-1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1};
+
+			for (int i=1; i<26; i++){
+				int val = (tab[i] == 1) ? i : -i;
+				if(substitution_set_true(val) == true) printf("Success %d\n",val);
+				else {printf("Failure %d\n",val);stop=false;}
+
+			}
+			substitution_reset_dynamic_table();
+			substitution_reset_stack();
 		}*/
+
+		// for (int i =1; i <=25; i++){
+		// 	if (i != 1)
+		// 		substitution_increase_history_flag();
+		// 	if(substitution_set_true(i) == true) printf("Success %d\n",i);
+		// 	else printf("Failure %d\n",i);
+		// }
+
 
 		_substitution_breakpoint;
 		if(substitution_set_true(1) == true) printf("Success %d\n",1);
 		else printf("Failure %d\n",1);
+		
+		// substitution_fprint_dynamic_values();
 
 		_substitution_breakpoint;
+		substitution_increase_history_flag();
 		if(substitution_set_true(3) == true) printf("Success %d\n",3);
-		else printf("Failure %d\n",3);	
+		else printf("Failure %d\n",3);
+
+		substitution_testing_vars(true);
+		substitution_testing_vars(false);
 		
 
-		substitution_fprint_dynamic_values();
+		// substitution_fprint_history_main_stack();
+		
+		// substitution_undo();
+		// substitution_fprint_dynamic_values();
+
+
+		// substitution_fprint_history_inte_stack();
+		// substitution_fprint_dynamic_values();
+
+
+
+
+		// substitution_fprint_assignment();
+
+		// _substitution_breakpoint;
+		// if(substitution_set_true(-3) == true) printf("Success %d\n",-3);
+		// else printf("Failure %d\n",-3);
+
+		// if(substitution_set_true(26) == true) printf("Success %d\n",26);
+		// else printf("Failure %d\n",26);
+		
+
+		// substitution_fprint_dynamic_values();
 		// printf("Step top : %ld \n",substitution_history_step_top);
 		// substitution_fprint_history_values_dynamic();	
 
-		substitution_undo();
+		// substitution_undo();
 
 		// substitution_fprint_history_values_dynamic();
 		// printf("Step top : %ld \n",substitution_history_step_top);
-		substitution_fprint_dynamic_values();
+		// substitution_fprint_dynamic_values();
 		
 
 		substitution_free_structure();
@@ -488,7 +558,12 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	clock_t debut = clock();
 	if(xg == 0)
 	{
-		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {printf("UNSAT\n");printf("%lld\n",conf[0]);substitution_free_structure();return false;}
+		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {
+			printf("UNSAT\n");
+			printf("%lld\n",conf[0]);
+			substitution_free_structure();
+			return false;
+		}
 		substitution_free_structure();
 	}
 	if(xg == 1)
@@ -511,10 +586,17 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 	
-
+	printf("Cnf assignment : ");
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
 		printf("%d", cnf_assignment[j]);
+	}
+	printf("\n");
+
+	printf("Susbst assignment : ");
+	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
+	{
+		printf("%d", substitution_assignment[j]);
 	}
 	printf("\n");
 	
