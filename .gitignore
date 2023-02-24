@@ -1,6 +1,10 @@
+# Custom
+testing/*
+.vscode/
+*.txt
+
 # Prerequisites
 *.d
-testing/*
 
 # Object files
 *.o
