@@ -1,3 +1,6 @@
 substitution_values_dynamic
 substitution_index_dynamic
 substitution_assignment
+substitution_history_inte_stack
+substitution_history_main_stack
+substitution_history_inte_index_stack

@@ -19,7 +19,7 @@
 #include "dimacs.h"
 #include "substitution.h"
 
-#define SMALL_TEST
+// #define SMALL_TEST
 // #define TEST_SUBST
 // #define NO_CNF
 
@@ -74,13 +74,6 @@ void save_result(int duree_ml, int_t conf[]){
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
-    /*printf("Setting:%ld\n",l);
-	for(int i = 1; i <= 15; i++)
-		printf("-%d%d-",cnf_assignment[i], xorset_assignment[i]);
-	printf("\n");*/
-
-	// printf("%ld \n",l);
-
     bool _next_loop;
     int_t _l;
 	#ifndef NO_CNF
@@ -100,13 +93,13 @@ bool wdsat_set_true(const int_t l) {
     _next_loop = true;
     while(_next_loop) {
 		_next_loop = false;
+		#ifndef NO_CNF
 		while(wdsat_cnf_up_top_stack) {
-			#ifndef NO_CNF
-				_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
-				if(_cnf_is_undef(_l)) _next_loop = true;
-				if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
-			#endif
+			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
+			if(_cnf_is_undef(_l)) _next_loop = true;
+			if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
 		}
+		#endif
 		while(wdsat_xorset_up_top_stack) {
 			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
 			if(_xorset_is_undef(_l)) _next_loop = true;
@@ -506,13 +499,19 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		else printf("Failure %d\n",1);
 		
 		// substitution_fprint_dynamic_values();
+		// substitution_fprint_substitution_index_stack();
+
+		substitution_testing_vars(true);
 
 		_substitution_breakpoint;
 		substitution_increase_history_flag();
 		if(substitution_set_true(3) == true) printf("Success %d\n",3);
 		else printf("Failure %d\n",3);
 
-		substitution_testing_vars(true);
+		// substitution_fprint_substitution_index_stack();
+
+		
+		substitution_undo();
 		substitution_testing_vars(false);
 		
 

@@ -1,6 +1,6 @@
 #!/bin/bash -u
 
-source ../color
+source ../color.conf
 
 mydir=Documents/WDSat/testing
 src=$HOME/$mydir

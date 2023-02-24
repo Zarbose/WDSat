@@ -73,7 +73,7 @@ extern int_t substitution_history_tag;
 #define _substitution_mergepoint \
 { \
     substitution_step_top && --substitution_step_top; \
-    substitution_history_step_top && --substitution_history_step_top; \
+    substitution_history_main_top && --substitution_history_main_top; \
 }
 
 // print functions
@@ -87,6 +87,9 @@ void substitution_fprint_history_index_dynamic(void);
 void substitution_fprint_history_inte_stack(void);
 void substitution_fprint_dynamic_index(void);
 void substitution_fprint_history_main_stack(void);
+void substitution_fprint_history_inte_index_stack(void);
+void substitution_fprint_substitution_up_stack(void);
+void substitution_fprint_substitution_index_stack(void);
 
 // utils functions
 void substitution_reset_boolean_vector(int_t *, uint_t sz);
