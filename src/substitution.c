@@ -251,8 +251,8 @@ void substitution_init_static_table(){
             uint_t _x2 = substitution_equivalency[v][1];
 
             // Rules with y is not an unary var and y = true
-            substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
-            substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
+            // substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
+            // substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
 
             // Rules with x1 is an unary var and x1 = false
             substitution_values_static[-_x1][substitution_index_static[-_x1]++]=-_y;
@@ -288,18 +288,17 @@ void substitution_update_dynamic_values(const int_t _l){
                         _x = substitution_equivalency[_y][0];
                     }
 
+                    substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
                     substitution_add_check_history_stack(_y);
-                    substitution_add_check_history_stack(_x);
-                    substitution_add_check_history_stack(-_y);
-                    substitution_add_check_history_stack(-_x);
 
                     substitution_values_dynamic[_y][substitution_index_dynamic[_y]++]=_x;
-
-                    substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
-
+                    substitution_add_check_history_stack(_x);
+                    
                     substitution_values_dynamic[-_y][substitution_index_dynamic[-_y]++]=-_x;
+                    substitution_add_check_history_stack(-_x);
 
                     substitution_values_dynamic[-_x][substitution_index_dynamic[-_x]++]=-_y;
+                    substitution_add_check_history_stack(-_y);
                 }
             }
         }
@@ -422,8 +421,40 @@ bool substitution_set_true(const int_t l) {
         }
     }
     else{
+        if (!_tf){ /* La régle x26 = false */
+        int_t _v = (l < 0) ? -l : l;
+            if (substitution_equivalent[_v] == true){
         
-        if (!_tf){ /* La régle x26 = false */ }
+                int_t x1 = substitution_equivalency[_v][0];
+                int_t x2 = substitution_equivalency[_v][1];
+
+                if (!_substitution_is_undef(x1) && !_substitution_is_undef(x2)){
+                    /* x1 and x2 def */
+                    if ( _substitution_is_true(x1) && _substitution_is_true(x2)){
+                        // printf("x1 = %d x2 = %d\n",_substitution_is_true(x1),_substitution_is_true(x2));
+                        return false;
+                    }
+                        
+                }
+                else if (_substitution_is_undef(x1) && !_substitution_is_undef(x2)){
+                    /* x1 undef */
+                    // if (_substitution_is_true(x2)){ // Attention aux doublons
+                    //     substitution_values_dynamic[_v][substitution_index_dynamic[_v]++]=-x1;  // A vérifier
+                    //     substitution_values_dynamic[-_v][substitution_index_dynamic[-_v]++]=x1; // A vérifier
+                    // }
+                }
+                else if (!_substitution_is_undef(x1) && _substitution_is_undef(x2)){
+                    /* x2 undef */
+                    // if (_substitution_is_true(x1)){ // Attention aux doublons
+                    //     substitution_values_dynamic[_v][substitution_index_dynamic[_v]++]=-x2;  // A vérifier
+                    //     substitution_values_dynamic[-_v][substitution_index_dynamic[-_v]++]=x2; // A vérifier
+                    // }
+                }
+                else{
+                    /* x1 and x2 undef */
+                }
+            }
+        }
     }
 
     return(substitution_subt());
@@ -433,6 +464,7 @@ bool substitution_subt(){
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
+        // printf("set : %ld\n",l);
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
             // printf("END 1\n");
@@ -531,27 +563,6 @@ int_t substitution_last_assigned(int_t *up_stack) {
 void substitution_reset_string(char* str){
     str[8]='\0';
 }
-
-void substitution_reset_files(){
-    char buffer[100]="";
-    FILE* fichier = fopen("script/testing_vars/list_vars.txt","r");
-    if (fichier == NULL){
-        printf( "Cannot open file : list_vars.txt\n");
-        exit(2);
-    }
-    else {
-        while(fscanf(fichier,"%s",buffer) != EOF){
-            printf("%s\n",buffer);
-        }
-        fclose(fichier); 
-    }
-}
-
-// substitution_history[__ID_SIZE__];
-// substitution_history_top;
-// substitution_step[__ID_SIZE__];
-// substitution_step_top;
-// substitution_history_top_it;
 
 void substitution_testing_vars(bool writing_status){
     char path[100]="testing/";

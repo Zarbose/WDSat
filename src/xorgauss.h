@@ -56,7 +56,7 @@ bool xorgauss_from_dimacs(void);
 bool xorgauss_initiate_from_dimacs(void);
 void xorgauss_reset_boolean_vector(uint_t *);
 uint_t xorgauss_get_first_id_from_boolean_vector(uint_t *);
-inline uint_t xorgauss_get_last_id_from_boolean_vector(uint_t *v);
+// inline uint_t xorgauss_get_last_id_from_boolean_vector(uint_t *v);
 uint_t xorgauss_get_size_of_boolean_vector(uint_t *, uint_t *);
 bool xorgauss_is_constant(uint_t *);
 void xorgauss_xor_it(uint_t *, uint_t *);

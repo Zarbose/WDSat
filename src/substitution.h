@@ -64,6 +64,7 @@ extern int_t substitution_history_tag;
 /// @brief set a breakpoint during resolution
 #define _substitution_breakpoint \
 { \
+    substitution_history_tag++; \
     substitution_step[substitution_step_top++] = substitution_history_top; \
     substitution_history_main_stack[substitution_history_main_top++] = substitution_history_inte_top; \
 }

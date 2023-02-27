@@ -94,7 +94,7 @@ void xorset_fprint() {
     const int_t n_x = xorset_nb_of_equations;
     const int_t log_n_x = fast_int_log10(xorset_nb_of_equations);
     for(i = 0; i < n_x; ++i) {
-        printf("-------------------------------------------  %d  ------------------------------------------- \n",i);
+        printf("-------------------------------------------  %ld  ------------------------------------------- \n",i);
         _cid_cout("[%0*ld] s[%ld] u[%ld]:", log_n_x, i, xorset_degree_s[i], xorset_degree_u[i]);
         for(j = 0; j < size_of_xor_equation[i]; ++j) {
             l = xor_equation[i][j];
