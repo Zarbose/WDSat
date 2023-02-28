@@ -2,6 +2,7 @@
 testing/*
 .vscode/
 *.txt
+wdsat_solver
 
 # Prerequisites
 *.d
