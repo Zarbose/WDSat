@@ -21,7 +21,7 @@
 
 // #define SMALL_TEST
 #define TEST_SUBST
-// #define NO_CNF
+#define NO_CNF
 
 int cpt = 0;
 
@@ -125,7 +125,7 @@ bool wdsat_set_true(const int_t l) {
 	// printf("Return true for %ld \n",l);
     return true;
 }
-
+int r = 0;
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 
 	// for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
@@ -191,10 +191,11 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 			#endif
 			xorset_undo();
 			#ifdef TEST_SUBST
-				// substitution_testing_vars(true);
+				substitution_testing_vars(true);
 				substitution_undo();
-				// substitution_testing_vars(false);
-				// system("/bin/bash script/testing_vars/main.sh");
+				substitution_testing_vars(false);
+				r = system("/bin/bash script/testing_vars/main.sh");
+				// printf("%d\n",r);
 			#endif
 			if(!wdsat_set_true(set[l])) return false;
 			return wdsat_solve_rest(l + 1, set_end,conf);
@@ -456,7 +457,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_table();
 
 	#ifdef SMALL_TEST
-		srand( time( NULL ) );
+		/*srand( time( NULL ) );
 		int tab[26];
 		int stop = true;
 		while(stop == true){
@@ -469,7 +470,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 				searchedValue = rand() % 101;
 			}
 
-			// substitution_fprint_static_values();
 			// int tab[26]={-1,1,1,0,1,0,0,1,0,1,0,0,0,1,0,1,1,1,0,0,1,0,1,0,0,0};
 			// int tab[26]={-1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1};
 
@@ -481,12 +481,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 				else {printf("Failure %d\n",val);stop=false;}
 
 			}
-			// printf("AVANT\n");
 			substitution_reset_dynamic_table();
-			// printf("APRES 1\n");
 			substitution_reset_stack();
-			// printf("APRES 2\n");
-		}
+		}*/
 
 		// for (int i =1; i <=25; i++){
 		// 	if (i != 1)
@@ -497,25 +494,34 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		// }
 
 
-		// _substitution_breakpoint;
+		_substitution_breakpoint;
+		int val;
+		val=1;
+		if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		else printf("Failure %d\n",val);
 
-		// substitution_fprint_static_values();
+		val=3;
+		if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		else printf("Failure %d\n",val);
 
-		// int val;
-		// val=-1;
-		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		// else printf("Failure %d\n",val);
+		val=5;
+		if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		else printf("Failure %d\n",val);
 		
 		// substitution_fprint_dynamic_values();
 		// substitution_fprint_substitution_index_stack();
 
-		// substitution_testing_vars(true);
+		substitution_testing_vars(true);
 
-		// _substitution_breakpoint;
-		// val=-3;
-		// substitution_increase_history_flag();
-		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		// else printf("Failure %d\n",val);
+		_substitution_breakpoint;
+		val=6;
+		substitution_increase_history_flag();
+		if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		else printf("Failure %d\n",val);
+
+		substitution_undo();
+		substitution_testing_vars(false);
+		system("/bin/bash script/testing_vars/main.sh");
 
 		substitution_free_structure();
 		return true;
@@ -529,7 +535,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {
 			printf("UNSAT\n");
 			printf("%ld\n",conf[0]);
+			printf("Avant\n");
 			substitution_free_structure();
+			printf("Après\n");
 			return false;
 		}
 		substitution_free_structure();
@@ -561,7 +569,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	printf("\n");
 
-	printf("Susbst assignment : ");
+	printf("Sub assignment : ");
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
 		printf("%d", substitution_assignment[j]);
@@ -569,7 +577,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	printf("\n");
 	
 	printf("conf:%ld\n",conf[0]);
-	
+
+	// substitution_free_structure();
+
 	return (true);
 
 }

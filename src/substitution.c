@@ -215,8 +215,11 @@ void substitution_free_structure(){
             free(substitution_values_dynamic[i]);
             continue;
         }
+        // printf("Test 3 : %ld\n",i);
         free(substitution_values_static[i]);
+        // printf("Test 4\n");
         free(substitution_values_dynamic[i]);
+        // printf("Test 5\n");
     }
     free(substitution_values_static_buffer);
     free(substitution_values_dynamic_buffer);
@@ -251,8 +254,8 @@ void substitution_init_static_table(){
             uint_t _x2 = substitution_equivalency[v][1];
 
             // Rules with y is not an unary var and y = true
-            // substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
-            // substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
+            substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
+            substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
 
             // Rules with x1 is an unary var and x1 = false
             substitution_values_static[-_x1][substitution_index_static[-_x1]++]=-_y;
@@ -287,18 +290,19 @@ void substitution_update_dynamic_values(const int_t _l){
                     } else {
                         _x = substitution_equivalency[_y][0];
                     }
+                    substitution_add_check_history_stack(_y);
+                    substitution_add_check_history_stack(_x);
+                    substitution_add_check_history_stack(-_x);
+                    substitution_add_check_history_stack(-_y);
 
                     substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
-                    substitution_add_check_history_stack(_y);
 
                     substitution_values_dynamic[_y][substitution_index_dynamic[_y]++]=_x;
-                    substitution_add_check_history_stack(_x);
                     
                     substitution_values_dynamic[-_y][substitution_index_dynamic[-_y]++]=-_x;
-                    substitution_add_check_history_stack(-_x);
-
+                    
                     substitution_values_dynamic[-_x][substitution_index_dynamic[-_x]++]=-_y;
-                    substitution_add_check_history_stack(-_y);
+                    
                 }
             }
         }
@@ -380,8 +384,6 @@ bool substitution_initiate_from_dimacs() {
         if(!i) {
             substitution_values_static[i] = NULL;
             substitution_values_dynamic[i] = NULL;
-
-            // Undo
             continue;
         }
         int_t _sub_size = _n_v;
@@ -401,18 +403,15 @@ bool substitution_initiate_from_dimacs() {
     // CLEAR(substitution_index_stack,__SIGNED_ID_SIZE__);
 
     substitution_init_static_table();
-    // substitution_fprint_static_values();
     return (true);
 }
 
 // "main" functions
 bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
-
-    // substitution_reset_stack();
-    // substitution_reset_dynamic_table();
 	
-    substitution_up_stack[substitution_up_top_stack++] = l;
+    // substitution_up_stack[substitution_up_top_stack++] = l;
+    substitution_add_check_stack(l);
 
     const bool _tf = (l < 0) ? false : true;
     if (substitution_is_unary_var(l)){
@@ -422,9 +421,8 @@ bool substitution_set_true(const int_t l) {
     }
     else{
         if (!_tf){ /* La régle x26 = false */
-        int_t _v = (l < 0) ? -l : l;
+            int_t _v = (l < 0) ? -l : l;
             if (substitution_equivalent[_v] == true){
-        
                 int_t x1 = substitution_equivalency[_v][0];
                 int_t x2 = substitution_equivalency[_v][1];
 
@@ -434,7 +432,6 @@ bool substitution_set_true(const int_t l) {
                         // printf("x1 = %d x2 = %d\n",_substitution_is_true(x1),_substitution_is_true(x2));
                         return false;
                     }
-                        
                 }
                 else if (_substitution_is_undef(x1) && !_substitution_is_undef(x2)){
                     /* x1 undef */
@@ -490,7 +487,6 @@ bool substitution_subt(){
                     // printf("add statique %ld to stack\n",_e);
                     substitution_add_check_stack(_e);
                 }
-
             }
 
             // Dynamic
@@ -539,11 +535,10 @@ void substitution_undo() {
 	substitution_history_top_it = substitution_history_top;
 
     // new undo
-
     const int_t top_step_main = (substitution_history_main_top > 0) ? substitution_history_main_stack[--substitution_history_main_top] : 0;
     while ( top_step_main != substitution_history_inte_top) {
         int_t l=substitution_history_inte_stack[--substitution_history_inte_top];
-        int_t indx =substitution_history_inte_stack[--substitution_history_inte_top];
+        int_t indx = substitution_history_inte_stack[--substitution_history_inte_top];
         substitution_index_dynamic[l]=indx;
     }
     substitution_tag++;
