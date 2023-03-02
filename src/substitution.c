@@ -178,10 +178,7 @@ void substitution_reset_stack(){
 }
 
 void substitution_add_check_stack(int_t v){
-    // printf("inside with : %ld\n",v);
-    // printf("Tag = %ld\n",substitution_tag);
     if ( !(substitution_index_stack[v] == substitution_tag) ){
-        // printf("set tab[%ld] =  %ld \n",v,substitution_tag);
         substitution_up_stack[substitution_up_top_stack++]=v;
         substitution_index_stack[v]=substitution_tag;
     }
@@ -201,9 +198,7 @@ void substitution_increase_history_flag(){
 
 inline void substitution_reset_boolean_vector(int_t *v, uint_t sz) {
 	for(uint_t i = 0ULL; i < sz; ++i){
-		/// different writing for same aim
 		v[i] = 0ULL;
-		// v[i] ^= v[i];
     }
 }
 
@@ -215,11 +210,8 @@ void substitution_free_structure(){
             free(substitution_values_dynamic[i]);
             continue;
         }
-        // printf("Test 3 : %ld\n",i);
         free(substitution_values_static[i]);
-        // printf("Test 4\n");
         free(substitution_values_dynamic[i]);
-        // printf("Test 5\n");
     }
     free(substitution_values_static_buffer);
     free(substitution_values_dynamic_buffer);
@@ -461,30 +453,23 @@ bool substitution_subt(){
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
-        // printf("set : %ld\n",l);
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
-            // printf("END 1\n");
-            // printf("Return false : %ld is set to false\n",l);
             substitution_reset_stack();
             return false;
         }
         else{
             _substitution_set(l,__TRUE__)
-            // printf("--- set %ld to true --- \n",l);
             substitution_history[substitution_history_top++] = l;
 
             // Static
             for (int_t i = 0; i != substitution_index_static[l]; ++i){
                 const int_t _e = substitution_values_static[l][i];
                 if(_substitution_is_false(_e)){
-                    // printf("END 2\n");
-                    // printf("Return false : %ld is set to false\n",_e);
                     substitution_reset_stack();
                     return false;
                 }
                 else if(_substitution_is_undef(_e)){
-                    // printf("add statique %ld to stack\n",_e);
                     substitution_add_check_stack(_e);
                 }
             }
@@ -493,14 +478,10 @@ bool substitution_subt(){
             for (int_t i = 0; i != substitution_index_dynamic[l]; ++i){
                 const int_t _e = substitution_values_dynamic[l][i];
                 if(_substitution_is_false(_e)){
-                    // printf("END 3\n");
-                    // printf("%d %d\n",substitution_assignment[-_e],substitution_assignment[_e]);
-                    // printf("Return false : %ld is set to false\n",l);
                     substitution_reset_stack();
                     return false;
                 }
                 else if(_substitution_is_undef(_e)){
-                    // printf("add dynamique %ld to stack\n",_e);
                     substitution_add_check_stack(_e);
                 }
             }
@@ -520,7 +501,6 @@ bool substitution_subt(){
             
         }
     }
-    // printf("%ld \n",substitution_history_inte_top);
     return true;
 }
 
@@ -537,7 +517,7 @@ void substitution_undo() {
     // new undo
     const int_t top_step_main = (substitution_history_main_top > 0) ? substitution_history_main_stack[--substitution_history_main_top] : 0;
     while ( top_step_main != substitution_history_inte_top) {
-        int_t l=substitution_history_inte_stack[--substitution_history_inte_top];
+        int_t l = substitution_history_inte_stack[--substitution_history_inte_top];
         int_t indx = substitution_history_inte_stack[--substitution_history_inte_top];
         substitution_index_dynamic[l]=indx;
     }

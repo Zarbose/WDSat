@@ -21,7 +21,7 @@
 
 // #define SMALL_TEST
 #define TEST_SUBST
-#define NO_CNF
+// #define NO_CNF
 
 int cpt = 0;
 
@@ -195,14 +195,15 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 				substitution_undo();
 				substitution_testing_vars(false);
 				r = system("/bin/bash script/testing_vars/main.sh");
+				if (r == 2 )
+					exit(2);
 				// printf("%d\n",r);
 			#endif
 			if(!wdsat_set_true(set[l])) return false;
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		}
-		else
+		else // Retour récursif ???
 		{
-			// printf("ICI 3\n");
 			#ifndef NO_CNF
 				_cnf_mergepoint;
 			#endif
@@ -492,7 +493,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		// 	if(substitution_set_true(val) == true) printf("Success %d\n",val);
 		// 	else printf("Failure %d\n",val);
 		// }
-
 
 		_substitution_breakpoint;
 		int val;

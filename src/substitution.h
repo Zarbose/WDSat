@@ -65,6 +65,7 @@ extern int_t substitution_history_tag;
 #define _substitution_breakpoint \
 { \
     substitution_history_tag++; \
+    substitution_tag++; \
     substitution_step[substitution_step_top++] = substitution_history_top; \
     substitution_history_main_stack[substitution_history_main_top++] = substitution_history_inte_top; \
 }
@@ -73,6 +74,8 @@ extern int_t substitution_history_tag;
 /// @brief merge last pushed context to previous one
 #define _substitution_mergepoint \
 { \
+    substitution_history_tag--; \
+    substitution_tag--; \
     substitution_step_top && --substitution_step_top; \
     substitution_history_main_top && --substitution_history_main_top; \
 }
