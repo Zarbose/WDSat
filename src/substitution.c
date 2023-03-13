@@ -20,7 +20,7 @@ static int_t substitution_history_top_it;
 // new undo structures
 int_t *substitution_history_inte_stack;
 int_t substitution_history_inte_top;
-int_t *substitution_history_main_stack;
+int_t substitution_history_main_stack[__ID_SIZE__];
 int_t substitution_history_main_top;
 
 int_t *substitution_history_inte_index_stack;
@@ -65,7 +65,7 @@ void substitution_fprint_equivalency() {
             for (int_t j=0LL; j< __SZ_SUB__; j++) printf("%ld ",substitution_equivalency[v][j]);
             printf("\n");
         }
-        
+
 	}
 }
 
@@ -121,7 +121,7 @@ void substitution_fprint_unary_var_assignment(){
     printf("\n");
 }
 
-void substitution_fprint_history_inte_index_stack(){    
+void substitution_fprint_history_inte_index_stack(){
     const int_t _n_v = substitution_nb_of_var;
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
@@ -149,20 +149,21 @@ void substitution_fprint_dynamic_index(){
 }
 
 void substitution_fprint_history_main_stack(){
+    printf("Printing substitution_history_main_stack \n");
     for (int i = 0; i < substitution_history_main_top; i++)
         printf("%ld \n",substitution_history_main_stack[i]);
 }
 
 void substitution_fprint_substitution_up_stack(){
-    printf("Printing substitution_up_stack \n");  
+    printf("Printing substitution_up_stack \n");
     for (int_t i = 0; i < substitution_up_top_stack; i++){
         printf("%ld ",substitution_up_stack[i]);
     }
     printf("\n");
 }
 
-void substitution_fprint_substitution_index_stack(){  
-    printf("Printing substitution_index_stack \n");  
+void substitution_fprint_substitution_index_stack(){
+    printf("Printing substitution_index_stack \n");
     const int_t _n_v = substitution_nb_of_var;
     for(int_t v = -_n_v; v <= _n_v; ++v) {
         if (!v) continue;
@@ -185,10 +186,11 @@ void substitution_add_check_stack(int_t v){
 }
 
 void substitution_add_check_history_stack(int_t v){
-     if ( !(substitution_history_inte_index_stack[v] == substitution_history_tag) ){
+    if ( !(substitution_history_inte_index_stack[v] == substitution_history_tag) ){
         substitution_history_inte_stack[substitution_history_inte_top++]=substitution_index_dynamic[v];
         substitution_history_inte_stack[substitution_history_inte_top++]=v;
         substitution_history_inte_index_stack[v]=substitution_history_tag;
+        // printf("LA %d\n",substitution_history_inte_top);
     }
 }
 
@@ -220,7 +222,7 @@ void substitution_free_structure(){
     free(substitution_static_index_buffer);
 
     free(substitution_history_inte_stack);
-    free(substitution_history_main_stack);
+    // free(substitution_history_main_stack);
     free(substitution_history_inte_index_stack_buffer);
 
 }
@@ -255,7 +257,7 @@ void substitution_init_static_table(){
             // Rules with x2 is an unary var and x2 = false
             substitution_values_static[-_x2][substitution_index_static[-_x2]++]=-_y;
         }
-        
+
 	}
 }
 
@@ -270,7 +272,7 @@ bool substitution_is_unary_var(const int_t _l){
 void substitution_update_dynamic_values(const int_t _l){
     const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
     for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // On cherche y <=> x1 x2
-        if (substitution_equivalent[w]){ 
+        if (substitution_equivalent[w]){
             int_t _y = w;
             for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
                 if (substitution_equivalency[_y][j] == _uv){
@@ -283,18 +285,20 @@ void substitution_update_dynamic_values(const int_t _l){
                         _x = substitution_equivalency[_y][0];
                     }
                     substitution_add_check_history_stack(_y);
+                    substitution_add_check_history_stack(-_y);
                     substitution_add_check_history_stack(_x);
                     substitution_add_check_history_stack(-_x);
-                    substitution_add_check_history_stack(-_y);
+
+                    // printf("add %ld %ld %ld %ld\n",_y,_x,-_y,-_x);
 
                     substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
 
                     substitution_values_dynamic[_y][substitution_index_dynamic[_y]++]=_x;
-                    
+
                     substitution_values_dynamic[-_y][substitution_index_dynamic[-_y]++]=-_x;
-                    
+
                     substitution_values_dynamic[-_x][substitution_index_dynamic[-_x]++]=-_y;
-                    
+
                 }
             }
         }
@@ -333,7 +337,7 @@ bool substitution_initiate_from_dimacs() {
 
     // init stack
     substitution_up_top_stack = substitution_tag = 0LL;
-    substitution_tag++;    
+    substitution_tag++;
     substitution_index_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_stack =  substitution_index_stack + _n_v;
 
@@ -364,9 +368,9 @@ bool substitution_initiate_from_dimacs() {
     substitution_history_main_top = substitution_history_inte_top = 0LL;
 
     substitution_history_inte_stack = (int_t *)malloc((__SZ_STACK__)*sizeof(int_t));
-    substitution_history_main_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    // substitution_history_main_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     CLEAR(substitution_history_inte_stack,__SIGNED_ID_SIZE__);
-    CLEAR(substitution_history_main_stack,__SIGNED_ID_SIZE__);
+    // CLEAR(substitution_history_main_stack,__SIGNED_ID_SIZE__);
 
     substitution_history_inte_index_stack_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_history_inte_index_stack = substitution_history_inte_index_stack_buffer +_n_v;
@@ -383,7 +387,7 @@ bool substitution_initiate_from_dimacs() {
         substitution_values_dynamic[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
         CLEAR(substitution_values_static[i],_sub_size);
         CLEAR(substitution_values_dynamic[i],_sub_size);
-        
+
         // Undo
 
         // Index
@@ -401,11 +405,12 @@ bool substitution_initiate_from_dimacs() {
 // "main" functions
 bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
-	
+
     // substitution_up_stack[substitution_up_top_stack++] = l;
     substitution_add_check_stack(l);
 
     const bool _tf = (l < 0) ? false : true;
+    // printf("tf = %d  l = %ld\n",_tf,l);
     if (substitution_is_unary_var(l)){
         if (_tf){
             substitution_update_dynamic_values(l);
@@ -461,6 +466,7 @@ bool substitution_subt(){
         else{
             _substitution_set(l,__TRUE__)
             substitution_history[substitution_history_top++] = l;
+            // printf("Set %ld to true",l);
 
             // Static
             for (int_t i = 0; i != substitution_index_static[l]; ++i){
@@ -498,7 +504,7 @@ bool substitution_subt(){
                     substitution_add_check_stack(_e);
                 }
             }*/
-            
+
         }
     }
     return true;
@@ -506,6 +512,7 @@ bool substitution_subt(){
 
 // Undo functions
 void substitution_undo() {
+    // substitution_fprint_history_main_stack();
     static int_t _l;
     const int_t top_step = (substitution_step_top) ? substitution_step[--substitution_step_top] : 0;
     while(substitution_history_top != top_step) {
@@ -539,6 +546,8 @@ void substitution_reset_string(char* str){
     str[8]='\0';
 }
 
+int abs(int v){ if (v<0) return -v; else return v;}
+
 void substitution_testing_vars(bool writing_status){
     char path[100]="testing/";
     char var[100]="";
@@ -558,11 +567,12 @@ void substitution_testing_vars(bool writing_status){
         exit(2);
     }
     else {
+        fprintf(fichier,"[l] val val ...\n");
         const int_t _n_v = substitution_nb_of_var;
         for(int_t v = -_n_v; v <= _n_v; ++v) {
             if (!v) continue;
             if (substitution_index_dynamic[v] == 0) continue;
-            fprintf(fichier,"%ld : ",v);
+            fprintf(fichier,"[%ld] ",v);
             for (int_t j=0LL; j < substitution_index_dynamic[v]; j++) fprintf(fichier,"%ld ",substitution_values_dynamic[v][j]);
             fprintf(fichier,"\n");
         }
@@ -584,13 +594,11 @@ void substitution_testing_vars(bool writing_status){
         exit(2);
     }
     else {
+        fprintf(fichier,"[l] indx_l\n");
         const int_t _n_v = substitution_nb_of_var;
         for(int_t v = -_n_v; v <= _n_v; ++v) {
             if (!v) continue;
-            if (substitution_index_dynamic[v] == 0) continue;
-            fprintf(fichier,"%ld : ",v);
-            for (int_t j=0LL; j < substitution_index_dynamic[v]; j++) fprintf(fichier,"%ld ",substitution_values_dynamic[v][j]);
-            fprintf(fichier,"\n");
+            fprintf(fichier,"[%ld] %ld\n",v,substitution_index_dynamic[v]);
         }
         substitution_reset_string(path);
         fclose(fichier);
@@ -611,8 +619,20 @@ void substitution_testing_vars(bool writing_status){
     }
     else {
         const int_t _v = substitution_nb_of_var;
+        fprintf(fichier,"[l] TV\n");
         for (int_t i = 1LL; i <= _v; ++i){
-            fprintf(fichier,"%ld  %ld: %d %d\n",-i,i,substitution_assignment[-i],substitution_assignment[i]);
+            const int_t tf = (_substitution_is_undef(i)) ? true : false;
+            if(tf){
+                continue;
+                fprintf(fichier,"[%ld] UNDEF\n",i);
+            }
+            else{
+                int t = (_substitution_is_true(i)) ? true : false;
+                if (t)
+                    fprintf(fichier,"[%ld] T\n",i);
+                else
+                    fprintf(fichier,"[%ld] F\n",i);
+            }
         }
         substitution_reset_string(path);
         fclose(fichier);
@@ -632,11 +652,37 @@ void substitution_testing_vars(bool writing_status){
         exit(2);
     }
     else {
-        for (int_t i=0; i < substitution_history_inte_top; i+=2){
-            if (substitution_history_inte_stack[i] >= 10)
-                fprintf(fichier,"%ld %ld\n",substitution_history_inte_stack[i],substitution_history_inte_stack[i+1]);
-            else
-                fprintf(fichier,"%ld %ld\n",substitution_history_inte_stack[i],substitution_history_inte_stack[i+1]);
+        fprintf(fichier,"[l] indice\n");
+        int tmp = substitution_history_inte_top;
+        while(tmp > 0) {
+            int nb_space=0;
+            int_t v = substitution_history_inte_stack[--tmp];
+            int_t ind = substitution_history_inte_stack[--tmp];
+            if (v < 0)
+                nb_space++;
+            if(abs(v) >= 10)
+                nb_space++;
+            if(abs(v) >= 100)
+                nb_space++;
+
+            switch (nb_space)
+            {
+            case 0:
+                fprintf(fichier,"[%ld]    %ld\n",v,ind);
+                break;
+            case 1:
+                fprintf(fichier,"[%ld]   %ld\n",v,ind);
+                break;
+            case 2:
+                fprintf(fichier,"[%ld]  %ld\n",v,ind);
+                break;
+            case 3:
+                fprintf(fichier,"[%ld] %ld\n",v,ind);
+                break;
+            default:
+                fprintf(fichier,"[%ld] %ld\n",v,ind);
+                break;
+            }
         }
 
         substitution_reset_string(path);
@@ -664,74 +710,161 @@ void substitution_testing_vars(bool writing_status){
         fclose(fichier);
     }
 
-    // substitution_history_inte_index_stack
-    // strcpy(var,"substitution_history_inte_index_stack");
-    // strcat(path,var);
-    // if (writing_status == true)
-    //     strcat(path,"_before.txt");
-    // else
-    //     strcat(path,"_after.txt");
+    // substitution_history
+    strcpy(var,"substitution_history");
+    strcat(path,var);
+    if (writing_status == true)
+        strcat(path,"_before.txt");
+    else
+        strcat(path,"_after.txt");
 
-    // fichier = fopen(path,"a");
-    // if (fichier == NULL){
-    //     printf( "Cannot open file %s\n", path );
-    //     exit(2);
-    // }
-    // else {
-    // const int_t _n_v = substitution_nb_of_var;
-    //     for(int_t v = -_n_v; v <= _n_v; ++v) {
-    //         if (!v) continue;
-    //         fprintf(fichier,"%ld\n",substitution_history_inte_index_stack[v]);
-    //     }
+    fichier = fopen(path,"a");
+    if (fichier == NULL){
+        printf( "Cannot open file %s\n", path );
+        exit(2);
+    }
+    else {
+        int tmp = substitution_history_top;
+        fprintf(fichier,"[top] %ld \n",substitution_history_top);
+        while(tmp > 0){
+            --tmp;
+            fprintf(fichier,"[%d] %ld \n",tmp,substitution_history[tmp]);
+        }
 
-    //     substitution_reset_string(path);
-    //     fclose(fichier);
-    // }
+        substitution_reset_string(path);
+        fclose(fichier);
+    }
 
-    // substitution_up_stack
-    // strcpy(var,"substitution_up_stack");
-    // strcat(path,var);
-    // if (writing_status == true)
-    //     strcat(path,"_before.txt");
-    // else
-    //     strcat(path,"_after.txt");
+    // substitution_history_main_inte_merged
+    strcpy(var,"substitution_history_main_inte_merged");
+    strcat(path,var);
+    if (writing_status == true)
+        strcat(path,"_before.txt");
+    else
+        strcat(path,"_after.txt");
 
-    // fichier = fopen(path,"a");
-    // if (fichier == NULL){
-    //     printf( "Cannot open file %s\n", path );
-    //     exit(2);
-    // }
-    // else {
-    //     for (int_t i = 0; i < substitution_up_top_stack; i++){
-    //         fprintf(fichier,"%ld\n",substitution_up_stack[i]);
-    //     }
+    fichier = fopen(path,"a");
+    if (fichier == NULL){
+        printf( "Cannot open file %s\n", path );
+        exit(2);
+    }
+    else {
+        int tmp_1 = substitution_history_inte_top;
+        int tmp_2 = substitution_history_main_top;
+        tmp_2--;
+        while(tmp_1 > 0) {
+            int nb_space=0;
+            int_t v = substitution_history_inte_stack[--tmp_1];
+            int_t ind = substitution_history_inte_stack[--tmp_1];
 
-    //     substitution_reset_string(path);
-    //     fclose(fichier);
-    // }
+            if (v < 0)
+                nb_space++;
+            if(abs(v) >= 10)
+                nb_space++;
+            if(abs(v) >= 100)
+                nb_space++;
 
-    // substitution_index_stack
-    // strcpy(var,"substitution_index_stack");
-    // strcat(path,var);
-    // if (writing_status == true)
-    //     strcat(path,"_before.txt");
-    // else
-    //     strcat(path,"_after.txt");
+            switch (nb_space)
+            {
+            case 0:
+                fprintf(fichier,"[%ld]    %ld\n",v,ind);
+                break;
+            case 1:
+                fprintf(fichier,"[%ld]   %ld\n",v,ind);
+                break;
+            case 2:
+                fprintf(fichier,"[%ld]  %ld\n",v,ind);
+                break;
+            case 3:
+                fprintf(fichier,"[%ld] %ld\n",v,ind);
+                break;
+            default:
+                fprintf(fichier,"[%ld] %ld\n",v,ind);
+                break;
+            }
 
-    // fichier = fopen(path,"a");
-    // if (fichier == NULL){
-    //     printf( "Cannot open file %s\n", path );
-    //     exit(2);
-    // }
-    // else {
-    //     const int_t _n_v = substitution_nb_of_var;
-    //     for(int_t v = -_n_v; v <= _n_v; ++v) {
-    //         if (!v) continue;
-    //         fprintf(fichier,"%ld ",substitution_index_stack[v]);
-    //     }
-    //     fprintf(fichier,"\n");
+            // substitution_history_main_stack[substitution_history_main_top++]
+            if (substitution_history_main_stack[tmp_2] == tmp_1){
+                while (substitution_history_main_stack[tmp_2] == ind && tmp_2 > 0){
+                    fprintf(fichier,"------ [%d] %ld ------\n",tmp_2,substitution_history_main_stack[tmp_2]);
+                    tmp_2--;
+                }
+            }
 
-    //     substitution_reset_string(path);
-    //     fclose(fichier);
-    // }
+        }
+
+        substitution_reset_string(path);
+        fclose(fichier);
+    }
+
+    /*substitution_history_inte_index_stack
+    strcpy(var,"substitution_history_inte_index_stack");
+    strcat(path,var);
+    if (writing_status == true)
+        strcat(path,"_before.txt");
+    else
+        strcat(path,"_after.txt");
+
+    fichier = fopen(path,"a");
+    if (fichier == NULL){
+        printf( "Cannot open file %s\n", path );
+        exit(2);
+    }
+    else {
+    const int_t _n_v = substitution_nb_of_var;
+        for(int_t v = -_n_v; v <= _n_v; ++v) {
+            if (!v) continue;
+            fprintf(fichier,"%ld\n",substitution_history_inte_index_stack[v]);
+        }
+
+        substitution_reset_string(path);
+        fclose(fichier);
+    }
+
+    substitution_up_stack
+    strcpy(var,"substitution_up_stack");
+    strcat(path,var);
+    if (writing_status == true)
+        strcat(path,"_before.txt");
+    else
+        strcat(path,"_after.txt");
+
+    fichier = fopen(path,"a");
+    if (fichier == NULL){
+        printf( "Cannot open file %s\n", path );
+        exit(2);
+    }
+    else {
+        for (int_t i = 0; i < substitution_up_top_stack; i++){
+            fprintf(fichier,"%ld\n",substitution_up_stack[i]);
+        }
+
+        substitution_reset_string(path);
+        fclose(fichier);
+    }
+
+    substitution_index_stack
+    strcpy(var,"substitution_index_stack");
+    strcat(path,var);
+    if (writing_status == true)
+        strcat(path,"_before.txt");
+    else
+        strcat(path,"_after.txt");
+
+    fichier = fopen(path,"a");
+    if (fichier == NULL){
+        printf( "Cannot open file %s\n", path );
+        exit(2);
+    }
+    else {
+        const int_t _n_v = substitution_nb_of_var;
+        for(int_t v = -_n_v; v <= _n_v; ++v) {
+            if (!v) continue;
+            fprintf(fichier,"%ld ",substitution_index_stack[v]);
+        }
+        fprintf(fichier,"\n");
+
+        substitution_reset_string(path);
+        fclose(fichier);
+    }*/
 }

@@ -127,6 +127,7 @@ bool wdsat_set_true(const int_t l) {
 }
 int r = 0;
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
+	printf("Nouveau : %ld\n",l);
 
 	// for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
 	// {
@@ -148,6 +149,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 	#ifndef NO_CNF
 		if(!_cnf_is_undef(set[l])) { // set[l] = l+1 == > l+1 est défine ?
+			printf("Ici avec l = %ld et set[l] = %ld\n",l,set[l]);
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		} 
 	#else
@@ -156,7 +158,11 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		} 
 	#endif
-	
+
+	// substitution_testing_vars(true);
+	// printf("save : %ld \n",l);
+
+	// printf("1 avec l = %ld\n",l);
 	#ifndef NO_CNF
 		_cnf_breakpoint;
 	#endif
@@ -168,13 +174,18 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	// printf("ICI %ld \n",set[l]);
 	if(!wdsat_set_true(-set[l]))
 	{
-		// printf("Backtrack 1\n");
+		// printf("2 avec l = %ld\n",l);
+		printf("Backtrack 1\n");
 		#ifndef NO_CNF
 			cnf_undo();
 		#endif
 		xorset_undo();
 		#ifdef TEST_SUBST
+			// system("/bin/bash script/testing_vars/clean.sh");
+			// substitution_testing_vars(true);
 			substitution_undo();
+			// substitution_testing_vars(false);
+			// exit(3);
 		#endif
 		if(!wdsat_set_true(set[l])) return false;
 		return wdsat_solve_rest(l + 1, set_end,conf);
@@ -182,22 +193,19 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 	else
 	{
-		// printf("ICI 2 \n");
 		if(!wdsat_solve_rest(l + 1, set_end,conf))
 		{
-			// printf("Backtrack 2\n");
+			printf("Backtrack 2\n");
 			#ifndef NO_CNF
 				cnf_undo();
 			#endif
 			xorset_undo();
 			#ifdef TEST_SUBST
+				system("/bin/bash script/testing_vars/clean.sh");
 				substitution_testing_vars(true);
 				substitution_undo();
 				substitution_testing_vars(false);
-				r = system("/bin/bash script/testing_vars/main.sh");
-				if (r == 2 )
-					exit(2);
-				// printf("%d\n",r);
+				exit(3);
 			#endif
 			if(!wdsat_set_true(set[l])) return false;
 			return wdsat_solve_rest(l + 1, set_end,conf);
@@ -511,7 +519,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		// substitution_fprint_dynamic_values();
 		// substitution_fprint_substitution_index_stack();
 
-		substitution_testing_vars(true);
+		// substitution_testing_vars(true);
 
 		_substitution_breakpoint;
 		val=6;
@@ -519,9 +527,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		if(substitution_set_true(val) == true) printf("Success %d\n",val);
 		else printf("Failure %d\n",val);
 
+		substitution_fprint_history_main_stack();
 		substitution_undo();
-		substitution_testing_vars(false);
-		system("/bin/bash script/testing_vars/main.sh");
+		substitution_fprint_history_main_stack();
+		// substitution_testing_vars(false);
+		// system("/bin/bash script/testing_vars/main.sh");
 
 		substitution_free_structure();
 		return true;
@@ -540,7 +550,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			printf("Après\n");
 			return false;
 		}
-		substitution_free_structure();
+		// substitution_free_structure();
 	}
 	if(xg == 1)
 	{
@@ -558,6 +568,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			// xorgauss_count_nb_var_nb_equation();
 			// dimacs_print_table();
 			
+			substitution_free_structure();
 			return false;
 		}
 	}
@@ -578,8 +589,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	
 	printf("conf:%ld\n",conf[0]);
 
-	// substitution_free_structure();
-
+	substitution_free_structure();
 	return (true);
 
 }

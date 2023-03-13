@@ -38,7 +38,7 @@ extern int_t substitution_step_top;
 extern int_t *substitution_history_inte_stack;
 extern int_t substitution_history_inte_top;
 
-extern int_t *substitution_history_main_stack;
+extern int_t substitution_history_main_stack[__ID_SIZE__];
 extern int_t substitution_history_main_top;
 
 extern int_t *substitution_history_inte_index_stack;
