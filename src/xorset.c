@@ -122,6 +122,7 @@ bool xorset_infer() {
     static int_t l, i, j, c, up_l;
     while(xorset_up_top_stack) {
         l = xorset_up_stack[--xorset_up_top_stack]; // l <-- top element from XORSET_propagation_stack
+        // printf("xorset : %ld\n",l);
         if(_xorset_is_true(l)) continue; // Si l = true
         else if(_xorset_is_false(l)) { // Si l = false
             xorset_up_top_stack = 0;
@@ -131,6 +132,7 @@ bool xorset_infer() {
             xorset_history[xorset_history_top++] = l;
             // for clauses where _l is assigned to TRUE
             const int_t xt_sz = xorset_size_of_index[l]; // xt_sz = la taille de la liste des clauses qui possédent le littéral l
+            // printf("Taille = %ld\n",xt_sz);
             int_t * const idx_t = xorset_index[l]; // idx_t = la liste des clauses qui possédent le littéral l
             for(i = 0; i < xt_sz; ++i) { // For each C in xorset_index[l]
                 c = idx_t[i];

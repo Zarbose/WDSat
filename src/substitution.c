@@ -406,13 +406,11 @@ bool substitution_initiate_from_dimacs() {
 bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
 
-    // substitution_up_stack[substitution_up_top_stack++] = l;
     substitution_add_check_stack(l);
 
     const bool _tf = (l < 0) ? false : true;
-    // printf("tf = %d  l = %ld\n",_tf,l);
-    if (substitution_is_unary_var(l)){
-        if (_tf){
+    if (substitution_is_unary_var(l)){ // l est une variable de départ ?
+        if (_tf){ // on veut mettre l à vrai ? ==> Régle dynamic
             substitution_update_dynamic_values(l);
         }
     }
@@ -466,7 +464,6 @@ bool substitution_subt(){
         else{
             _substitution_set(l,__TRUE__)
             substitution_history[substitution_history_top++] = l;
-            // printf("Set %ld to true",l);
 
             // Static
             for (int_t i = 0; i != substitution_index_static[l]; ++i){
@@ -512,7 +509,7 @@ bool substitution_subt(){
 
 // Undo functions
 void substitution_undo() {
-    // substitution_fprint_history_main_stack();
+    // Désafectation des littéraux
     static int_t _l;
     const int_t top_step = (substitution_step_top) ? substitution_step[--substitution_step_top] : 0;
     while(substitution_history_top != top_step) {
@@ -521,7 +518,7 @@ void substitution_undo() {
     }
 	substitution_history_top_it = substitution_history_top;
 
-    // new undo
+    // Backtrack du tableau dynamique et des indexe
     const int_t top_step_main = (substitution_history_main_top > 0) ? substitution_history_main_stack[--substitution_history_main_top] : 0;
     while ( top_step_main != substitution_history_inte_top) {
         int_t l = substitution_history_inte_stack[--substitution_history_inte_top];
@@ -542,12 +539,11 @@ int_t substitution_last_assigned(int_t *up_stack) {
 	return up_stack_top;
 }
 
-void substitution_reset_string(char* str){
-    str[8]='\0';
-}
+void substitution_reset_string(char* str){str[8]='\0';}
 
-int abs(int v){ if (v<0) return -v; else return v;}
+int abs(int v){if (v<0) return -v; else return v;}
 
+// Fonction d'écriture des variables dans des fichiers pour pouvoir tester leurs comportements
 void substitution_testing_vars(bool writing_status){
     char path[100]="testing/";
     char var[100]="";
