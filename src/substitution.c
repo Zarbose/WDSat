@@ -451,7 +451,6 @@ bool substitution_subt(){
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
-        // printf("subst : %ld\n",l);
 
         if(!substitution_update_tables(l)) // Pourquoi c'est mieux de le faire ici ?
             return false;
@@ -463,7 +462,6 @@ bool substitution_subt(){
         }
         else{
             _substitution_set(l,__TRUE__)
-            // printf("[substi] set %ld to TRUE\n",l);
             substitution_history[substitution_history_top++] = l;
 
             // Static

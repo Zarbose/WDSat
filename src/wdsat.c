@@ -74,7 +74,6 @@ void save_result(int duree_ml, int_t conf[]){
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
-	// printf("Nouveau : %ld\n",l);
     bool _next_loop;
     int_t _l;
 	#ifndef NO_CNF
@@ -100,7 +99,6 @@ bool wdsat_set_true(const int_t l) {
 		#endif
 		while(wdsat_xorset_up_top_stack) {
 			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
-			// printf("xorset : %ld\n",_l);
 			if(_xorset_is_undef(_l)) _next_loop = true;
 			if(!xorset_set_true(_l)) {/*printf("xor contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
 		}
@@ -122,20 +120,15 @@ bool wdsat_set_true(const int_t l) {
 			wdsat_substitution_up_top_stack = xorset_last_assigned(wdsat_substitution_up_stack);
 		#endif
 	}
-
-	// printf("Return true for %ld \n",l);
     return true;
 }
 
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
-	// printf("Nouveau : %ld\n",l);
-
 	// for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
 	// {
 	// 	printf("%d", cnf_assignment[j]);
 	// }
 	// printf("\n");
-	// printf("l = %lld\n",l);
 
 	if(l > set_end) // C'est la fin ?  ligne 1 algo 4.1
 	{
@@ -150,7 +143,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 	#ifndef NO_CNF
 		if(!_cnf_is_undef(set[l])) { // set[l] = l+1 == > l+1 est défine ?
-			// printf("Ici avec l = %ld et set[l] = %ld\n",l,set[l]);
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		} 
 	#else
@@ -170,7 +162,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	conf[0]++;
 	if(!wdsat_set_true(-set[l])) // ligne 5 et 5 algo 4.1
 	{
-		// printf("Backtrack 1\n");
 		#ifndef NO_CNF
 			cnf_undo();
 		#endif
@@ -186,24 +177,18 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	{
 		if(!wdsat_solve_rest(l + 1, set_end,conf))
 		{
-			// printf("Backtrack 2\n");
 			#ifndef NO_CNF
 				cnf_undo();
 			#endif
 			xorset_undo();
 			#ifdef TEST_SUBST
-				// system("/bin/bash script/testing_vars/clean.sh");
-				// substitution_testing_vars(true);
 				substitution_undo();
-				// substitution_testing_vars(false);
-				// exit(3);
 			#endif
 			if(!wdsat_set_true(set[l])) return false;
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		}
-		else // Retour récursif ??? (non)
+		else
 		{
-			// printf("------ Mergepoint %ld ------\n",l);
 			#ifndef NO_CNF
 				_cnf_mergepoint;
 			#endif
@@ -218,8 +203,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
-    // if (d < 10) 
-	// printf("%d\n", d);
 
 	if(l > nb_min_vars)
 	{
