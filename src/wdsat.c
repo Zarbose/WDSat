@@ -74,7 +74,7 @@ void save_result(int duree_ml, int_t conf[]){
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
-	printf("Nouveau : %ld\n",l);
+	// printf("Nouveau : %ld\n",l);
     bool _next_loop;
     int_t _l;
 	#ifndef NO_CNF
@@ -95,7 +95,7 @@ bool wdsat_set_true(const int_t l) {
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
 			if(_cnf_is_undef(_l)) _next_loop = true;
-			if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
+			if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l)*/;return false;} // assign and propagate _l to true.
 		}
 		#endif
 		while(wdsat_xorset_up_top_stack) {
@@ -113,17 +113,20 @@ bool wdsat_set_true(const int_t l) {
 		#endif
 		#ifndef NO_CNF
 			wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
+			wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
+		#else
+			wdsat_xorset_up_top_stack = substitution_last_assigned(wdsat_xorset_up_stack);
 		#endif
-		wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
+		
 		#ifdef TEST_SUBST
-			wdsat_substitution_up_top_stack = substitution_last_assigned(wdsat_substitution_up_stack);
+			wdsat_substitution_up_top_stack = xorset_last_assigned(wdsat_substitution_up_stack);
 		#endif
 	}
 
 	// printf("Return true for %ld \n",l);
     return true;
 }
-int r = 0;
+
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	// printf("Nouveau : %ld\n",l);
 
@@ -134,7 +137,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	// printf("\n");
 	// printf("l = %lld\n",l);
 
-	if(l > set_end) // C'est la fin ?
+	if(l > set_end) // C'est la fin ?  ligne 1 algo 4.1
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
 		printf("SAT:\n");
@@ -147,7 +150,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	}
 	#ifndef NO_CNF
 		if(!_cnf_is_undef(set[l])) { // set[l] = l+1 == > l+1 est défine ?
-			printf("Ici avec l = %ld et set[l] = %ld\n",l,set[l]);
+			// printf("Ici avec l = %ld et set[l] = %ld\n",l,set[l]);
 			return wdsat_solve_rest(l + 1, set_end,conf);
 		} 
 	#else
@@ -165,9 +168,9 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		_substitution_breakpoint;
 	#endif
 	conf[0]++;
-	if(!wdsat_set_true(-set[l]))
+	if(!wdsat_set_true(-set[l])) // ligne 5 et 5 algo 4.1
 	{
-		printf("Backtrack 1\n");
+		// printf("Backtrack 1\n");
 		#ifndef NO_CNF
 			cnf_undo();
 		#endif
@@ -183,7 +186,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 	{
 		if(!wdsat_solve_rest(l + 1, set_end,conf))
 		{
-			printf("Backtrack 2\n");
+			// printf("Backtrack 2\n");
 			#ifndef NO_CNF
 				cnf_undo();
 			#endif
@@ -200,6 +203,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 		}
 		else // Retour récursif ??? (non)
 		{
+			// printf("------ Mergepoint %ld ------\n",l);
 			#ifndef NO_CNF
 				_cnf_mergepoint;
 			#endif
@@ -210,6 +214,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]) {
 			return true;
 		}
 	}
+
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
@@ -234,7 +239,15 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
-	if(!_cnf_is_undef(set[l])) return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
+	#ifndef NO_CNF
+		if(!_cnf_is_undef(set[l])) {
+			return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
+		} 
+	#else
+		if(!_substitution_is_undef(set[l])) { 
+			return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
+		} 
+	#endif
 	#ifndef NO_CNF
 		_cnf_breakpoint;
 	#endif
@@ -449,7 +462,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// xorset_fprint();
 	// xorset_index_structure_fprintf();
-	// exit(5);
 
 	// dimacs_print_formula();
 	// dimacs_print_equivalency();
@@ -484,44 +496,82 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			substitution_reset_stack();
 		}*/
 
-		// for (int i =1; i <=25; i++){
-		// 	if (i != 1)
-		// 		substitution_increase_history_flag();
-		// 	int val=i;
-		// 	if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		// 	else printf("Failure %d\n",val);
-		// }
+		for (int i =1; i <=25; i++){
+			_substitution_breakpoint;
+			int val=i;
+			if(wdsat_set_true(val) == true) printf("Success %d\n",val);
+			else printf("Failure %d\n",val);
+		}
 
-		_substitution_breakpoint;
-		int val;
-		val=1;
-		if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		else printf("Failure %d\n",val);
 
-		val=3;
-		if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		else printf("Failure %d\n",val);
 
-		val=5;
-		if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		else printf("Failure %d\n",val);
+		// _substitution_breakpoint;
+		// int val;
+		// val=1;
+		// if(wdsat_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
+
+		// val=3;
+		// if(wdsat_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
+
+
+
+
+
+		
+		// _substitution_breakpoint;
+		// val=-2;
+		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
+
+		// _substitution_breakpoint;
+		// val=-3;
+		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
+
+		// substitution_fprint_static_values();
+
+		// val=3;
+		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
+
+		// val=5;
+		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
+
+		// substitution_fprint_dynamic_values();
+		// substitution_fprint_static_values();
 		
 		// substitution_fprint_dynamic_values();
 		// substitution_fprint_substitution_index_stack();
 
 		// substitution_testing_vars(true);
 
-		_substitution_breakpoint;
-		val=6;
-		substitution_increase_history_flag();
-		if(substitution_set_true(val) == true) printf("Success %d\n",val);
-		else printf("Failure %d\n",val);
+		// _substitution_breakpoint;
+		// val=6;
+		// substitution_increase_history_flag();
+		// if(substitution_set_true(val) == true) printf("Success %d\n",val);
+		// else printf("Failure %d\n",val);
 
-		substitution_fprint_history_main_stack();
-		substitution_undo();
-		substitution_fprint_history_main_stack();
+		// substitution_fprint_history_main_stack();
+		// substitution_undo();
+		// substitution_fprint_history_main_stack();
 		// substitution_testing_vars(false);
 		// system("/bin/bash script/testing_vars/main.sh");
+
+		/*int val = 1;
+		for (int i = 1; i<26; i++){
+			if(xorgauss_set_true(val) == true) printf("------ Success %d ------\n",val);
+			else printf("------ Failure %d ------\n",val);
+			val++;
+		}
+		printf("xorgauss assignment : ");
+		for(j = 1; j <= dimacs_nb_unary_vars(); j++)
+		{
+			printf("%d", xorgauss_assignment[j]);
+		}
+		printf("\n");*/
 
 		substitution_free_structure();
 		return true;
@@ -535,12 +585,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {
 			printf("UNSAT\n");
 			printf("%ld\n",conf[0]);
-			printf("Avant\n");
 			substitution_free_structure();
-			printf("Après\n");
 			return false;
 		}
-		// substitution_free_structure();
 	}
 	if(xg == 1)
 	{
@@ -575,6 +622,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	printf("\n");
 	
 	printf("conf:%ld\n",conf[0]);
+
+	// substitution_fprint_dynamic_values();
+	// substitution_fprint_static_values();
 
 	substitution_free_structure();
 	return (true);

@@ -61,45 +61,6 @@ int_t xorgauss_count_nb_var_xor=0LL;
 inline const uint_t xorgauss_get_nb_xorequation() { return xorgauss_nb_of_equations; }
 static int_t list_var[__ID_SIZE__];
 
-void resetTable(){
-	for (int_t i = 0; i < __ID_SIZE__ ;i++){
-		list_var[i]=0;
-	}
-}
-
-int insideTable(uint_t id){
-	if (list_var[id] == 1) return 0;
-	list_var[id]=1;
-	return 1;
-}
-
-void xorgauss_count_nb_var_nb_equation(){
-	uint_t v, cpt_var=0ULL, cpt_equa=0ULL;
-	xorgauss_count_nb_var_xor=0ULL;
-	xorgauss_count_xorequation=0ULL;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v){
-		if(xorgauss_equivalent[v]){
-			cpt_var++;
-			cpt_equa++;
-			for(uint_t _boolean_vector_fprint_i = 1ULL; _boolean_vector_fprint_i <= xorgauss_nb_of_vars; ++_boolean_vector_fprint_i)
-			{
-				if(_boolean_vector_get(xorgauss_equivalency[v], _boolean_vector_fprint_i))
-				{
-					if (insideTable(_boolean_vector_fprint_i) == 1) {
-						cpt_var++;
-					}
-				}
-				
-			}
-
-		}
-	}
-	xorgauss_count_nb_var_xor=cpt_var;
-	xorgauss_count_xorequation=cpt_equa;
-	resetTable();
-	printf(" %lld %lld\n",cpt_var,cpt_equa);
-}
-
 void xorgauss_fprint_nb_equationxor(){
 	uint_t v, cpt=0ULL;
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
@@ -654,63 +615,68 @@ bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 	return true;
 }
 
+
+bool xorgauss_set_true_enhanced(const int_t _v){
+	const bool _tf = (_v < 0) ? false : true;
+	const uint_t _uv = (uint_t) ((_v < 0) ? -_v : _v);
+	if(_uv <= dimacs_nb_unary_vars()) // if ul is an unary variable
+	{
+		if(_tf == true)
+		{
+			int_t i = 0;
+			while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
+			{
+				xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]]--; // Ligne 19 algo 4.10
+				if(xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]] == 1) // Ligne 20 algo 4.10
+				{
+					int_t j = 1;
+					while(_xorgauss_is_true(dimacs_monomials_to_column[_uv][i][j])) j++;
+
+					if(j > __MAX_DEGREE__ - 2 || dimacs_monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
+					{
+						xorgauss_up_stack[xorgauss_up_top_stack++] = dimacs_monomials_to_column[_uv][i][0]; //so set monomial to 1
+						assert(xorgauss_up_top_stack < __ID_SIZE__);
+					}
+					else
+					{
+						if(!xorgauss_replace(dimacs_monomials_to_column[_uv][i][0], dimacs_monomials_to_column[_uv][i][j])) // Ligne 21 algo 4.10
+						{
+							xorgauss_up_top_stack = 0;
+							return false;
+						}
+					}
+				}
+				i++;
+			}
+		}
+		else // Ligne 24 algo 4.10
+		{
+			int_t i = 0;
+			while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
+			{
+				xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]] = 0;
+				i++;
+			}
+		}
+	}
+	return true;
+}
+
+
 // _tf = truth value of _v
 // _uv = propositional variable
 bool xorgauss_set_true(const int_t v)
 {
 	assert(abs((int) v) <= xorgauss_nb_of_vars);
-	// xorgauss_fprint_nb_equationxor();
 	int_t _v;
 	xorgauss_up_stack[xorgauss_up_top_stack++] = v;
 	while(xorgauss_up_top_stack)
 	{
 		_v = xorgauss_up_stack[--xorgauss_up_top_stack]; // l <-- top element from XG_propagation_stack
 		if(!xorgauss_infer(_v)) return false; // SET_IN_XG version non améliorer
-		// xorgauss_fprint_nb_equationxor();
 		
 #ifdef __XG_ENHANCED__
-		const bool _tf = (_v < 0) ? false : true;
-		const uint_t _uv = (uint_t) ((_v < 0) ? -_v : _v);
-		if(_uv <= dimacs_nb_unary_vars()) // if ul is an unary variable
-		{
-			if(_tf == true)
-			{
-				int_t i = 0;
-				while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
-				{
-					xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]]--; // Ligne 19 algo 4.10
-					if(xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]] == 1) // Ligne 20 algo 4.10
-					{
-						int_t j = 1;
-						while(_xorgauss_is_true(dimacs_monomials_to_column[_uv][i][j])) j++;
-
-						if(j > __MAX_DEGREE__ - 2 || dimacs_monomials_to_column[_uv][i][j] == 0) //all of the terms are set to 1
-						{
-							xorgauss_up_stack[xorgauss_up_top_stack++] = dimacs_monomials_to_column[_uv][i][0]; //so set monomial to 1
-							assert(xorgauss_up_top_stack < __ID_SIZE__);
-						}
-						else
-						{
-							if(!xorgauss_replace(dimacs_monomials_to_column[_uv][i][0], dimacs_monomials_to_column[_uv][i][j])) // Ligne 21 algo 4.10
-							{
-								xorgauss_up_top_stack = 0;
-								return false;
-							}
-						}
-					}
-					i++;
-				}
-			}
-			else // Ligne 24 algo 4.10
-			{
-				int_t i = 0;
-				while(dimacs_monomials_to_column[_uv][i][0] > 0) // Ligne 17 algo 4.10 ?????
-				{
-					xorgauss_current_degree[dimacs_monomials_to_column[_uv][i][0]] = 0;
-					i++;
-				}
-			}
-		}
+		if (!xorgauss_set_true_enhanced(_v)) return false;;
 #endif
 	}
 	return true;
