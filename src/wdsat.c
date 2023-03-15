@@ -23,8 +23,6 @@
 #define TEST_SUBST  // Utilisation ou non du module substitution
 #define NO_CNF // Utilisation ou non du module CNF
 
-int cpt = 0;
-
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
 // static int_t nb_of_vars; // Not used
@@ -51,9 +49,6 @@ static int_t wdsat_substitution_up_top_stack;
 
 static int_t set[__ID_SIZE__];
 
-int_t nb_activation=0LL;
-int d_arbre=0;
-
 void save_result(int duree_ml, int_t conf[]){
 	FILE* fichier = NULL;
 
@@ -63,7 +58,7 @@ void save_result(int duree_ml, int_t conf[]){
 
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
-		fprintf(fichier, "%ld;%ld;%d;%d;%d;%d;%d\n",conf[0],nb_activation,duree_ml,K1,K2,K3,d_arbre);
+		fprintf(fichier, "%ld;%ld;%d;%d;%d;\n",conf[0],duree_ml,K1,K2,K3);
         fclose(fichier);
     }
     else{
@@ -317,57 +312,35 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	if (d > d_arbre) d_arbre=d;
-	// printf("%d\n",d);
 
 	if(!wdsat_set_true(l)) return false;
-	// xorgauss_fprint_nb_equationxor();
-
-	// xorgauss_count_nb_var_nb_equation();
-
-	// if (xorgauss_count_xorequation >= xorgauss_count_nb_var_xor) printf("%lld %lld\n",xorgauss_count_xorequation,xorgauss_count_nb_var_xor);
-
-	// if ( xorgauss_count_xorequation == xorgauss_count_nb_var_xor){
-	// if ( (d >= K1 && d <= K2) || d >= K3 ){
-	// if ( (d >= K1 && d <= K2)){
-
-
-
-	// if ( d >= K3 ){
-		nb_activation++;
-
-		while(_loop_pass) {
-			// finalyse with XORGAUSS
-			_continue = false;
-			cnf_history_it = cnf_history_top;
-			while(cnf_history_it > cnf_history_last) {
-				_l = cnf_history[--cnf_history_it];
-				if(_xorgauss_is_undef(_l)) {
-					if(!xorgauss_set_true(_l)) return false;
-					_continue = true;
-				}
-			}
-			cnf_history_last = cnf_history_top;
-			_loop_pass = false;
-			if(_continue) {
-				// get list of literal set thanks to XORGAUSS
-				xorgauss_history_it = xorgauss_history_top;
-				while(xorgauss_history_it > xorgauss_history_last) {
-					_l = xorgauss_history[--xorgauss_history_it];
-					if(_cnf_is_false(_l)) return false;
-					if(_cnf_is_undef(_l)) {
-						_loop_pass = true;
-						if(!wdsat_set_true(_l)) return false;
-					}
-				}
-				xorgauss_history_last = xorgauss_history_top;
+	while(_loop_pass) {
+		// finalyse with XORGAUSS
+		_continue = false;
+		cnf_history_it = cnf_history_top;
+		while(cnf_history_it > cnf_history_last) {
+			_l = cnf_history[--cnf_history_it];
+			if(_xorgauss_is_undef(_l)) {
+				if(!xorgauss_set_true(_l)) return false;
+				_continue = true;
 			}
 		}
-	// }
-	// if(d == 1){
-	// 	xorgauss_fprint_for_xorset();
-	// 	exit(0);
-	// }
+		cnf_history_last = cnf_history_top;
+		_loop_pass = false;
+		if(_continue) {
+			// get list of literal set thanks to XORGAUSS
+			xorgauss_history_it = xorgauss_history_top;
+			while(xorgauss_history_it > xorgauss_history_last) {
+				_l = xorgauss_history[--xorgauss_history_it];
+				if(_cnf_is_false(_l)) return false;
+				if(_cnf_is_undef(_l)) {
+					_loop_pass = true;
+					if(!wdsat_set_true(_l)) return false;
+				}
+			}
+			xorgauss_history_last = xorgauss_history_top;
+		}
+	}
 	return true;
 }
 
@@ -437,8 +410,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			set[j - 1] = j;
 		}
 	}
-
-	// xorgauss_count_nb_var_nb_equation();
 
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
@@ -577,7 +548,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");
-			printf("nb_activation = %ld\n",nb_activation);
 			printf("conf:%ld\n",conf[0]);
 
 			clock_t fin = clock();
