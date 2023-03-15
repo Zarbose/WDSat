@@ -306,37 +306,62 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	bool _loop_pass = true;
 	bool _continue;
-	int_t cnf_history_it;
-	int_t cnf_history_last = cnf_history_top;
+	#ifndef NO_CNF
+		int_t cnf_history_it;
+		int_t cnf_history_last = cnf_history_top;
+	#else
+		int_t substitution_history_it;
+		int_t substitution_history_last = substitution_history_top;
+	#endif
 	int_t xorgauss_history_it;
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
-
 
 	if(!wdsat_set_true(l)) return false;
 	while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;
-		cnf_history_it = cnf_history_top;
-		while(cnf_history_it > cnf_history_last) {
-			_l = cnf_history[--cnf_history_it];
-			if(_xorgauss_is_undef(_l)) {
-				if(!xorgauss_set_true(_l)) return false;
-				_continue = true;
+		#ifndef NO_CNF
+			cnf_history_it = cnf_history_top;
+			while(cnf_history_it > cnf_history_last) {
+				_l = cnf_history[--cnf_history_it];
+				if(_xorgauss_is_undef(_l)) {
+					if(!xorgauss_set_true(_l)) return false;
+					_continue = true;
+				}
 			}
-		}
-		cnf_history_last = cnf_history_top;
+			cnf_history_last = cnf_history_top;
+		#else
+			substitution_history_it = substitution_history_top;
+			while(substitution_history_it > substitution_history_last) {
+				_l = substitution_history[--substitution_history_it];
+				if(_xorgauss_is_undef(_l)) {
+					if(!xorgauss_set_true(_l)) return false;
+					_continue = true;
+				}
+			}
+			substitution_history_last = substitution_history_top;
+		#endif
+
 		_loop_pass = false;
 		if(_continue) {
 			// get list of literal set thanks to XORGAUSS
 			xorgauss_history_it = xorgauss_history_top;
 			while(xorgauss_history_it > xorgauss_history_last) {
 				_l = xorgauss_history[--xorgauss_history_it];
-				if(_cnf_is_false(_l)) return false;
-				if(_cnf_is_undef(_l)) {
-					_loop_pass = true;
-					if(!wdsat_set_true(_l)) return false;
-				}
+				#ifndef NO_CNF
+					if(_cnf_is_false(_l)) return false;
+					if(_cnf_is_undef(_l)) {
+						_loop_pass = true;
+						if(!wdsat_set_true(_l)) return false;
+					}
+				#else
+					if(_substitution_is_false(_l)) return false;
+					if(_substitution_is_undef(_l)) {
+						_loop_pass = true;
+						if(!wdsat_set_true(_l)) return false;
+					}
+				#endif
 			}
 			xorgauss_history_last = xorgauss_history_top;
 		}
