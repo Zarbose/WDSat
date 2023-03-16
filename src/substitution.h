@@ -14,8 +14,11 @@
 #define __SZ_STACK__ 8*(__MAX_ANF_ID__*__MAX_ANF_ID__)
 
 // cnf module equivalence structures
-extern int_t substitution_equivalency[__ID_SIZE__][__SZ_SUB__];
+extern int_t substitution_equivalency_all[__ID_SIZE__][__SZ_SUB__];
 extern bool substitution_equivalent[__ID_SIZE__]; // index to read faster substitution_equivalency
+
+extern int_t substitution_equivalency_unary[__MAX_ANF_ID__][__SIGNED_ID_SIZE__];
+extern int_t substitution_equivalent_index_unary[__MAX_ANF_ID__];
 
 
 // stack structures

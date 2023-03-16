@@ -20,8 +20,8 @@
 #include "substitution.h"
 
 // #define SMALL_TEST  // Activation ou non de la zone de test
-#define TEST_SUBST  // Utilisation ou non du module substitution
-#define NO_CNF // Utilisation ou non du module CNF
+// #define TEST_SUBST  // Utilisation ou non du module substitution
+// #define NO_CNF // Utilisation ou non du module CNF
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
