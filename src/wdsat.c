@@ -23,6 +23,8 @@
 // #define TEST_SUBST  // Utilisation ou non du module substitution
 // #define NO_CNF // Utilisation ou non du module CNF
 
+#define PRINT_AS_CSV
+
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
 // static int_t nb_of_vars; // Not used
@@ -66,6 +68,39 @@ void save_result(int duree_ml, int_t conf[]){
 		exit(2);
     }
 }
+
+void wdsat_fprint_result(int_t conf[], int debut){
+
+	#ifdef PRINT_AS_CSV
+		clock_t fin = clock();
+		int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+		
+		printf("%ld;",conf[0]);
+		printf("%d;\n",duree_ml);
+
+	#else
+		clock_t fin = clock();
+		int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
+		printf("cnf_assignment:");
+		for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
+		{
+			printf("%d", cnf_assignment[j]);
+		}
+		printf("\n");
+
+		printf("sub_assignment:");
+		for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
+		{
+			printf("%d", substitution_assignment[j]);
+		}
+		printf("\n");
+		
+		printf("conf:%ld\n",conf[0]);
+		printf("temps_s:%d\n",duree_ml);
+	#endif
+}
+
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
@@ -377,8 +412,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	int_t conf[1]={0};
 	
 	cnf_initiate_from_dimacs();
+	printf("INIT CNF OK\n");
 	xorset_initiate_from_dimacs();
+	printf("INIT XORSET OK\n");
 	substitution_initiate_from_dimacs();
+	printf("INIT SUBST OK\n");
 
 	if(!xorgauss_initiate_from_dimacs())
 	{
@@ -386,6 +424,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		return false;
 	}
 	cpy_from_dimacs();
+	printf("INIT XORGAUSS OK\n");
 
 	//check allocated memory
 	if(dimacs_nb_vars() < __MAX_ID__)
@@ -563,7 +602,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	{
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {
 			printf("UNSAT\n");
-			printf("%ld\n",conf[0]);
+			wdsat_fprint_result(conf,debut);
+
 			substitution_free_structure();
 			return false;
 		}
@@ -573,19 +613,18 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");
-			printf("conf:%ld\n",conf[0]);
+			wdsat_fprint_result(conf,debut);
 
-			clock_t fin = clock();
-			int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
-
-			if (S == 1) save_result(duree_ml,conf);
+			// if (S == 1) save_result(duree_ml,conf);
 			
 			substitution_free_structure();
 			return false;
 		}
 	}
+
+	wdsat_fprint_result(conf,debut);
 	
-	printf("Cnf assignment : ");
+	/*printf("Cnf assignment : ");
 	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
 		printf("%d", cnf_assignment[j]);
@@ -599,10 +638,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	printf("\n");
 	
-	printf("conf:%ld\n",conf[0]);
-
-	// substitution_fprint_dynamic_values();
-	// substitution_fprint_static_values();
+	printf("conf:%ld\n",conf[0]);*/
 
 	substitution_free_structure();
 	return (true);
