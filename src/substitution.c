@@ -60,7 +60,7 @@ static int_t *substitution_dynamic_index_buffer;
 
 
 // Regular print
-void substitution_fprint_equivalency() {
+void substitution_fprint_equivalency_all() {
 	uint_t v;
 	for(v = 0LL; v <= substitution_nb_of_var; ++v) {
         if (substitution_equivalent[v]){
@@ -69,6 +69,16 @@ void substitution_fprint_equivalency() {
             printf("\n");
         }
 
+	}
+}
+
+void substitution_fprint_equivalency_unary(){
+    for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
+        printf("[%ld]",i);
+        for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
+            printf(" (%ld %ld)",substitution_equivalency_unary[i][j],substitution_equivalency_unary[i][j+1]);
+        }
+        printf("\n");
 	}
 }
 
@@ -175,16 +185,6 @@ void substitution_fprint_substitution_index_stack(){
     printf("\n");
 }
 
-void substitution_fprint_equivalency_V2(){
-    for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
-        printf("[%ld]",i);
-        for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
-            printf(" (%ld %ld)",substitution_equivalency_unary[i][j],substitution_equivalency_unary[i][j+1]);
-        }
-        printf("\n");
-	}
-}
-
 // Utils functions
 void substitution_reset_stack(){
     ++substitution_tag;
@@ -203,7 +203,6 @@ void substitution_add_check_history_stack(int_t v){
         substitution_history_inte_stack[substitution_history_inte_top++]=substitution_index_dynamic[v];
         substitution_history_inte_stack[substitution_history_inte_top++]=v;
         substitution_history_inte_index_stack[v]=substitution_history_tag;
-        // printf("LA %d\n",substitution_history_inte_top);
     }
 }
 
@@ -231,7 +230,6 @@ void substitution_free_structure(){
     free(substitution_static_index_buffer);
 
     free(substitution_history_inte_stack);
-    // free(substitution_history_main_stack);
     free(substitution_history_inte_index_stack_buffer);
 
 }
@@ -249,26 +247,6 @@ void substitution_reset_dynamic_table(){
 }
 
 void substitution_init_static_table(){
-	/*uint_t v;
-	for(v = 1LL; v <= substitution_nb_of_var; ++v) {
-        if (substitution_equivalent[v]){
-            uint_t _y = v;
-            uint_t _x1 = substitution_equivalency_all[v][0];
-            uint_t _x2 = substitution_equivalency_all[v][1];
-
-            // Rules with y is not an unary var and y = true
-            substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
-            substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
-
-            // Rules with x1 is an unary var and x1 = false
-            substitution_values_static[-_x1][substitution_index_static[-_x1]++]=-_y;
-
-            // Rules with x2 is an unary var and x2 = false
-            substitution_values_static[-_x2][substitution_index_static[-_x2]++]=-_y;
-        }
-
-	}*/
-
     for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
         for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
             int_t _x1 = i;
@@ -300,38 +278,6 @@ bool substitution_is_unary_var(const int_t _l){
 }
 
 void substitution_update_dynamic_values(const int_t _l){
-    /*const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
-    for(int_t w = 0LL; w < substitution_nb_of_var; ++w) { // On cherche y <=> x1 x2
-        if (substitution_equivalent[w]){
-            int_t _y = w;
-            for (int_t j=0LL; j< __SZ_SUB__; j++) { // x1 ? x2 ?
-                if (substitution_equivalency_all[_y][j] == _uv){
-                    int_t _x;
-
-                    // Ici _x == x2
-                    if ( j == 0LL ){
-                        _x = substitution_equivalency_all[_y][1];
-                    } else {
-                        _x = substitution_equivalency_all[_y][0];
-                    }
-                    substitution_add_check_history_stack(_y);
-                    substitution_add_check_history_stack(-_y);
-                    substitution_add_check_history_stack(_x);
-                    substitution_add_check_history_stack(-_x);
-
-                    substitution_values_dynamic[_x][substitution_index_dynamic[_x]++]=_y;
-
-                    substitution_values_dynamic[_y][substitution_index_dynamic[_y]++]=_x;
-
-                    substitution_values_dynamic[-_y][substitution_index_dynamic[-_y]++]=-_x;
-
-                    substitution_values_dynamic[-_x][substitution_index_dynamic[-_x]++]=-_y;
-
-                }
-            }
-        }
-    }*/
-
     const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
     for (int j = 0; j<substitution_equivalent_index_unary[_uv]; j+=2){
         // int_t _x1 = _uv;
@@ -371,23 +317,18 @@ bool substitution_update_tables(const int_t l){
                 if (!_substitution_is_undef(x1) && !_substitution_is_undef(x2)){
                     /* x1 and x2 def */
                     if ( _substitution_is_true(x1) && _substitution_is_true(x2)){
-                        // printf("x1 = %d x2 = %d\n",_substitution_is_true(x1),_substitution_is_true(x2));
                         return false;
                     }
                 }
                 else if (_substitution_is_undef(x1) && !_substitution_is_undef(x2)){
                     /* x1 undef */
                     if (_substitution_is_true(x2)){ // Attention aux doublons
-                        // substitution_values_dynamic[_v][substitution_index_dynamic[_v]++]=-x1;  // A vérifier
-                        // substitution_values_dynamic[-_v][substitution_index_dynamic[-_v]++]=x1; // A vérifier
                         substitution_add_check_stack(-x1);
                     }
                 }
                 else if (!_substitution_is_undef(x1) && _substitution_is_undef(x2)){
                     /* x2 undef */
                     if (_substitution_is_true(x1)){ // Attention aux doublons
-                        //  substitution_values_dynamic[_v][substitution_index_dynamic[_v]++]=-x2;  // A vérifier
-                        //  substitution_values_dynamic[-_v][substitution_index_dynamic[-_v]++]=x2; // A vérifier
                         substitution_add_check_stack(-x2);
                     }
                 }
