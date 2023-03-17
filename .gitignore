@@ -1,8 +1,11 @@
 # Custom
 testing/*
 .vscode/
-*.txt
+*.txtcsv
+*.
 wdsat_solver
+perfo_solver/*
+result/*
 
 # Prerequisites
 *.d
