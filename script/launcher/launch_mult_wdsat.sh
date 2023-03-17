@@ -1,7 +1,5 @@
 #!/bin/bash -u
 
-
-
 err() {
     echo "[$(date +'%Y-%m-%d')]: $*" >&2
 }
@@ -12,8 +10,6 @@ usage() {
     -h for help
     -S to enable the saving of the results into $src ( o2=27 N=25 M=53 )\n"
 }
-
-# [ $# -lt 1 ] && err "Missing arguments" && usage && exit 1
 
 o2=$1
 o2=27
@@ -53,10 +49,9 @@ cd $mydir
 i=0
 for elm in $src/*;do
     echo "------------- Nouvelle instance "`expr $i + 1`" -------------"
-    if [ $save -eq 0 ];then
-        ./wdsat_solver -x -i $elm
-    else
-        ./wdsat_solver -S -x -i $elm
-    fi
+    # echo $elm
+
+    ./wdsat_solver -S -i $elm &
+
     ((i+=1))
 done

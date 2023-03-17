@@ -140,6 +140,7 @@ on_continue:
 	if(!generate(input_filename, output_filename)) {
 		exit_value = (byte_t) EXIT_FAILURE;
 	}
+	printf("End\n");
 	
 end:
 	//printf("\n");

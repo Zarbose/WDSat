@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "wdsat_utils.h"
 #include "substitution.h"
@@ -216,21 +217,21 @@ void substitution_free_structure(){
     const int_t _n_v = substitution_nb_of_var;
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if(!i) {
-            free(substitution_values_static[i]);
-            free(substitution_values_dynamic[i]);
+            _free_mem(substitution_values_static[i]);
+            _free_mem(substitution_values_dynamic[i]);
             continue;
         }
-        free(substitution_values_static[i]);
-        free(substitution_values_dynamic[i]);
+        _free_mem(substitution_values_static[i]);
+        _free_mem(substitution_values_dynamic[i]);
     }
-    free(substitution_values_static_buffer);
-    free(substitution_values_dynamic_buffer);
+    _free_mem(substitution_values_static_buffer);
+    _free_mem(substitution_values_dynamic_buffer);
 
-    free(substitution_dynamic_index_buffer);
-    free(substitution_static_index_buffer);
+    _free_mem(substitution_dynamic_index_buffer);
+    _free_mem(substitution_static_index_buffer);
 
-    free(substitution_history_inte_stack);
-    free(substitution_history_inte_index_stack_buffer);
+    _free_mem(substitution_history_inte_stack);
+    _free_mem(substitution_history_inte_index_stack_buffer);
 
 }
 
@@ -387,7 +388,6 @@ bool substitution_initiate_from_dimacs() {
         }
 	}
 
-
     // init stack
     substitution_up_top_stack = substitution_tag = 0LL;
     substitution_tag++;
@@ -395,7 +395,7 @@ bool substitution_initiate_from_dimacs() {
     substitution_index_stack =  substitution_index_stack + _n_v;
 
     // init tab assignment
-    substitution_assignment = (boolean_t *)malloc(__SIGNED_ID_SIZE__*sizeof(boolean_t));
+    substitution_assignment = substitution_assignment_buffer + _n_v + 1LL;
     substitution_assignment[0LL] = __UNDEF__;
     for (int_t i = 1LL; i <= _n_v; ++i)
         _substitution_unset(i);
@@ -428,23 +428,31 @@ bool substitution_initiate_from_dimacs() {
     substitution_history_inte_index_stack_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_history_inte_index_stack = substitution_history_inte_index_stack_buffer +_n_v;
 
+    // printf("Test 1\n");
+
     // Filling in tables
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if(!i) {
+            // printf("Test 2\n");
             substitution_values_static[i] = NULL;
             substitution_values_dynamic[i] = NULL;
             continue;
         }
+        // printf("Test 3 %ld \n",_n_v);
         int_t _sub_size = _n_v;
         substitution_values_static[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
+        // printf("Test 3.1\n");
         substitution_values_dynamic[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
+        // printf("Test 4\n");
         CLEAR(substitution_values_static[i],_sub_size);
         CLEAR(substitution_values_dynamic[i],_sub_size);
+
+        // printf("Test 5\n");
 
         // Index
         substitution_index_stack[i] = substitution_index_static[i] = substitution_index_dynamic[i] = substitution_history_inte_index_stack[i] = 0;
     }
-
+    // printf("Test 6\n");
     substitution_init_static_table();
     
     return (true);

@@ -10,7 +10,6 @@
 #include<stdio.h>
 #include<time.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "wdsat.h"
 #include "cnf.h"
@@ -20,10 +19,11 @@
 #include "substitution.h"
 
 // #define SMALL_TEST  // Activation ou non de la zone de test
-// #define TEST_SUBST  // Utilisation ou non du module substitution
-// #define NO_CNF // Utilisation ou non du module CNF
+#define TEST_SUBST  // Si définie utilisation du module substitution
+#define NO_CNF // Si définie le module cnf n'est pas utilisé
 
-#define PRINT_AS_CSV
+// #define ENABLE_PRINT
+// #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -51,16 +51,19 @@ static int_t wdsat_substitution_up_top_stack;
 
 static int_t set[__ID_SIZE__];
 
-void save_result(int duree_ml, int_t conf[]){
+void wdsat_save_result(int debut, int_t conf[]){
+	clock_t fin = clock();
+	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
 	FILE* fichier = NULL;
 
 	char path_file[1000];
 	// sprintf(&path_file,"result/Rainbow/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
-	sprintf(path_file,"result/Rainbow/experimentation_in_progress/to_analyse/result_N_25_M_53_K1_%d_K2_%d_K3_%d.csv",K1,K2,K3);
+	sprintf(path_file,"perfo_solveur/result.csv");
 
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
-		fprintf(fichier, "%ld;%ld;%d;%d;%d;\n",conf[0],duree_ml,K1,K2,K3);
+		fprintf(fichier, "%ld;%ld;\n",conf[0],duree_ml);
         fclose(fichier);
     }
     else{
@@ -68,6 +71,47 @@ void save_result(int duree_ml, int_t conf[]){
 		exit(2);
     }
 }
+
+void wdsat_save_tmp_xorset_result(int debut){
+	clock_t fin = clock();
+	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
+	FILE* fichier = NULL;
+
+	char path_file[1000];
+	sprintf(path_file,"perfo_solveur/xorset.csv");
+
+	fichier=fopen(path_file,"a+");
+	if (fichier != NULL){
+		fprintf(fichier, "%d;\n",duree_ml);
+        fclose(fichier);
+    }
+    else{
+        printf("Impossible d'ouvrir le fichier : %s\n",path_file);
+		exit(2);
+    }
+}
+
+void wdsat_save_tmp_subst_result(int debut){
+	clock_t fin = clock();
+	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
+	FILE* fichier = NULL;
+
+	char path_file[1000];
+	sprintf(path_file,"perfo_solveur/sbust.csv");
+
+	fichier=fopen(path_file,"a+");
+	if (fichier != NULL){
+		fprintf(fichier, "%d;\n",duree_ml);
+        fclose(fichier);
+    }
+    else{
+        printf("Impossible d'ouvrir le fichier : %s\n",path_file);
+		exit(2);
+    }
+}
+
 
 void wdsat_fprint_result(int_t conf[], int debut){
 
@@ -100,7 +144,6 @@ void wdsat_fprint_result(int_t conf[], int debut){
 		printf("temps_s:%d\n",duree_ml);
 	#endif
 }
-
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
@@ -412,11 +455,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	int_t conf[1]={0};
 	
 	cnf_initiate_from_dimacs();
-	printf("INIT CNF OK\n");
 	xorset_initiate_from_dimacs();
-	printf("INIT XORSET OK\n");
 	substitution_initiate_from_dimacs();
-	printf("INIT SUBST OK\n");
 
 	if(!xorgauss_initiate_from_dimacs())
 	{
@@ -424,7 +464,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		return false;
 	}
 	cpy_from_dimacs();
-	printf("INIT XORGAUSS OK\n");
 
 	//check allocated memory
 	if(dimacs_nb_vars() < __MAX_ID__)
@@ -445,8 +484,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 	// end code for multithread (this has to be done before wdsat_infer_unitary();
-
-	// wdsat_infer_unitary();
 
 	if(strlen(mvc_graph) > 0)
 	{
@@ -602,7 +639,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	{
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf)) {
 			printf("UNSAT\n");
-			wdsat_fprint_result(conf,debut);
+			#ifdef ENABLE_PRINT
+				wdsat_fprint_result(conf,debut);
+			#endif
+
+			if (S == 1) wdsat_save_result(debut,conf);
 
 			substitution_free_structure();
 			return false;
@@ -613,32 +654,21 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");
-			wdsat_fprint_result(conf,debut);
+			#ifdef ENABLE_PRINT
+				wdsat_fprint_result(conf,debut);
+			#endif
 
-			// if (S == 1) save_result(duree_ml,conf);
+			if (S == 1) wdsat_save_result(debut,conf);
 			
 			substitution_free_structure();
 			return false;
 		}
 	}
 
-	wdsat_fprint_result(conf,debut);
-	
-	/*printf("Cnf assignment : ");
-	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
-	{
-		printf("%d", cnf_assignment[j]);
-	}
-	printf("\n");
-
-	printf("Sub assignment : ");
-	for(j = 1; j <= dimacs_nb_unary_vars(); j++)
-	{
-		printf("%d", substitution_assignment[j]);
-	}
-	printf("\n");
-	
-	printf("conf:%ld\n",conf[0]);*/
+	#ifdef ENABLE_PRINT
+		wdsat_fprint_result(conf,debut);
+	#endif
+	if (S == 1) wdsat_save_result(debut,conf);
 
 	substitution_free_structure();
 	return (true);
