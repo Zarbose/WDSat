@@ -7,10 +7,8 @@
 
 #include "wdsat_utils.h"
 
-#define CLEAR(ptr, size) memset((ptr), 0, (size)*sizeof(*ptr))
-
 // substitution
-#define __SZ_SUB__ (2)
+#define __SZ_SUB__ (__MAX_DEGREE__-1)
 #define __SZ_STACK__ 8*(__MAX_ANF_ID__*__MAX_ANF_ID__)
 
 // cnf module equivalence structures

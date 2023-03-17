@@ -86,7 +86,7 @@ int scan_opt(int argc, char **argv, const char *opt) {
 	return(0);
 }
 
-boolean_t generate(char *ifn, char *ofn) {
+boolean_t generate(char *ifn, char *ofn, char * filename) {
 	FILE *d;
 	
 	if((d = fopen(ifn, "r")) == NULL) {
@@ -107,7 +107,7 @@ boolean_t generate(char *ifn, char *ofn) {
 	
 	if(_l == 0)
 		_l = n;
-	wdsat_solve(n ,_l, _m, irr, X3, xg, mvc_graph, thread,S);
+	wdsat_solve(n ,_l, _m, irr, X3, xg, mvc_graph, thread,S,filename);
 	return(__ON__);
 }
 
@@ -137,11 +137,9 @@ on_break:
 on_continue:
 	if(scan_opt(argc, argv, "i:o:a:n:l:xbcshm:g:t:S")) goto on_break;
 	
-	if(!generate(input_filename, output_filename)) {
+	if(!generate(input_filename, output_filename,input_filename)) {
 		exit_value = (byte_t) EXIT_FAILURE;
 	}
-	printf("End\n");
-	
 end:
 	//printf("\n");
 	return((int) exit_value);

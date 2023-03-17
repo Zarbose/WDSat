@@ -39,7 +39,7 @@ boolean_t substitution_assignment_buffer[__SIGNED_ID_SIZE__];
 boolean_t *substitution_assignment;
 
 // cnf module equivalence structures
-int_t substitution_equivalency_all[__ID_SIZE__][__SZ_SUB__];
+int_t substitution_equivalency_all[__ID_SIZE__][__MAX_DEGREE__-1];
 bool substitution_equivalent[__ID_SIZE__]; // index to read faster substitution_equivalency_all
 
 int_t substitution_equivalency_unary[__MAX_ANF_ID__][__SIGNED_ID_SIZE__];
@@ -242,7 +242,7 @@ void substitution_reset_dynamic_table(){
             continue;
         }
         int_t _sub_size = _n_v;
-        CLEAR(substitution_values_dynamic[i],_sub_size);
+        _clear_mem(substitution_values_dynamic[i],_sub_size);
         substitution_index_dynamic[i]=0;
     }
 }
@@ -422,8 +422,8 @@ bool substitution_initiate_from_dimacs() {
 
     substitution_history_inte_stack = (int_t *)malloc((__SZ_STACK__)*sizeof(int_t));
     // substitution_history_main_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
-    CLEAR(substitution_history_inte_stack,__SIGNED_ID_SIZE__);
-    // CLEAR(substitution_history_main_stack,__SIGNED_ID_SIZE__);
+    _clear_mem(substitution_history_inte_stack,__SIGNED_ID_SIZE__);
+    // _clear_mem(substitution_history_main_stack,__SIGNED_ID_SIZE__);
 
     substitution_history_inte_index_stack_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_history_inte_index_stack = substitution_history_inte_index_stack_buffer +_n_v;
@@ -444,8 +444,8 @@ bool substitution_initiate_from_dimacs() {
         // printf("Test 3.1\n");
         substitution_values_dynamic[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
         // printf("Test 4\n");
-        CLEAR(substitution_values_static[i],_sub_size);
-        CLEAR(substitution_values_dynamic[i],_sub_size);
+        _clear_mem(substitution_values_static[i],_sub_size);
+        _clear_mem(substitution_values_dynamic[i],_sub_size);
 
         // printf("Test 5\n");
 

@@ -77,7 +77,7 @@ void xorset_clause_id_fprint(int_t id){
 }
 
 void xorset_index_structure_fprintf(){
-    int_t i,j,c,l;
+    int_t i,j;
     for(i = 1LL; i <= xorset_nb_of_vars; ++i){
         const int_t xt_sz = xorset_size_of_index[i];
         int_t * const idx_t = xorset_index[i];

@@ -111,6 +111,16 @@ typedef uint_fast8_t   ubyte_t;
  } \
 }
 
+/**
+ * @def _clear_mem(_p, _elt) 
+ * @author Simon Pieto
+ * @brief Set the memory of _elt to 0.
+ * @param _p is a pointer
+ * @param _elt is the number of values of size '_type'
+ * @warning _p must have a value (already allocated)
+ */
+#define _clear_mem(_p, _elt) memset((_p), 0, (_elt)*sizeof(*_p))
+
 /* ---------------------------------------------------------------- */
 // *** One-Block int Vector Macros
 

@@ -978,7 +978,7 @@ void dimacs_print_formula() {
 }
 
 void dimacs_print_equivalency() {
-	int_t i, j;
+	int_t i;
 
     for(i = 0LL; i < dimacs_nb_of_boolean_equations; ++i) {
         if (dimacs_size_of_boolean_equation[i] == 3){
