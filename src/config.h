@@ -1,10 +1,6 @@
 
 //enable the XG-ext module (must use anf as input)
 #define __XG_ENHANCED__
-#define K1 0
-#define K2 14
-#define K3 1
-#define K5 30000
 
 
 //find all solutions instead of only one
@@ -133,10 +129,8 @@
 /*** END static allocation ***/
 
 /** Rainbow : N=25 M=53 **/
-# ifdef __XG_ENHANCED__
 # define __MAX_ANF_ID__ 26 // make it +1
 # define __MAX_DEGREE__ 3 // make it +1
-# endif
 # define __MAX_ID__ 325
 # define __MAX_BUFFER_SIZE__ 200000
 # define __MAX_EQ__ 1378

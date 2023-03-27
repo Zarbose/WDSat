@@ -18,7 +18,7 @@
 #include "dimacs.h"
 #include "substitution.h"
 
-// #define SMALL_TEST  // Activation ou non de la zone de test
+// #define TEST  // Activation ou non de la zone de test
 #define TEST_SUBST  // Si définie utilisation du module substitution
 #define NO_CNF // Si définie le module cnf n'est pas utilisé
 
@@ -545,7 +545,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
-	#ifdef SMALL_TEST // Une zone de test
+	#ifdef TEST // Une zone de test
 		/*srand( time( NULL ) );
 		int tab[26];
 		int stop = true;

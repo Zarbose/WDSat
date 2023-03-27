@@ -59,7 +59,6 @@ static int_t *substitution_static_index_buffer;
 static int_t *substitution_index_dynamic;
 static int_t *substitution_dynamic_index_buffer;
 
-
 // Regular print
 void substitution_fprint_equivalency_all() {
 	uint_t v;
@@ -247,29 +246,6 @@ void substitution_reset_dynamic_table(){
     }
 }
 
-void substitution_init_static_table(){
-    for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
-        for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
-            int_t _x1 = i;
-            int_t _x2 = substitution_equivalency_unary[i][j];
-            int_t _y = substitution_equivalency_unary[i][j+1];
-
-            if (_x2 < i)
-                continue;
-
-            // Rules with y is not an unary var and y = true
-            substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
-            substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
-
-            // Rules with x1 is an unary var and x1 = false
-            substitution_values_static[-_x1][substitution_index_static[-_x1]++]=-_y;
-
-            // Rules with x2 is an unary var and x2 = false
-            substitution_values_static[-_x2][substitution_index_static[-_x2]++]=-_y;
-        }
-	}
-}
-
 bool substitution_is_unary_var(const int_t _l){
     int_t abs_val = (_l < 0) ? -_l : _l;
     if( abs_val > substitution_nb_unary_vars)
@@ -343,6 +319,30 @@ bool substitution_update_tables(const int_t l){
 }
 
 // Init functions
+
+void substitution_init_static_table(){
+    for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
+        for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
+            int_t _x1 = i;
+            int_t _x2 = substitution_equivalency_unary[i][j];
+            int_t _y = substitution_equivalency_unary[i][j+1];
+
+            if (_x2 < i)
+                continue;
+
+            // Rules with y is not an unary var and y = true
+            substitution_values_static[_y][substitution_index_static[_y]++]=_x1; // ICI
+            substitution_values_static[_y][substitution_index_static[_y]++]=_x2; // ICI
+
+            // Rules with x1 is an unary var and x1 = false
+            substitution_values_static[-_x1][substitution_index_static[-_x1]++]=-_y;
+
+            // Rules with x2 is an unary var and x2 = false
+            substitution_values_static[-_x2][substitution_index_static[-_x2]++]=-_y;
+        }
+	}
+}
+
 bool substitution_initiate_from_dimacs() {
     const int_t _n_e = dimacs_nb_equations(); // Ici _n_e = 900
     const int_t _n_v = dimacs_nb_vars(); // Ici _n_v = 325
@@ -421,38 +421,29 @@ bool substitution_initiate_from_dimacs() {
     substitution_history_main_top = substitution_history_inte_top = 0LL;
 
     substitution_history_inte_stack = (int_t *)malloc((__SZ_STACK__)*sizeof(int_t));
-    // substitution_history_main_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     _clear_mem(substitution_history_inte_stack,__SIGNED_ID_SIZE__);
-    // _clear_mem(substitution_history_main_stack,__SIGNED_ID_SIZE__);
 
     substitution_history_inte_index_stack_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_history_inte_index_stack = substitution_history_inte_index_stack_buffer +_n_v;
 
-    // printf("Test 1\n");
 
     // Filling in tables
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if(!i) {
-            // printf("Test 2\n");
             substitution_values_static[i] = NULL;
             substitution_values_dynamic[i] = NULL;
             continue;
         }
-        // printf("Test 3 %ld \n",_n_v);
         int_t _sub_size = _n_v;
         substitution_values_static[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
-        // printf("Test 3.1\n");
         substitution_values_dynamic[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
-        // printf("Test 4\n");
         _clear_mem(substitution_values_static[i],_sub_size);
         _clear_mem(substitution_values_dynamic[i],_sub_size);
 
-        // printf("Test 5\n");
 
         // Index
         substitution_index_stack[i] = substitution_index_static[i] = substitution_index_dynamic[i] = substitution_history_inte_index_stack[i] = 0;
     }
-    // printf("Test 6\n");
     substitution_init_static_table();
     
     return (true);
@@ -511,12 +502,10 @@ bool substitution_subt(){
             /*for (int_t i = 0; substitution_values_dynamic[-l][i] != 0; ++i){
                 const int_t _e = substitution_values_dynamic[-l][i];
                 if(_substitution_is_false(_e)){
-                    printf("END 4\n");
                     substitution_reset_stack();
                     return false;
                 }
                 else if(_substitution_is_undef(_e)){
-                    printf("add 3 %ld to stack\n",_e);
                     substitution_add_check_stack(_e);
                 }
             }*/
