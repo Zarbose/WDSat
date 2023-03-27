@@ -22,7 +22,7 @@
 #define TEST_SUBST  // Si définie utilisation du module substitution
 #define NO_CNF // Si définie le module cnf n'est pas utilisé
 
-#define ENABLE_PRINT
+// #define ENABLE_PRINT
 // #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
 
 /// @var uint_t nb_of_vars;
@@ -72,7 +72,7 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 	}
 
 
-	sprintf(path_file,"perfo_solveur/test.csv");
+	sprintf(path_file,"perfo_solveur/result1.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
 		fprintf(fichier, "%d;%ld;%ld;\n",seed,conf[0],duree_ml);
@@ -83,40 +83,6 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 		exit(2);
     }
 	printf("End seed %d\n",seed);
-}
-
-void wdsat_save_tmp_subst_result(){
-	FILE* fichier = NULL;
-
-	char path_file[1000];
-	sprintf(path_file,"perfo_solveur/sbust.csv");
-
-	fichier=fopen(path_file,"a+");
-	if (fichier != NULL){
-		fprintf(fichier, "1;\n");
-        fclose(fichier);
-    }
-    else{
-        printf("Impossible d'ouvrir le fichier : %s\n",path_file);
-		exit(2);
-    }
-}
-
-void wdsat_save_tmp_cnf_result(){
-	FILE* fichier = NULL;
-
-	char path_file[1000];
-	sprintf(path_file,"perfo_solveur/cnf.csv");
-
-	fichier=fopen(path_file,"a+");
-	if (fichier != NULL){
-		fprintf(fichier, "1;\n");
-        fclose(fichier);
-    }
-    else{
-        printf("Impossible d'ouvrir le fichier : %s\n",path_file);
-		exit(2);
-    }
 }
 
 void wdsat_fprint_result(int_t conf[], int debut){

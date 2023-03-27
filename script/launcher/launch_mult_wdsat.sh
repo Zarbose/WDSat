@@ -11,7 +11,7 @@ usage() {
     -S to enable the saving of the results into $src ( o2=27 N=25 M=53 )\n"
 }
 
-o2=$1
+# o2=$1
 o2=27
 N=`expr $o2 - 2`
 M=`expr \( $o2 \* 2 \) - 1`
@@ -44,14 +44,23 @@ while true; do
             shift;;
     esac 
 done
-
+counter=0
 cd $mydir
 i=0
 for elm in $src/*;do
     echo "------------- Nouvelle instance "`expr $i + 1`" -------------"
-    # echo $elm
+
+    if [ $counter -eq 10 ];then
+        sleep 270
+    fi
+
+    if [ $counter -eq 20 ];then
+        sleep 270
+    fi
 
     ./wdsat_solver -S -i $elm &
+
+    counter=$((counter+1))
 
     ((i+=1))
 done
