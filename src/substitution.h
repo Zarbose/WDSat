@@ -85,12 +85,7 @@ extern int_t substitution_history_tag;
 void substitution_fprint_values(void);
 void substitution_fprint_equivalency(void);
 void substitution_fprint_assignment(void);
-void substitution_fprint_static_values(void);
-void substitution_fprint_dynamic_values(void);
-void substitution_fprint_history_values_dynamic(void);
-void substitution_fprint_history_index_dynamic(void);
 void substitution_fprint_history_inte_stack(void);
-void substitution_fprint_dynamic_index(void);
 void substitution_fprint_history_main_stack(void);
 void substitution_fprint_history_inte_index_stack(void);
 void substitution_fprint_substitution_up_stack(void);
@@ -102,7 +97,6 @@ void substitution_add_check_stack(int_t v);
 void substitution_reset_stack(void);
 int_t substitution_last_assigned(int_t *up_stack);
 void substitution_free_structure(void);
-void substitution_reset_dynamic_table(void);
 void substitution_increase_history_flag(void);
 
 // init functions
