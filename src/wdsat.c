@@ -72,7 +72,7 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 	}
 
 
-	sprintf(path_file,"perfo_solveur/result.csv");
+	sprintf(path_file,"perfo_solveur/test.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
 		fprintf(fichier, "%d;%ld;%ld;\n",seed,conf[0],duree_ml);
@@ -83,23 +83,6 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 		exit(2);
     }
 	printf("End seed %d\n",seed);
-}
-
-void wdsat_save_tmp_xorset_result(){
-	FILE* fichier = NULL;
-
-	char path_file[1000];
-	sprintf(path_file,"perfo_solveur/xorset.csv");
-
-	fichier=fopen(path_file,"a+");
-	if (fichier != NULL){
-		fprintf(fichier, "1;\n");
-        fclose(fichier);
-    }
-    else{
-        printf("Impossible d'ouvrir le fichier : %s\n",path_file);
-		exit(2);
-    }
 }
 
 void wdsat_save_tmp_subst_result(){

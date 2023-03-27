@@ -52,12 +52,19 @@ static int_t **substitution_values_static_buffer;
 static int_t **substitution_values_dynamic;
 static int_t **substitution_values_dynamic_buffer;
 
+static int_t **substitution_values;
+static int_t **substitution_values_buffer;
+
 // index tables
 static int_t *substitution_index_static;
 static int_t *substitution_static_index_buffer;
 
 static int_t *substitution_index_dynamic;
 static int_t *substitution_dynamic_index_buffer;
+
+static int_t *substitution_index;
+static int_t *substitution_index_buffer;
+
 
 // Regular print
 void substitution_fprint_equivalency_all() {
@@ -185,6 +192,30 @@ void substitution_fprint_substitution_index_stack(){
     printf("\n");
 }
 
+/* -------------------------------------- */
+void substitution_fprint_substitution_index(){
+    printf("Printing substitution_index \n");
+    const int_t _n_v = substitution_nb_of_var;
+    for(int_t v = -_n_v; v <= _n_v; ++v) {
+        if (!v) continue;
+        printf("%ld ",substitution_index[v]);
+    }
+    printf("\n");
+}
+
+void substitution_fprint_values(){
+    const int_t _n_v = substitution_nb_of_var;
+    printf("Printing substitution_values \n");
+    for(int_t v = -_n_v; v <= _n_v; ++v) {
+        if (!v) continue;
+        if (substitution_index[v] == 0) continue;
+        printf("[%ld] ",v);
+        for (int_t j=0LL; j < substitution_index[v] ; j++) printf("%ld ",substitution_values[v][j]);
+        printf("\n");
+    }
+}
+/* -------------------------------------- */
+
 // Utils functions
 void substitution_reset_stack(){
     ++substitution_tag;
@@ -206,6 +237,14 @@ void substitution_add_check_history_stack(int_t v){
     }
 }
 
+void substitution_add_check_history_stack_V2(int_t v){
+    if ( !(substitution_history_inte_index_stack[v] == substitution_history_tag) ){
+        substitution_history_inte_stack[substitution_history_inte_top++]=substitution_index[v];
+        substitution_history_inte_stack[substitution_history_inte_top++]=v;
+        substitution_history_inte_index_stack[v]=substitution_history_tag;
+    }
+}
+
 inline void substitution_reset_boolean_vector(int_t *v, uint_t sz) {
 	for(uint_t i = 0ULL; i < sz; ++i){
 		v[i] = 0ULL;
@@ -218,20 +257,31 @@ void substitution_free_structure(){
         if(!i) {
             _free_mem(substitution_values_static[i]);
             _free_mem(substitution_values_dynamic[i]);
+            /* -------------------------------------- */
+            _free_mem(substitution_values[i]);
+            /* -------------------------------------- */
             continue;
         }
         _free_mem(substitution_values_static[i]);
         _free_mem(substitution_values_dynamic[i]);
+        /* -------------------------------------- */
+        _free_mem(substitution_values[i]);
+        /* -------------------------------------- */
     }
     _free_mem(substitution_values_static_buffer);
     _free_mem(substitution_values_dynamic_buffer);
+    /* -------------------------------------- */
+    _free_mem(substitution_values_buffer);
+    /* -------------------------------------- */
 
     _free_mem(substitution_dynamic_index_buffer);
     _free_mem(substitution_static_index_buffer);
+    /* -------------------------------------- */
+    _free_mem(substitution_index_buffer);
+    /* -------------------------------------- */
 
     _free_mem(substitution_history_inte_stack);
     _free_mem(substitution_history_inte_index_stack_buffer);
-
 }
 
 void substitution_reset_dynamic_table(){
@@ -277,11 +327,37 @@ void substitution_update_dynamic_values(const int_t _l){
     }
 }
 
+/* -------------------------------------- */
+void substitution_update_dynamic_part(const int_t _l){
+    const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
+    for (int j = 0; j<substitution_equivalent_index_unary[_uv]; j+=2){
+        // int_t _x1 = _uv;
+        int_t _x = substitution_equivalency_unary[_uv][j];
+        int_t _y = substitution_equivalency_unary[_uv][j+1];
+
+        substitution_add_check_history_stack_V2(_y);
+        substitution_add_check_history_stack_V2(-_y);
+        substitution_add_check_history_stack_V2(_x);
+        substitution_add_check_history_stack_V2(-_x);
+
+        substitution_values[_x][substitution_index[_x]++]=_y;
+
+        substitution_values[_y][substitution_index[_y]++]=_x;
+
+        substitution_values[-_y][substitution_index[-_y]++]=-_x;
+
+        substitution_values[-_x][substitution_index[-_x]++]=-_y;
+
+    }
+}
+/* -------------------------------------- */
+
 bool substitution_update_tables(const int_t l){
     const bool _tf = (l < 0) ? false : true;
     if (substitution_is_unary_var(l)){
         if (_tf){
-            substitution_update_dynamic_values(l);
+            // substitution_update_dynamic_values(l);
+            substitution_update_dynamic_part(l);
         }
     }
     else{
@@ -342,6 +418,31 @@ void substitution_init_static_table(){
         }
 	}
 }
+
+/* -------------------------------------- */
+void substitution_init_static_part(){
+    for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
+        for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
+            int_t _x1 = i;
+            int_t _x2 = substitution_equivalency_unary[i][j];
+            int_t _y = substitution_equivalency_unary[i][j+1];
+
+            if (_x2 < i)
+                continue;
+
+            // Rules with y is not an unary var and y = true
+            substitution_values[_y][substitution_index[_y]++]=_x1;
+            substitution_values[_y][substitution_index[_y]++]=_x2;
+
+            // Rules with x1 is an unary var and x1 = false
+            substitution_values[-_x1][substitution_index[-_x1]++]=-_y;
+
+            // Rules with x2 is an unary var and x2 = false
+            substitution_values[-_x2][substitution_index[-_x2]++]=-_y;
+        }
+	}
+}
+/* -------------------------------------- */
 
 bool substitution_initiate_from_dimacs() {
     const int_t _n_e = dimacs_nb_equations(); // Ici _n_e = 900
@@ -407,12 +508,23 @@ bool substitution_initiate_from_dimacs() {
     substitution_dynamic_index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_dynamic =  substitution_dynamic_index_buffer + _n_v;
 
+    /* -------------------------------------- */
+    substitution_index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    substitution_index =  substitution_index_buffer + _n_v;
+    /* -------------------------------------- */
+
     // init "main" structures
     substitution_values_static_buffer = (int_t **)malloc((__SIGNED_ID_SIZE__) * sizeof(int_t *));
     substitution_values_static = substitution_values_static_buffer +_n_v;
 
     substitution_values_dynamic_buffer = (int_t**)malloc((__SIGNED_ID_SIZE__) * sizeof(int_t *));
     substitution_values_dynamic = substitution_values_dynamic_buffer +_n_v;
+
+
+    /* -------------------------------------- */
+    substitution_values_buffer = (int_t **)malloc((__SIGNED_ID_SIZE__) * sizeof(int_t *));
+    substitution_values = substitution_values_buffer + _n_v;
+    /* -------------------------------------- */
 
     // new undo structures
     substitution_step_top = substitution_history_top = substitution_history_top_it = substitution_history_tag =0LL;
@@ -432,6 +544,9 @@ bool substitution_initiate_from_dimacs() {
         if(!i) {
             substitution_values_static[i] = NULL;
             substitution_values_dynamic[i] = NULL;
+            /* -------------------------------------- */
+            substitution_values[i] = NULL;
+            /* -------------------------------------- */
             continue;
         }
         int_t _sub_size = _n_v;
@@ -440,12 +555,23 @@ bool substitution_initiate_from_dimacs() {
         _clear_mem(substitution_values_static[i],_sub_size);
         _clear_mem(substitution_values_dynamic[i],_sub_size);
 
+        /* -------------------------------------- */
+        substitution_values[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
+        _clear_mem(substitution_values[i],_sub_size);
+        /* -------------------------------------- */
+        
+
 
         // Index
         substitution_index_stack[i] = substitution_index_static[i] = substitution_index_dynamic[i] = substitution_history_inte_index_stack[i] = 0;
+        /* -------------------------------------- */
+        substitution_index[i]=0;
+        /* -------------------------------------- */
     }
     substitution_init_static_table();
-    
+    /* -------------------------------------- */
+    substitution_init_static_part();
+    /* -------------------------------------- */
     return (true);
 }
 
@@ -475,21 +601,33 @@ bool substitution_subt(){
             _substitution_set(l,__TRUE__)
             substitution_history[substitution_history_top++] = l;
 
-            // Static
-            for (int_t i = 0; i != substitution_index_static[l]; ++i){
-                const int_t _e = substitution_values_static[l][i];
-                if(_substitution_is_false(_e)){
-                    substitution_reset_stack();
-                    return false;
-                }
-                else if(_substitution_is_undef(_e)){
-                    substitution_add_check_stack(_e);
-                }
-            }
+            // // Static
+            // for (int_t i = 0; i != substitution_index_static[l]; ++i){
+            //     const int_t _e = substitution_values_static[l][i];
+            //     if(_substitution_is_false(_e)){
+            //         substitution_reset_stack();
+            //         return false;
+            //     }
+            //     else if(_substitution_is_undef(_e)){
+            //         substitution_add_check_stack(_e);
+            //     }
+            // }
 
-            // Dynamic
-            for (int_t i = 0; i != substitution_index_dynamic[l]; ++i){
-                const int_t _e = substitution_values_dynamic[l][i];
+            // // Dynamic
+            // for (int_t i = 0; i != substitution_index_dynamic[l]; ++i){
+            //     const int_t _e = substitution_values_dynamic[l][i];
+            //     if(_substitution_is_false(_e)){
+            //         substitution_reset_stack();
+            //         return false;
+            //     }
+            //     else if(_substitution_is_undef(_e)){
+            //         substitution_add_check_stack(_e);
+            //     }
+            // }
+
+            /* -------------------------------------- */
+            for (int_t i = 0; i != substitution_index[l]; ++i){
+                const int_t _e = substitution_values[l][i];
                 if(_substitution_is_false(_e)){
                     substitution_reset_stack();
                     return false;
@@ -498,6 +636,7 @@ bool substitution_subt(){
                     substitution_add_check_stack(_e);
                 }
             }
+            /* -------------------------------------- */
 
             /*for (int_t i = 0; substitution_values_dynamic[-l][i] != 0; ++i){
                 const int_t _e = substitution_values_dynamic[-l][i];
@@ -531,7 +670,8 @@ void substitution_undo() {
     while ( top_step_main != substitution_history_inte_top) {
         int_t l = substitution_history_inte_stack[--substitution_history_inte_top];
         int_t indx = substitution_history_inte_stack[--substitution_history_inte_top];
-        substitution_index_dynamic[l]=indx;
+        // substitution_index_dynamic[l]=indx;
+        substitution_index[l]=indx;
     }
     substitution_tag++;
     substitution_history_tag++;
