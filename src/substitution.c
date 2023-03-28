@@ -40,7 +40,7 @@ boolean_t *substitution_assignment;
 
 // cnf module equivalence structures
 int_t substitution_equivalency_all[__ID_SIZE__][__MAX_DEGREE__-1];
-bool substitution_equivalent[__ID_SIZE__]; // index to read faster substitution_equivalency_all
+bool substitution_equivalent[__ID_SIZE__];
 
 int_t substitution_equivalency_unary[__MAX_ANF_ID__][__SIGNED_ID_SIZE__];
 int_t substitution_equivalent_index_unary[__MAX_ANF_ID__];
@@ -171,6 +171,15 @@ void substitution_fprint_values(){
 }
 
 // Utils functions
+bool substitution_is_unary_var(const int_t _l){
+    int_t abs_val = (_l < 0) ? -_l : _l;
+    if( abs_val > substitution_nb_unary_vars)
+        return false;
+
+    return true;
+}
+
+// Add functions
 void substitution_reset_stack(){
     ++substitution_tag;
     substitution_up_top_stack=0;
@@ -191,37 +200,7 @@ void substitution_add_check_history_stack(int_t v){
     }
 }
 
-inline void substitution_reset_boolean_vector(int_t *v, uint_t sz) {
-	for(uint_t i = 0ULL; i < sz; ++i){
-		v[i] = 0ULL;
-    }
-}
-
-void substitution_free_structure(){
-    const int_t _n_v = substitution_nb_of_var;
-    for(int_t i = -_n_v; i <= _n_v; ++i) {
-        if(!i) {
-            _free_mem(substitution_values[i]);
-            continue;
-        }
-        _free_mem(substitution_values[i]);
-    }
-    _free_mem(substitution_values_buffer);
-
-    _free_mem(substitution_index_buffer);
-
-    _free_mem(substitution_history_inte_stack);
-    _free_mem(substitution_history_inte_index_stack_buffer);
-}
-
-bool substitution_is_unary_var(const int_t _l){
-    int_t abs_val = (_l < 0) ? -_l : _l;
-    if( abs_val > substitution_nb_unary_vars)
-        return false;
-
-    return true;
-}
-
+// Update functions
 void substitution_update_dynamic_part(const int_t _l){
     const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
     for (int j = 0; j<substitution_equivalent_index_unary[_uv]; j+=2){
@@ -319,7 +298,7 @@ bool substitution_initiate_from_dimacs() {
 
     // init index for substitution_equivalency_all
     for(int_t i = 0LL; i <= _n_v; ++i) {
-        substitution_reset_boolean_vector(substitution_equivalency_all[i],__SZ_SUB__);
+        _clear_mem(substitution_equivalency_all[i],__SZ_SUB__);
 		substitution_equivalent[i] = false;
 	}
 
@@ -361,7 +340,7 @@ bool substitution_initiate_from_dimacs() {
     substitution_index_stack = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     substitution_index_stack =  substitution_index_stack + _n_v;
 
-    // init tab assignment
+    // init assignment tables
     substitution_assignment = substitution_assignment_buffer + _n_v + 1LL;
     substitution_assignment[0LL] = __UNDEF__;
     for (int_t i = 1LL; i <= _n_v; ++i)
@@ -397,8 +376,6 @@ bool substitution_initiate_from_dimacs() {
         int_t _sub_size = _n_v;
         substitution_values[i] = (int_t*)malloc(_sub_size * sizeof(int_t));
         _clear_mem(substitution_values[i],_sub_size);
-        
-
 
         // Index
         substitution_index_stack[i] = substitution_index[i] = substitution_history_inte_index_stack[i] = 0;
@@ -409,7 +386,6 @@ bool substitution_initiate_from_dimacs() {
 
 // "main" functions
 bool substitution_set_true(const int_t l) {
-    // printf("Ici avec %ld \n",l);
     assert(abs((int) l) <= substitution_nb_of_var);
     substitution_add_check_stack(l);
 
@@ -490,4 +466,18 @@ int_t substitution_last_assigned(int_t *up_stack) {
 		up_stack[up_stack_top++] = _l;
 	}
 	return up_stack_top;
+}
+
+// End functions
+void substitution_free_structure(){
+    const int_t _n_v = substitution_nb_of_var;
+    for(int_t i = -_n_v; i <= _n_v; ++i) {
+        _free_mem(substitution_values[i]);
+    }
+    _free_mem(substitution_values_buffer);
+
+    _free_mem(substitution_index_buffer);
+
+    _free_mem(substitution_history_inte_stack);
+    _free_mem(substitution_history_inte_index_stack_buffer);
 }

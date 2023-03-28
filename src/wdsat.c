@@ -22,7 +22,7 @@
 #define TEST_SUBST  // Si définie utilisation du module substitution
 #define NO_CNF // Si définie le module cnf n'est pas utilisé
 
-// #define ENABLE_PRINT
+#define ENABLE_PRINT
 // #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
 
 /// @var uint_t nb_of_vars;
