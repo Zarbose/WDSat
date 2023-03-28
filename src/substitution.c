@@ -42,7 +42,7 @@ boolean_t *substitution_assignment;
 int_t substitution_equivalency_all[__ID_SIZE__][__MAX_DEGREE__-1];
 bool substitution_equivalent[__ID_SIZE__];
 
-int_t substitution_equivalency_unary[__MAX_ANF_ID__][__SIGNED_ID_SIZE__];
+int_t substitution_equivalency_unary[__MAX_ANF_ID__][__MAX_ID__];
 int_t substitution_equivalent_index_unary[__MAX_ANF_ID__];
 
 
@@ -389,10 +389,10 @@ bool substitution_set_true(const int_t l) {
     assert(abs((int) l) <= substitution_nb_of_var);
     substitution_add_check_stack(l);
 
-    return(substitution_subt());
+    return(substitution_infer());
 }
 
-bool substitution_subt(){
+bool substitution_infer(){
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];

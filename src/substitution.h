@@ -15,7 +15,7 @@
 extern int_t substitution_equivalency_all[__ID_SIZE__][__SZ_SUB__];
 extern bool substitution_equivalent[__ID_SIZE__]; // index to read faster substitution_equivalency
 
-extern int_t substitution_equivalency_unary[__MAX_ANF_ID__][__SIGNED_ID_SIZE__];
+extern int_t substitution_equivalency_unary[__MAX_ANF_ID__][__MAX_ID__];
 extern int_t substitution_equivalent_index_unary[__MAX_ANF_ID__];
 
 
@@ -81,7 +81,7 @@ extern int_t substitution_history_tag;
     substitution_history_main_top && --substitution_history_main_top; \
 }
 
-// print functions
+// Print functions
 void substitution_fprint_values(void);
 void substitution_fprint_equivalency(void);
 void substitution_fprint_assignment(void);
@@ -91,25 +91,22 @@ void substitution_fprint_history_inte_index_stack(void);
 void substitution_fprint_substitution_up_stack(void);
 void substitution_fprint_substitution_index_stack(void);
 
-// utils functions
-void substitution_reset_boolean_vector(int_t *, uint_t sz);
+// Utils functions
 void substitution_add_check_stack(int_t v);
 void substitution_reset_stack(void);
 int_t substitution_last_assigned(int_t *up_stack);
-void substitution_free_structure(void);
 void substitution_increase_history_flag(void);
 
-// init functions
+// Init functions
 bool substitution_initiate_from_dimacs(void);
 
 // "main" functions
 bool substitution_set_true(const int_t l);
-bool substitution_subt(void);
+bool substitution_infer(void);
 
-// undo functions
+// Undo functions
 void substitution_undo(void);
 
-// testing functions
-void substitution_testing_vars(bool writing_status);
-
+// End functions
+void substitution_free_structure(void);
 #endif
