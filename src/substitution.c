@@ -397,8 +397,9 @@ bool substitution_infer(){
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
 
-        if(!substitution_update_tables(l)) // Pourquoi c'est mieux de le faire ici ?
+        if(!substitution_update_tables(l)){ // Pourquoi c'est mieux de le faire ici ?
             return false;
+        }
 
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
@@ -420,17 +421,16 @@ bool substitution_infer(){
                 }
             }
 
-            /*for (int_t i = 0; substitution_values_dynamic[-l][i] != 0; ++i){
-                const int_t _e = substitution_values_dynamic[-l][i];
-                if(_substitution_is_false(_e)){
-                    substitution_reset_stack();
-                    return false;
-                }
-                else if(_substitution_is_undef(_e)){
-                    substitution_add_check_stack(_e);
-                }
-            }*/
-
+            // for (int_t i = 0; i != substitution_index[-l]; ++i){
+            //     const int_t _e = substitution_values[-l][i];
+            //     if(_substitution_is_false(-_e)){
+            //         substitution_reset_stack();
+            //         return false;
+            //     }
+            //     else if(_substitution_is_undef(-_e)){
+            //         substitution_add_check_stack(-_e);
+            //     }
+            // }
         }
     }
     return true;
