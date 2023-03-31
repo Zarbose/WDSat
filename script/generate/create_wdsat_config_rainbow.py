@@ -34,7 +34,7 @@ elif len( sys.argv ) == 3:
         with open("../../src/config.h", 'a') as f:
             f.write("""
 /** Rainbow : N={0} M={1} **/
-# define __MAX_ANF_ID__ {2} // make it +1
+/*# define __MAX_ANF_ID__ {2} // make it +1
 # define __MAX_DEGREE__ 3 // make it +1
 # define __MAX_ID__ {3}
 # define __MAX_BUFFER_SIZE__ 200000
