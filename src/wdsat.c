@@ -19,10 +19,10 @@
 #include "substitution.h"
 
 // #define TEST  // Activation ou non de la zone de test
-#define TEST_SUBST  // Si définie utilisation du module substitution
-#define NO_CNF // Si définie le module cnf n'est pas utilisé
+// #define TEST_SUBST  // Si définie utilisation du module substitution
+// #define NO_CNF // Si définie le module cnf n'est pas utilisé
 
-// #define ENABLE_PRINT
+#define ENABLE_PRINT
 // #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
 
 /// @var uint_t nb_of_vars;
@@ -169,22 +169,25 @@ bool wdsat_set_true(const int_t l) {
 }
 
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE* flux /**/) {
-	// for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
-	// {
-	// 	printf("%d", cnf_assignment[j]);
-	// }
-	// printf("\n");
+	
+	/*
 
-	/**
-	// printf("Avant\n");
 	int tmp=0;
 	char chaine[100];
-	fgets(chaine, 100, flux);
-	tmp=atoi(chaine);
-	l=tmp;
-	// printf("%ld\n",l);
-	/***/
+	// printf("AVANT\n");
+	if (fgets(chaine, 100, flux) == NULL )	{
+		printf("Fin de fichier\n");
+		l=set_end+1;
+	}
+	else{
+		tmp=atoi(chaine);
+		l=tmp;
+		// printf("%d\n", l);
+		// printf("%d\n",tmp);
+	}
 
+	/**/
+	
 	if(l > set_end) // C'est la fin ?  ligne 1 algo 4.1
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -194,16 +197,19 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 		printf("\nconf:%ld\n", conf[0]);
 		return false;
 #endif
+		// printf("l = %ld set_end = %ld\n",l,set_end);
 		return true;	
 	}
 	#ifndef NO_CNF
-		if(!_cnf_is_undef(set[l])) { // set[l] = l+1 == > l+1 est défine ?
-			return wdsat_solve_rest(l + 1, set_end,conf/**/, dec +1, flux /**/);
+		if(!_cnf_is_undef(/**/ set[l]/**/ /* set[tmp] /**/)) { // set[l] = l+1 == > l+1 est défine ?
+			// printf("ICI\n");
+			return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec +1, flux /**/);
 		} 
 	#else
 		// set[l] = set[l] désigne le littéral en cours d'affectation
-		if(!_substitution_is_undef(set[l])) {  // Si set[l] est définie
-			return wdsat_solve_rest(l + 1, set_end,conf /**/, dec + 1, flux /**/); // Alors je passe au littéral suivant
+		if(!_substitution_is_undef(/**/set[l]/**/ /* set[tmp] /**/)) {  // Si set[l] est définie
+			// printf("ICI\n");
+			return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf /**/, dec + 1, flux /**/); // Alors je passe au littéral suivant
 		} 
 	#endif
 
@@ -216,11 +222,13 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 	#endif
 	conf[0]++;
 
-	/**/
-	printf("%d\n", -(l+1));
+	/*
+	// printf("%d set %d\n",dec, -(l+1));
+	// printf("%d\n", -(l+1));
+	printf("%d\n", l);
 	/**/
 
-	if(!wdsat_set_true(-set[l])) // ligne 5 et 5 algo 4.1
+	if(!wdsat_set_true(/**/ -set[l] /**/ /* -set[tmp] /**/)) // ligne 5 et 5 algo 4.1
 	{
 		#ifndef NO_CNF
 			cnf_undo();
@@ -230,17 +238,21 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 			substitution_undo();
 		#endif
 
-        /**/
-	    printf("%d\n", (l+1));
+        /*
+		printf("%d set %d\n",dec, (l+1));
+	    // printf("%d\n", (l+1));
+	    // printf("%d\n", l);
 	    /**/
 
-		if(!wdsat_set_true(set[l])) return false;
-		return wdsat_solve_rest(l + 1, set_end,conf/**/, dec + 1, flux /**/);
+		// printf("%d\n",tmp+1);
+
+		if(!wdsat_set_true(/**/ set[l] /**/ /* set[tmp] /**/)) return false;
+		return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec + 1, flux /**/);
 		
 	}
 	else
 	{
-		if(!wdsat_solve_rest(l + 1, set_end,conf/**/, dec + 1, flux /**/))
+		if(!wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec + 1, flux /**/))
 		{
 			#ifndef NO_CNF
 				cnf_undo();
@@ -250,12 +262,16 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 				substitution_undo();
 			#endif
 
-            /**/
-	        printf("%d\n", (l+1));
+            /*
+			printf("%d set %d\n",dec, (l+1));
+	        // printf("%d\n", (l+1));
+	        // printf("%d\n", l);
 	        /**/
 
-			if(!wdsat_set_true(set[l])) return false;
-			return wdsat_solve_rest(l + 1, set_end,conf/**/, dec + 1, flux /**/);
+			// printf("%d\n",tmp+1);
+
+			if(!wdsat_set_true(/**/ set[l] /**/ /* set[tmp] /**/)) return false;
+			return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec + 1, flux /**/);
 		}
 		else
 		{
@@ -280,8 +296,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		printf("SAT:\n");
 		for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
 			printf("%d", xorgauss_assignment[i]);
-		printf("\nnb_activation = %lld\n",nb_activation);
-		printf("conf:%lld\n", conf[0]);
+		printf("\nconf:%lld\n", conf[0]);
 		return false;
 #endif
 		return true;
@@ -444,8 +459,6 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	return true;
 }
 
-/// @fn solve();
-/// @return false if formula is unsatisfiable and true otherwise
 bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t xg, char mvc_graph[1000], char thread[1000],int S, char *filename) {
 	int_t j;
 	int_t nb_min_vars;
@@ -520,7 +533,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_table();
 
 	clock_t debut = clock();
-	FILE* flux = fopen("output_nosub","r");
+	FILE* flux = fopen("output_nosub_l","r");
 	if (flux == NULL){ printf("Fichier NULL\n");exit(2);}
 
 	if(xg == 0)
