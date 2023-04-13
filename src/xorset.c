@@ -128,6 +128,9 @@ bool xorset_infer() {
             return(false);
         } else {
             _xorset_set(l, __TRUE__) // l = true  -l = TRUE xor TRUE
+            /**/
+            printf("set xor %ld to true\n",l);
+            /**/
             xorset_history[xorset_history_top++] = l;
             // for clauses where _l is assigned to TRUE
             const int_t xt_sz = xorset_size_of_index[l]; // xt_sz = la taille de la liste des clauses qui possédent le littéral l

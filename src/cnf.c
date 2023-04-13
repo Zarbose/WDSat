@@ -106,6 +106,9 @@ inline bool cnf_infer(void) {
             return(false);
         } else {
             _cnf_set(l, __TRUE__); // l = true  -l = TRUE XOR TRUE
+            /**/
+            printf("set cnf %ld to true\n",l);
+            /**/
             cnf_history[cnf_history_top++] = l;
             // push propagation thanks to binary implications
             const int_t _sz_bin_imp = cnf_size_of_binary_implications[l]; // _sz_bin_imp = la taille de la liste d'implication 

@@ -19,8 +19,8 @@
 #include "substitution.h"
 
 // #define TEST  // Activation ou non de la zone de test
-#define TEST_SUBST  // Si définie utilisation du module substitution
-#define NO_CNF // Si définie le module cnf n'est pas utilisé
+// #define TEST_SUBST  // Si définie utilisation du module substitution
+// #define NO_CNF // Si définie le module cnf n'est pas utilisé
 
 #define ENABLE_PRINT
 // #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
@@ -41,12 +41,16 @@ static int_t wdsat_cnf_up_top_stack;
 /// @brief unit propagation xorset stack
 static int_t wdsat_xorset_up_stack[__ID_SIZE__];
 
-/// @var int_t wdsat_cnf_up_top_stack;
-/// @brief unit propagation cnf stack top
+/// @var int_t wdsat_xorset_up_top_stack;
+/// @brief unit propagation xorset stack top
 static int_t wdsat_xorset_up_top_stack;
 
-
+/// @var int_t wdsat_substitution_up_stack[__ID_SIZE__];
+/// @brief unit propagation subst stack
 static int_t wdsat_substitution_up_stack[__ID_SIZE__];
+
+/// @var int_t wdsat_substitution_up_top_stack;
+/// @brief unit propagation subst stack top
 static int_t wdsat_substitution_up_top_stack;
 
 static int_t set[__ID_SIZE__];
@@ -139,19 +143,21 @@ bool wdsat_set_true(const int_t l) {
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
 			if(_cnf_is_undef(_l)) _next_loop = true;
-			if(!cnf_set_true(_l)) {/*printf("ter contr %lld\n",_l)*/;return false;} // assign and propagate _l to true.
+			if(!cnf_set_true(_l)) {/**/ printf("ter contr %lld\n",_l)/**/;return false;} // assign and propagate _l to true.
 		}
 		#endif
 		while(wdsat_xorset_up_top_stack) {
 			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
+			// printf("xorset %ld\n",_l);
 			if(_xorset_is_undef(_l)) _next_loop = true;
-			if(!xorset_set_true(_l)) {/*printf("xor contr %lld\n",_l);*/return false;} // assign and propagate _l to true.
+			if(!xorset_set_true(_l)) {/**/ printf("xor contr %lld\n",_l);/**/return false;} // assign and propagate _l to true.
 		}
 		#ifdef TEST_SUBST
 			while (wdsat_substitution_up_top_stack) {
 				_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
+				// printf("sub %ld\n",_l);
 				if(_substitution_is_undef(_l)) _next_loop = true;
-				if(!substitution_set_true(_l)) {/*printf("subt contr %lld\n",_l);*/return false;}
+				if(!substitution_set_true(_l)) {/**/ printf("subt contr %lld\n",_l);/**/return false;}
 		}
 		#endif
 		#ifndef NO_CNF
@@ -163,8 +169,11 @@ bool wdsat_set_true(const int_t l) {
 		
 		#ifdef TEST_SUBST
 			wdsat_substitution_up_top_stack = xorset_last_assigned(wdsat_substitution_up_stack);
+			// printf("wdsat_substitution_up_top_stack = %ld\n",wdsat_substitution_up_top_stack);
+
 		#endif
 	}
+	// exit(3);
     return true;
 }
 
@@ -222,10 +231,12 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 	#endif
 	conf[0]++;
 
-	/*
+	/**/
 	// printf("%d set %d\n",dec, -(l+1));
 	// printf("%d\n", -(l+1));
+	// printf("--- %d ---\n", l);
 	printf("%d\n", l);
+	// printf("0 %d\n", -(l+1));
 	/**/
 
 	if(!wdsat_set_true(/**/ -set[l] /**/ /* -set[tmp] /**/)) // ligne 5 et 5 algo 4.1
@@ -238,13 +249,11 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 			substitution_undo();
 		#endif
 
-        /*
-		printf("%d set %d\n",dec, (l+1));
-	    // printf("%d\n", (l+1));
+        /**
+		// printf("%d set %d\n",dec, (l+1));
+	    printf("1 %d\n", (l+1));
 	    // printf("%d\n", l);
 	    /**/
-
-		// printf("%d\n",tmp+1);
 
 		if(!wdsat_set_true(/**/ set[l] /**/ /* set[tmp] /**/)) return false;
 		return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec + 1, flux /**/);
@@ -262,13 +271,11 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 				substitution_undo();
 			#endif
 
-            /*
-			printf("%d set %d\n",dec, (l+1));
-	        // printf("%d\n", (l+1));
+            /**
+			// printf("%d set %d\n",dec, (l+1));
+	        printf("2 %d\n", (l+1));
 	        // printf("%d\n", l);
 	        /**/
-
-			// printf("%d\n",tmp+1);
 
 			if(!wdsat_set_true(/**/ set[l] /**/ /* set[tmp] /**/)) return false;
 			return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec + 1, flux /**/);
@@ -532,6 +539,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
+	// cnf_fprint();
+
+	// substitution_fprint_equivalency_unary();
+
 	clock_t debut = clock();
 	FILE* flux = fopen("output_nosub_l","r");
 	if (flux == NULL){ printf("Fichier NULL\n");exit(2);}
@@ -572,7 +583,8 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	#endif
 	if (S == 1) wdsat_save_result(debut,conf,filename);
 
-		// substitution_fprint_values();
+	// substitution_fprint_values();
+	// cnf_fprint();
 
 	fclose(flux);
 	substitution_free_structure();

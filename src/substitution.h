@@ -83,7 +83,8 @@ extern int_t substitution_history_tag;
 
 // Print functions
 void substitution_fprint_values(void);
-void substitution_fprint_equivalency(void);
+void substitution_fprint_equivalency_all(void);
+void substitution_fprint_equivalency_unary(void);
 void substitution_fprint_assignment(void);
 void substitution_fprint_history_inte_stack(void);
 void substitution_fprint_history_main_stack(void);
