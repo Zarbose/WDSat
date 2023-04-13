@@ -6,6 +6,13 @@ testing/*
 wdsat_solver
 perfo_solveur/*
 result/*
+1
+2
+cnf.txt
+find_l*
+script.sh
+output*
+*.ods*
 
 # Prerequisites
 *.d
