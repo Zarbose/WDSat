@@ -78,7 +78,18 @@ void xorset_clause_id_fprint(int_t id){
 
 void xorset_index_structure_fprintf(){
     int_t i,j;
-    for(i = 1LL; i <= xorset_nb_of_vars; ++i){
+    // for(i = 1LL; i <= xorset_nb_of_vars; ++i){
+    //     const int_t xt_sz = xorset_size_of_index[i];
+    //     int_t * const idx_t = xorset_index[i];
+    //     printf("[%lld] [%lld] ",i,xorset_size_of_index[i]);
+    //     for(j=0LL; j < xt_sz; ++j){
+    //         printf("%lld ",idx_t[j]);
+    //     }
+    //     printf("\n");
+    // }
+
+    for(i = -xorset_nb_of_vars; i <= xorset_nb_of_vars; ++i){
+        if (i == 0LL) continue;
         const int_t xt_sz = xorset_size_of_index[i];
         int_t * const idx_t = xorset_index[i];
         printf("[%lld] [%lld] ",i,xorset_size_of_index[i]);
@@ -150,6 +161,7 @@ bool xorset_infer() {
                         up_l = xor_equation[c][j];
                         if(_xorset_is_undef(up_l)) {
                             xorset_up_stack[xorset_up_top_stack++] = (d_s & 1) ? -up_l : up_l; // if degree_T[C] is even
+                            // printf("add %ld -> l = %ld, c = %ld\n",xorset_up_stack[xorset_up_top_stack-1],-l,c);
 							break;
                         }
                     }
@@ -167,13 +179,20 @@ bool xorset_infer() {
                 const int_t unset_lt = sz_eq - d_s - xorset_degree_u[c];
                 /// below is same as 'if(_xorset_clause_unsat(c)) return(false);'
 				if((!unset_lt) && (!(d_s & 1LL))) {xorset_up_top_stack = 0; return(false);}
+                // if( -l == 40 ){
+                //     printf("unset_lt = %ld c = %ld\n",unset_lt,c);
+                // }
                 if(unset_lt == 1) { // if degree_T[C] + degree_F[C] = size [C] -1 ?????????
                     for(j = 0; j < sz_eq; ++j) {
                         up_l = xor_equation[c][j];
                         if(_xorset_is_undef(up_l)) {
                             xorset_up_stack[xorset_up_top_stack++] = (d_s & 1) ? -up_l : up_l; // if degree_F[C] is even 
+                            // printf("add %ld -> l = %ld, c = %ld\n",xorset_up_stack[xorset_up_top_stack-1],-l,c);
 							break;
                         }
+                        // else if( -l == 40 ){
+                        //     printf("%ld\n",up_l);
+                        // }
                     }
                 }
             }

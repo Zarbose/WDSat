@@ -18,9 +18,7 @@
 #include "dimacs.h"
 #include "substitution.h"
 
-// #define TEST  // Activation ou non de la zone de test
-// #define TEST_SUBST  // Si définie utilisation du module substitution
-// #define NO_CNF // Si définie le module cnf n'est pas utilisé
+#define TEST_SUBST  // Si définie utilisation du module substitution
 
 #define ENABLE_PRINT
 // #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
@@ -76,7 +74,7 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 	}
 
 
-	sprintf(path_file,"perfo_solveur/result1.csv");
+	sprintf(path_file,"perfo_solveur/result.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
 		fprintf(fichier, "%d;%ld;%ld;\n",seed,conf[0],duree_ml);
@@ -125,7 +123,7 @@ void wdsat_fprint_result(int_t conf[], int debut){
 bool wdsat_set_true(const int_t l) {
     bool _next_loop;
     int_t _l;
-	#ifndef NO_CNF
+	#ifndef TEST_SUBST
 		wdsat_cnf_up_top_stack = 0LL;
 		wdsat_cnf_up_stack[wdsat_cnf_up_top_stack++] = l;
 	#endif
@@ -139,19 +137,14 @@ bool wdsat_set_true(const int_t l) {
     _next_loop = true;
     while(_next_loop) {
 		_next_loop = false;
-		#ifndef NO_CNF
+		#ifndef TEST_SUBST
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
 			if(_cnf_is_undef(_l)) _next_loop = true;
 			if(!cnf_set_true(_l)) {/**/ printf("ter contr %lld\n",_l)/**/;return false;} // assign and propagate _l to true.
 		}
 		#endif
-		while(wdsat_xorset_up_top_stack) {
-			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
-			// printf("xorset %ld\n",_l);
-			if(_xorset_is_undef(_l)) _next_loop = true;
-			if(!xorset_set_true(_l)) {/**/ printf("xor contr %lld\n",_l);/**/return false;} // assign and propagate _l to true.
-		}
+
 		#ifdef TEST_SUBST
 			while (wdsat_substitution_up_top_stack) {
 				_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
@@ -160,7 +153,14 @@ bool wdsat_set_true(const int_t l) {
 				if(!substitution_set_true(_l)) {/**/ printf("subt contr %lld\n",_l);/**/return false;}
 		}
 		#endif
-		#ifndef NO_CNF
+
+		while(wdsat_xorset_up_top_stack) {
+			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
+			// printf("xorset %ld\n",_l);
+			if(_xorset_is_undef(_l)) _next_loop = true;
+			if(!xorset_set_true(_l)) {/**/ printf("xor contr %lld\n",_l);/**/return false;} // assign and propagate _l to true.
+		}
+		#ifndef TEST_SUBST
 			wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
 			wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
 		#else
@@ -209,7 +209,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 		// printf("l = %ld set_end = %ld\n",l,set_end);
 		return true;	
 	}
-	#ifndef NO_CNF
+	#ifndef TEST_SUBST
 		if(!_cnf_is_undef(/**/ set[l]/**/ /* set[tmp] /**/)) { // set[l] = l+1 == > l+1 est défine ?
 			// printf("ICI\n");
 			return wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec +1, flux /**/);
@@ -222,7 +222,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 		} 
 	#endif
 
-	#ifndef NO_CNF
+	#ifndef TEST_SUBST
 		_cnf_breakpoint;
 	#endif
 	_xorset_breakpoint;
@@ -241,7 +241,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 
 	if(!wdsat_set_true(/**/ -set[l] /**/ /* -set[tmp] /**/)) // ligne 5 et 5 algo 4.1
 	{
-		#ifndef NO_CNF
+		#ifndef TEST_SUBST
 			cnf_undo();
 		#endif
 		xorset_undo();
@@ -263,7 +263,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 	{
 		if(!wdsat_solve_rest(/**/ l + 1 /**/ /* tmp + 1 /**/, set_end,conf/**/, dec + 1, flux /**/))
 		{
-			#ifndef NO_CNF
+			#ifndef TEST_SUBST
 				cnf_undo();
 			#endif
 			xorset_undo();
@@ -282,7 +282,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec , FILE
 		}
 		else
 		{
-			#ifndef NO_CNF
+			#ifndef TEST_SUBST
 				_cnf_mergepoint;
 			#endif
 			_xorset_mergepoint;
@@ -314,7 +314,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
-	#ifndef NO_CNF
+	#ifndef TEST_SUBST
 		if(!_cnf_is_undef(set[l])) {
 			return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 		} 
@@ -323,7 +323,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 			return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 		} 
 	#endif
-	#ifndef NO_CNF
+	#ifndef TEST_SUBST
 		_cnf_breakpoint;
 	#endif
 	#ifdef TEST_SUBST
@@ -334,7 +334,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	conf[0]++;
 	if(!wdsat_infer(-set[l],conf,d))
 	{
-		#ifndef NO_CNF
+		#ifndef TEST_SUBST
 			cnf_undo();
 		#endif
 		#ifdef TEST_SUBST
@@ -353,7 +353,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	{
 		if(!wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1))
 		{
-			#ifndef NO_CNF
+			#ifndef TEST_SUBST
 				cnf_undo();
 			#endif
 			#ifdef TEST_SUBST
@@ -373,7 +373,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #ifdef __DEBUG__
 			printf("lev:%d--ok on 0\n",set[l]);
 #endif
-			#ifndef NO_CNF
+			#ifndef TEST_SUBST
 				_cnf_mergepoint;
 			#endif
 			#ifdef TEST_SUBST
@@ -403,7 +403,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	bool _loop_pass = true;
 	bool _continue;
-	#ifndef NO_CNF
+	#ifndef TEST_SUBST
 		int_t cnf_history_it;
 		int_t cnf_history_last = cnf_history_top;
 	#else
@@ -418,7 +418,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;
-		#ifndef NO_CNF
+		#ifndef TEST_SUBST
 			cnf_history_it = cnf_history_top;
 			while(cnf_history_it > cnf_history_last) {
 				_l = cnf_history[--cnf_history_it];
@@ -446,7 +446,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 			xorgauss_history_it = xorgauss_history_top;
 			while(xorgauss_history_it > xorgauss_history_last) {
 				_l = xorgauss_history[--xorgauss_history_it];
-				#ifndef NO_CNF
+				#ifndef TEST_SUBST
 					if(_cnf_is_false(_l)) return false;
 					if(_cnf_is_undef(_l)) {
 						_loop_pass = true;
@@ -585,6 +585,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// substitution_fprint_values();
 	// cnf_fprint();
+
+	// xorset_index_structure_fprintf();
+
+	// dimacs_print_formula();
 
 	fclose(flux);
 	substitution_free_structure();
