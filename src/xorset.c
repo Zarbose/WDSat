@@ -139,7 +139,7 @@ bool xorset_infer() {
             return(false);
         } else {
             _xorset_set(l, __TRUE__) // l = true  -l = TRUE xor TRUE
-            /**/
+            /**
             printf("set xor %ld to true\n",l);
             /**/
             xorset_history[xorset_history_top++] = l;

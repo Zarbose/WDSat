@@ -7,6 +7,8 @@
 #include "substitution.h"
 #include "dimacs.h"
 
+int_t nb_var;
+
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
 static uint_t substitution_nb_unary_vars; // Ici substitution_nb_unary_vars = 25
@@ -260,6 +262,8 @@ bool substitution_update_tables(const int_t l){
                 }
                 else{
                     /* x1 and x2 undef */
+                    // substitution_add_check_stack(-x1);
+                    // substitution_add_check_stack(-x2);
                 }
             }
         }
@@ -399,9 +403,6 @@ bool substitution_infer(){
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
         
-        /**/
-        printf("set sub %ld to true\n",l);
-        /**/
         if(!substitution_update_tables(l)){ // Pourquoi c'est mieux de le faire ici ?
             return false;
         }
@@ -413,6 +414,10 @@ bool substitution_infer(){
         }
         else{
             _substitution_set(l,__TRUE__)
+            nb_var++;
+            /**
+            printf("set sub %ld to true\n",l);
+            /**/
             substitution_history[substitution_history_top++] = l;
 
             for (int_t i = 0; i != substitution_index[l]; ++i){
@@ -449,6 +454,7 @@ void substitution_undo() {
     while(substitution_history_top != top_step) {
         _l = substitution_history[--substitution_history_top];
         _substitution_unset(_l);
+        nb_var--;
     }
 	substitution_history_top_it = substitution_history_top;
 

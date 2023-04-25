@@ -15,6 +15,8 @@
 
 #include "wdsat_utils.h"
 
+extern int_t nb_var;
+
 /// States of reading automata
 #define ADOS   0
 #define ADOI   1

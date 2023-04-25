@@ -10,6 +10,8 @@
 #include "dimacs.h"
 #include "wdsat_utils.h"
 
+int_t nb_var;
+
 
 // unit propagation stack
 int_t cnf_up_stack[__ID_SIZE__];
@@ -106,7 +108,8 @@ inline bool cnf_infer(void) {
             return(false);
         } else {
             _cnf_set(l, __TRUE__); // l = true  -l = TRUE XOR TRUE
-            /**/
+            nb_var++;
+            /**
             printf("set cnf %ld to true\n",l);
             /**/
             cnf_history[cnf_history_top++] = l;
@@ -319,6 +322,7 @@ void cnf_undo() {
     while(cnf_history_top != top_step) {
         _l = cnf_history[--cnf_history_top];
         _cnf_unset(_l);
+        nb_var--;
     }
 	cnf_history_top_it = cnf_history_top;
 }
