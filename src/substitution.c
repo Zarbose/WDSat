@@ -8,6 +8,8 @@
 #include "dimacs.h"
 #include "cycle.h"
 
+#define STAT
+
 int_t nb_var;
 
 // utils variables
@@ -399,22 +401,40 @@ bool substitution_set_true(const int_t l) {
     return(substitution_infer());
 }
 
+#ifdef STAT
+    void substitution_write_data(int value,char* dest){
+        FILE* flux = fopen(dest,"a+");
+        if( flux == NULL) {printf("FICHIER NULL : %s\n",dest); exit(2);}
+        fprintf(flux, "%d\n",value);
+        fclose(flux);
+    }
+#endif
+
 bool substitution_infer(){
-    ticks clockcycles_init, clockcycles_last;
+
+    #ifdef STAT
+        ticks clockcycles_init, clockcycles_last;
+    #endif
+
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
-        
-        clockcycles_init = getticks();
+        #ifdef STAT
+            clockcycles_init = getticks();
+        #endif
         if(!substitution_update_tables(l)){ // Pourquoi c'est mieux de le faire ici ?
-            clockcycles_last = getticks();
-            int resutl = elapsed(clockcycles_last, clockcycles_init);
-            printf("%d\n",resutl);
+            #ifdef STAT
+                clockcycles_last = getticks();
+                int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+                substitution_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/sub");
+            #endif
             return false;
         }
-        clockcycles_last = getticks();
-        int resutl = elapsed(clockcycles_last, clockcycles_init);
-        printf("%d\n",resutl);
+        #ifdef STAT
+            clockcycles_last = getticks();
+            int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+            substitution_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/sub");
+        #endif
 
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){

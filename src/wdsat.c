@@ -25,7 +25,9 @@ int_t nb_var = 0;
 #define TEST_SUBST  // Si définie utilisation du module substitution
 
 #define ENABLE_PRINT
-// #define PRINT_AS_CSV  // Si définié affiche le résultat sous une forme csv
+// #define STAT_CNF
+#define STAT_XORSET
+#define STAT_SUBSTITUTION
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -97,47 +99,47 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 
 void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
 
-	#ifdef PRINT_AS_CSV
-		clock_t fin = clock();
-		int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+	clock_t fin = clock();
+	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
-		ticks clockcycles_last;
-		clockcycles_last = getticks();
-		double total_ticks = elapsed(clockcycles_last, clockcycles_init);
-		
-		printf("conf;duree_ml;ticks;\n");
-		printf("%ld;%ld;%f\n",conf[0],duree_ml,total_ticks);
+	ticks clockcycles_last;
+	clockcycles_last = getticks();
+	int total_ticks = elapsed(clockcycles_last, clockcycles_init);
 
-	#else
-		clock_t fin = clock();
-		int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+	printf("cnf_assignment:");
+	for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
+	{
+		printf("%d", cnf_assignment[j]);
+	}
+	printf("\n");
 
-		ticks clockcycles_last;
-		clockcycles_last = getticks();
-		double total_ticks = elapsed(clockcycles_last, clockcycles_init);
-
-		printf("cnf_assignment:");
-		for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
-		{
-			printf("%d", cnf_assignment[j]);
-		}
-		printf("\n");
-
-		printf("sub_assignment:");
-		for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
-		{
-			printf("%d", substitution_assignment[j]);
-		}
-		printf("\n");
-		
-		printf("conf:%ld\n",conf[0]);
-		printf("temps_ml:%d\n",duree_ml);
-		printf("ticks:%f\n",total_ticks);
-	#endif
+	printf("sub_assignment:");
+	for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
+	{
+		printf("%d", substitution_assignment[j]);
+	}
+	printf("\n");
+	
+	printf("conf:%ld\n",conf[0]);
+	printf("temps_ml:%d\n",duree_ml);
+	printf("ticks:%d\n",total_ticks);
 }
+
+#ifdef STAT_SUBSTITUTION || STAT_CNF || STAT_SUBSTITUTION
+	void wdsat_write_data(int value, char * dest){
+		FILE* flux = fopen(dest,"a+");
+		if( flux == NULL) {printf("FICHIER NULL : %s\n",dest); exit(2);}
+		fprintf(flux, "%d\n",value);
+		fclose(flux);
+	}
+#endif
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
+
+	#ifdef STAT_SUBSTITUTION || STAT_CNF || STAT_SUBSTITUTION
+		ticks clockcycles_init, clockcycles_last;
+	#endif
     bool _next_loop;
     int_t _l;
 	#ifndef TEST_SUBST
@@ -158,7 +160,23 @@ bool wdsat_set_true(const int_t l) {
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
 			if(_cnf_is_undef(_l)) _next_loop = true;
-			if(!cnf_set_true(_l)) {/** printf("ter contr %lld\n",_l)/**/;return false;} // assign and propagate _l to true.
+			#ifdef STAT_CNF
+				clockcycles_init = getticks();
+			#endif
+			if(!cnf_set_true(_l)) {
+				/** printf("ter contr %lld\n",_l);/**/
+				#ifdef STAT_CNF
+					clockcycles_last = getticks();
+					int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+					wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/mod-cnf");
+				#endif
+				return false;
+			}
+			#ifdef STAT_CNF
+				clockcycles_last = getticks();
+				int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+				wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/mod-cnf");
+			#endif
 		}
 		#endif
 
@@ -167,7 +185,23 @@ bool wdsat_set_true(const int_t l) {
 				_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
 				// printf("sub %ld\n",_l);
 				if(_substitution_is_undef(_l)) _next_loop = true;
-				if(!substitution_set_true(_l)) {/** printf("subt contr %lld\n",_l);/**/return false;}
+				#ifdef STAT_SUBSTITUTION
+					clockcycles_init = getticks();
+				#endif
+				if(!substitution_set_true(_l)) {
+					/** printf("subt contr %lld\n",_l);/**/
+					#ifdef STAT_SUBSTITUTION
+						clockcycles_last = getticks();
+						int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+						wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/mod-sub");
+					#endif
+					return false;
+				}
+				#ifdef STAT_SUBSTITUTION
+					clockcycles_last = getticks();
+					int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+					wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/mod-sub");
+				#endif
 		}
 		#endif
 
@@ -175,7 +209,23 @@ bool wdsat_set_true(const int_t l) {
 			_l = wdsat_xorset_up_stack[--wdsat_xorset_up_top_stack];
 			// printf("xorset %ld\n",_l);
 			if(_xorset_is_undef(_l)) _next_loop = true;
-			if(!xorset_set_true(_l)) {/** printf("xor contr %lld\n",_l);/**/return false;} // assign and propagate _l to true.
+			#ifdef STAT_XORSET
+				clockcycles_init = getticks();
+			#endif
+			if(!xorset_set_true(_l)) {
+				/** printf("xor contr %lld\n",_l);/**/
+				#ifdef STAT_XORSET
+					clockcycles_last = getticks();
+					int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+					wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/mod-xor");
+				#endif
+				return false;
+			}
+			#ifdef STAT_XORSET
+				clockcycles_last = getticks();
+				int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+				wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/mod-xor");
+			#endif
 		}
 		#ifndef TEST_SUBST
 			wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
@@ -408,9 +458,9 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 
 	if(!wdsat_set_true(l)) return false;
 
-	printf("NORMAL %d\n",nb_var);
+	// printf("NORMAL %d\n",nb_var);
 	if(nb_var >= (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__)) ){
-		printf("XORGAUSS\n");
+		// printf("XORGAUSS\n");
 		while(_loop_pass) {
 			// finalyse with XORGAUSS
 			_continue = false;
@@ -544,9 +594,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	ticks clockcycles_init;
 	clockcycles_init = getticks();
-	
-	FILE* flux = fopen("output_nosub_l","r");
-	if (flux == NULL){ printf("Fichier NULL\n");exit(2);}
 
 	if(xg == 0)
 	{
@@ -558,7 +605,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
-			fclose(flux);
 			substitution_free_structure();
 			return false;
 		}
@@ -591,7 +637,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 
 	// dimacs_print_formula();
 
-	fclose(flux);
 	substitution_free_structure();
 	return (true);
 

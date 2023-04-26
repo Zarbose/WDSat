@@ -1,14 +1,9 @@
 # Custom
 .vscode/
-*.txt
-*.csv
-*.sh
 wdsat_solver
 perfo_solveur/*
 result/*
 find_l*
-output*
-*.ods*
 fichier/
 
 
