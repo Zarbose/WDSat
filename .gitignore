@@ -9,6 +9,7 @@ result/*
 find_l*
 output*
 *.ods*
+fichier/
 
 
 # Prerequisites

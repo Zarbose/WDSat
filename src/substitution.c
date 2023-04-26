@@ -6,6 +6,7 @@
 #include "wdsat_utils.h"
 #include "substitution.h"
 #include "dimacs.h"
+#include "cycle.h"
 
 int_t nb_var;
 
@@ -399,13 +400,21 @@ bool substitution_set_true(const int_t l) {
 }
 
 bool substitution_infer(){
+    ticks clockcycles_init, clockcycles_last;
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
         
+        clockcycles_init = getticks();
         if(!substitution_update_tables(l)){ // Pourquoi c'est mieux de le faire ici ?
+            clockcycles_last = getticks();
+            int resutl = elapsed(clockcycles_last, clockcycles_init);
+            printf("%d\n",resutl);
             return false;
         }
+        clockcycles_last = getticks();
+        int resutl = elapsed(clockcycles_last, clockcycles_init);
+        printf("%d\n",resutl);
 
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
@@ -430,17 +439,6 @@ bool substitution_infer(){
                     substitution_add_check_stack(_e);
                 }
             }
-
-            // for (int_t i = 0; i != substitution_index[-l]; ++i){
-            //     const int_t _e = substitution_values[-l][i];
-            //     if(_substitution_is_false(-_e)){
-            //         substitution_reset_stack();
-            //         return false;
-            //     }
-            //     else if(_substitution_is_undef(-_e)){
-            //         substitution_add_check_stack(-_e);
-            //     }
-            // }
         }
     }
     return true;

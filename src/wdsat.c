@@ -18,6 +18,7 @@
 #include "xorgauss.h"
 #include "dimacs.h"
 #include "substitution.h"
+#include "cycle.h"
 
 int_t nb_var = 0;
 
@@ -56,10 +57,14 @@ static int_t wdsat_substitution_up_top_stack;
 
 static int_t set[__ID_SIZE__];
 
-void wdsat_save_result(int debut, int_t conf[],char *filename){
+void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *filename){
 	clock_t fin = clock();
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
+	ticks clockcycles_last;
+	clockcycles_last = getticks();
+	double total_ticks = elapsed(clockcycles_last, clockcycles_init);
+	
 	FILE* fichier = NULL;
 	char path_file[1000];
 
@@ -80,7 +85,7 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 	sprintf(path_file,"perfo_solveur/result.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
-		fprintf(fichier, "%d;%ld;%ld;\n",seed,conf[0],duree_ml);
+		fprintf(fichier, "%d;%ld;%ld;%f;\n",seed,conf[0],duree_ml,total_ticks);
         fclose(fichier);
     }
     else{
@@ -90,18 +95,26 @@ void wdsat_save_result(int debut, int_t conf[],char *filename){
 	printf("End seed %d\n",seed);
 }
 
-void wdsat_fprint_result(int_t conf[], int debut){
+void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
 
 	#ifdef PRINT_AS_CSV
 		clock_t fin = clock();
 		int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
+		ticks clockcycles_last;
+		clockcycles_last = getticks();
+		double total_ticks = elapsed(clockcycles_last, clockcycles_init);
 		
-		printf("conf;duree_ml;\n");
-		printf("%ld;%ld;\n",conf[0],duree_ml);
+		printf("conf;duree_ml;ticks;\n");
+		printf("%ld;%ld;%f\n",conf[0],duree_ml,total_ticks);
 
 	#else
 		clock_t fin = clock();
 		int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
+
+		ticks clockcycles_last;
+		clockcycles_last = getticks();
+		double total_ticks = elapsed(clockcycles_last, clockcycles_init);
 
 		printf("cnf_assignment:");
 		for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
@@ -119,6 +132,7 @@ void wdsat_fprint_result(int_t conf[], int debut){
 		
 		printf("conf:%ld\n",conf[0]);
 		printf("temps_ml:%d\n",duree_ml);
+		printf("ticks:%f\n",total_ticks);
 	#endif
 }
 
@@ -527,6 +541,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// substitution_fprint_equivalency_unary();
 
 	clock_t debut = clock();
+
+	ticks clockcycles_init;
+	clockcycles_init = getticks();
+	
 	FILE* flux = fopen("output_nosub_l","r");
 	if (flux == NULL){ printf("Fichier NULL\n");exit(2);}
 
@@ -535,10 +553,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf,0)) {
 			printf("UNSAT\n");
 			#ifdef ENABLE_PRINT
-				wdsat_fprint_result(conf,debut);
+				wdsat_fprint_result(conf,debut,clockcycles_init);
 			#endif
 
-			if (S == 1) wdsat_save_result(debut,conf,filename);
+			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 			fclose(flux);
 			substitution_free_structure();
@@ -551,10 +569,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");
 			#ifdef ENABLE_PRINT
-				wdsat_fprint_result(conf,debut);
+				wdsat_fprint_result(conf,debut,clockcycles_init);
 			#endif
 
-			if (S == 1) wdsat_save_result(debut,conf,filename);
+			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 			
 			substitution_free_structure();
 			return false;
@@ -562,9 +580,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 
 	#ifdef ENABLE_PRINT
-		wdsat_fprint_result(conf,debut);
+		wdsat_fprint_result(conf,debut,clockcycles_init);
 	#endif
-	if (S == 1) wdsat_save_result(debut,conf,filename);
+	if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 	// substitution_fprint_values();
 	// cnf_fprint();
