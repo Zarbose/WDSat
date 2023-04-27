@@ -8,13 +8,13 @@
 #include "dimacs.h"
 #include "cycle.h"
 
-#define STAT
+// #define STAT
 
 int_t nb_var;
 
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
-static uint_t substitution_nb_unary_vars; // Ici substitution_nb_unary_vars = 25
+static int_t substitution_nb_unary_vars; // Ici substitution_nb_unary_vars = 25
 
 // undo structures
 int_t substitution_history[__ID_SIZE__];
@@ -443,7 +443,7 @@ bool substitution_infer(){
         }
         else{
             _substitution_set(l,__TRUE__)
-            nb_var++;
+            if (l < substitution_nb_unary_vars && l > -substitution_nb_unary_vars) nb_var++;
             /**
             printf("set sub %ld to true\n",l);
             /**/
@@ -472,7 +472,7 @@ void substitution_undo() {
     while(substitution_history_top != top_step) {
         _l = substitution_history[--substitution_history_top];
         _substitution_unset(_l);
-        nb_var--;
+        if (_l < substitution_nb_unary_vars && _l > -substitution_nb_unary_vars) nb_var--;
     }
 	substitution_history_top_it = substitution_history_top;
 

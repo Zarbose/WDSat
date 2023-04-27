@@ -36,6 +36,11 @@ printf "%-30s%-30s%-30s\n" "Total" "$total_nb" "100"
 
 for file in files/*;do
     ticks=$(sum $file)
+
+    if [ $ticks -eq 0 ];then
+        continue;
+    fi
+
     per=$(percentage $total_nb $ticks)
     printf "%-30s%-30s%-30s\n" "$file" "$ticks" "$per"
 done

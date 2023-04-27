@@ -25,9 +25,10 @@ int_t nb_var = 0;
 #define TEST_SUBST  // Si définie utilisation du module substitution
 
 #define ENABLE_PRINT
+
 // #define STAT_CNF
-#define STAT_XORSET
-#define STAT_SUBSTITUTION
+// #define STAT_XORSET
+// #define STAT_SUBSTITUTION
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -245,6 +246,11 @@ bool wdsat_set_true(const int_t l) {
 }
 
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) {
+
+	#ifdef STAT_SUBSTITUTION || STAT_CNF || STAT_SUBSTITUTION
+		ticks clockcycles_init, clockcycles_last;
+		int diff_ticks = 0;
+	#endif
 	
 	if(l > set_end)
 	{
@@ -284,11 +290,39 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 	if(!wdsat_set_true(-set[l])) // ligne 5 et 5 algo 4.1
 	{
 		#ifndef TEST_SUBST
+			#ifdef STAT_CNF
+				clockcycles_init = getticks();
+			#endif
 			cnf_undo();
+			#ifdef STAT_CNF
+				clockcycles_last = getticks();
+				diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+				wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/bac-cnf");
+			#endif
+		#endif
+
+
+		#ifdef STAT_XORSET
+			clockcycles_init = getticks();
 		#endif
 		xorset_undo();
+		#ifdef STAT_XORSET
+			clockcycles_last = getticks();
+			diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+			wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/bac-xor");
+		#endif
+
+
 		#ifdef TEST_SUBST
+			#ifdef STAT_SUBSTITUTION
+				clockcycles_init = getticks();
+			#endif
 			substitution_undo();
+			#ifdef STAT_SUBSTITUTION
+				clockcycles_last = getticks();
+				diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+				wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/bac-sub");
+			#endif
 		#endif
 
         /**
@@ -304,11 +338,39 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 		if(!wdsat_solve_rest(l + 1, set_end,conf, dec + 1))
 		{
 			#ifndef TEST_SUBST
+				#ifdef STAT_CNF
+					clockcycles_init = getticks();
+				#endif
 				cnf_undo();
+				#ifdef STAT_CNF
+					clockcycles_last = getticks();
+					diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+					wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/bac-cnf");
+				#endif
+			#endif
+
+
+			#ifdef STAT_XORSET
+				clockcycles_init = getticks();
 			#endif
 			xorset_undo();
+			#ifdef STAT_XORSET
+				clockcycles_last = getticks();
+				diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+				wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/bac-xor");
+			#endif
+
+
 			#ifdef TEST_SUBST
+				#ifdef STAT_SUBSTITUTION
+					clockcycles_init = getticks();
+				#endif
 				substitution_undo();
+				#ifdef STAT_SUBSTITUTION
+					clockcycles_last = getticks();
+					diff_ticks = elapsed(clockcycles_last, clockcycles_init);
+					wdsat_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/bac-sub");
+				#endif
 			#endif
 
             /**
