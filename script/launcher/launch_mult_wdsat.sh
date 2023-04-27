@@ -50,17 +50,18 @@ i=0
 for elm in $src/*;do
     echo "------------- Nouvelle instance "`expr $i + 1`" -------------"
 
-    if [ $counter -eq 10 ];then
-        sleep 270
-    fi
+    # if [ $counter -eq 10 ];then
+    #     sleep 270
+    # fi
 
-    if [ $counter -eq 20 ];then
-        sleep 270
-    fi
+    # if [ $counter -eq 20 ];then
+    #     sleep 270
+    # fi
 
-    ./wdsat_solver -S -i $elm &
+    # ./wdsat_solver -S -x -i $elm &
+    ./wdsat_solver -S -x -i $elm
 
-    counter=$((counter+1))
+    # counter=$((counter+1))
 
     ((i+=1))
 done

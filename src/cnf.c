@@ -27,6 +27,7 @@ int_t cnf_step[__ID_SIZE__];
 int_t cnf_step_top;
 // number of variables, number of equations
 static int_t cnf_nb_of_vars;
+static int_t cnf_nb_of_unary_vars;
 static int_t cnf_nb_of_equations;
 
 // binary implication lists
@@ -108,7 +109,7 @@ inline bool cnf_infer(void) {
             return(false);
         } else {
             _cnf_set(l, __TRUE__); // l = true  -l = TRUE XOR TRUE
-            nb_var++;
+            if (l < cnf_nb_of_unary_vars && l > -cnf_nb_of_unary_vars) nb_var++;
             /**
             printf("set cnf %ld to true\n",l);
             /**/
@@ -173,6 +174,8 @@ bool cnf_initiate_from_dimacs(void) {
     int_t i, j, sz;
     const int_t _n_v = dimacs_nb_vars();
     const int_t _n_e = dimacs_nb_equations();
+    const int_t _n_uv = dimacs_nb_unary_vars();
+    cnf_nb_of_unary_vars = _n_uv;
     cnf_nb_of_equations = _n_e;
     cnf_nb_of_vars = _n_v;
     assert(cnf_nb_of_vars <= __MAX_ID__);
@@ -322,7 +325,7 @@ void cnf_undo() {
     while(cnf_history_top != top_step) {
         _l = cnf_history[--cnf_history_top];
         _cnf_unset(_l);
-        nb_var--;
+        if (_l < cnf_nb_of_unary_vars && _l > -cnf_nb_of_unary_vars) nb_var--;
     }
 	cnf_history_top_it = cnf_history_top;
 }

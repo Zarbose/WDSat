@@ -66,7 +66,8 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 
 	ticks clockcycles_last;
 	clockcycles_last = getticks();
-	double total_ticks = elapsed(clockcycles_last, clockcycles_init);
+	int total_ticks = elapsed(clockcycles_last, clockcycles_init);
+	// printf("OUIII %d\n",total_ticks);
 	
 	FILE* fichier = NULL;
 	char path_file[1000];
@@ -88,7 +89,7 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 	sprintf(path_file,"perfo_solveur/result.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
-		fprintf(fichier, "%d;%ld;%ld;%f;\n",seed,conf[0],duree_ml,total_ticks);
+		fprintf(fichier, "%d;%ld;%ld;%d;\n",seed,conf[0],duree_ml,total_ticks);
         fclose(fichier);
     }
     else{
@@ -105,6 +106,9 @@ void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
 
 	ticks clockcycles_last;
 	clockcycles_last = getticks();
+
+	printf("%ld %ld\n",clockcycles_init,clockcycles_last);
+
 	int total_ticks = elapsed(clockcycles_last, clockcycles_init);
 
 	printf("cnf_assignment:");
@@ -521,7 +525,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	if(!wdsat_set_true(l)) return false;
 
 	// printf("NORMAL %d\n",nb_var);
-	if(nb_var >= (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__)) ){
+	// if(nb_var >= (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__)) ){
 		// printf("XORGAUSS\n");
 		while(_loop_pass) {
 			// finalyse with XORGAUSS
@@ -571,7 +575,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_last = xorgauss_history_top;
 			}
 		}
-	}
+	// }
 	return true;
 }
 
