@@ -1,17 +1,13 @@
 # Custom
 .vscode/
 wdsat_solver
-perfo_solveur/*
 result/*
-find_l*
 fichier/
-script/stat/files/*
 
 backtrack.csv
 classique.csv
 tmp.txt
 xorgauss.csv
-script.sh
 
 
 # Prerequisites

@@ -22,7 +22,7 @@
 
 int_t nb_var = 0;
 
-#define TEST_SUBST 
+#define TEST_SUBST
 
 #define ENABLE_PRINT
 
@@ -126,7 +126,6 @@ void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
 	printf("temps_ml:%d\n",duree_ml);
 	printf("ticks:%f\n",total_ticks);
 }
-
 
 // assign and propagate l to true using CNF and XORSET modules.
 bool wdsat_set_true(const int_t l) {
