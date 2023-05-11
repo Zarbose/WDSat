@@ -19,7 +19,7 @@ M=`expr \( $o2 \* 2 \) - 1`
 # 27 25 53
 
 mydir=$HOME/Documents/WDSat
-benchmark=Documents/WDSat/benchmarks/Rainbow/N_${N}_M_${M}
+benchmark=Documents/WDSat/benchmarks/Rainbow/N_${N}_M_${M}_V2
 src=$HOME/$benchmark
 save=0
 
