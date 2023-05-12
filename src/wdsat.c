@@ -22,7 +22,7 @@
 
 int_t nb_var = 0;
 
-#define TEST_SUBST
+// #define TEST_SUBST
 
 #define ENABLE_PRINT
 
@@ -150,7 +150,7 @@ bool wdsat_set_true(const int_t l) {
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
 			if(_cnf_is_undef(_l)) _next_loop = true;
-			if(!cnf_set_true(_l)) { /** printf("ter contr %lld\n",_l);/**/ return false; }
+			if(!cnf_set_true(_l)) { /**/ printf("ter contr %lld\n",_l);/**/ return false; }
 		}
 		#endif
 
@@ -159,7 +159,7 @@ bool wdsat_set_true(const int_t l) {
 				_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
 				// printf("sub %ld\n",_l);
 				if(_substitution_is_undef(_l)) _next_loop = true;
-				if(!substitution_set_true(_l)) { /** printf("subt contr %lld\n",_l);/**/ return false; }
+				if(!substitution_set_true(_l)) { /**/ printf("subt contr %lld\n",_l);/**/ return false; }
 		}
 		#endif
 
@@ -168,11 +168,7 @@ bool wdsat_set_true(const int_t l) {
 			// printf("xorset %ld\n",_l);
 			if(_xorset_is_undef(_l)) _next_loop = true;
 
-			if(!xorset_set_true(_l)) {
-				/** printf("xor contr %lld\n",_l);/**/
-
-				return false;
-			}
+			if(!xorset_set_true(_l)) { /**/ printf("xor contr %lld\n",_l);/**/ return false; }
 		}
 		#ifndef TEST_SUBST
 			wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
@@ -463,6 +459,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 								diff_ticks = elapsed(clockcycles_last, clockcycles_init);
 								printf("xorgauss;%d\n",diff_ticks);
 							#endif
+							// printf("gauss contr %lld\n",_l);
 							return false;
 						}
 						_continue = true;
@@ -480,6 +477,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 								diff_ticks = elapsed(clockcycles_last, clockcycles_init);
 								printf("xorgauss;%d\n",diff_ticks);
 							#endif
+							// printf("gauss contr %lld\n",_l);
 							return false;
 						}
 						_continue = true;
