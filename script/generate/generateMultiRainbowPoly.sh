@@ -5,12 +5,12 @@ err() {
 }
 
 usage() {
-    echo -e "\nUse: ./$(basename "$0") base_seed nb_file_to_generate o2\n"
+    echo -e "\nUse:\n\t./$(basename "$0") nb_seed_to_generate o2\n"
 }
 
-[ $# -lt 3 ] && err "Missing arguments" && usage && exit 1
+[ $# -lt 2 ] && err "Missing arguments" && usage && exit 1
 
-start_seed=$1
+start_seed=0
 nbf=$2
 o2=$3
 
