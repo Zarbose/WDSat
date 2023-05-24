@@ -13,6 +13,7 @@
 
 #include "wdsat_utils.h"
 #include "xorgauss.h"
+// #include "substitution.h"
 #include "dimacs.h"
 
 

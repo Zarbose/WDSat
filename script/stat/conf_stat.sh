@@ -25,7 +25,7 @@ for pid in ${pids[*]}; do
 done
 echo "Fin attente"
 
-
+sleep 1
 
 for elm in $formules/*; do
     seed=$(basename $elm | cut -d '_' -f 4)
