@@ -406,7 +406,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int apro = (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__));
-	printf("%ld %d\n",d,apro);
+	// printf("%ld %d\n",nb_var,apro);
 
 	bool _loop_pass = true;
 	bool _continue;
@@ -421,81 +421,41 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	#ifdef XOR_CONSTR
-	if ( d <= apro){
-	#endif
-		// printf("A\n");
-		if(!wdsat_set_true(l)){
-			return false;
-		}
-	#ifdef XOR_CONSTR
-	}
-	#endif
+	// if ( nb_var <= apro){
+		if(!wdsat_set_true(l)){ return false; }
+	// }
 
-	#ifdef XOR_CONSTR
-	// if(nb_var >= (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__)) ){
-	if(d >= apro ){
-		// printf("B\n");
-	#endif
+	if(nb_var >= apro ){
+		substitution_fprint_values();
+		exit(2);
 		while(_loop_pass) {
-			// finalyse with XORGAUSS
+			// printf("A\n");
 			_continue = false;
-			#ifndef TEST_SUBST
-				cnf_history_it = cnf_history_top;
-				while(cnf_history_it > cnf_history_last) {
-					_l = cnf_history[--cnf_history_it];
-					if(_xorgauss_is_undef(_l)) {
-						if(!xorgauss_set_true(_l)) { /** printf("gauss contr %lld\n",_l); /**/ return false; }
-						_continue = true;
-					}
+			substitution_history_it = substitution_history_top;
+			while(substitution_history_it > substitution_history_last) {
+				_l = substitution_history[--substitution_history_it];
+				if(_xorgauss_is_undef(_l)) {
+					if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l); /**/ return false; }
+					_continue = true;
 				}
-				cnf_history_last = cnf_history_top;
-			#else
-				substitution_history_it = substitution_history_top;
-				while(substitution_history_it > substitution_history_last) {
-					_l = substitution_history[--substitution_history_it];
-					if(_xorgauss_is_undef(_l)) {
-						if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l); /**/ return false; }
-						_continue = true;
-					}
-					// printf("C\n");
-				}
-				substitution_history_last = substitution_history_top;
-			#endif
-			_loop_pass = false;
-			#ifdef XOR_CONSTR
-			if ( d <= apro){
-				// printf("D\n");
-			#endif
-				
-				if(_continue) {
-					// get list of literal set thanks to XORGAUSS
-					xorgauss_history_it = xorgauss_history_top;
-					while(xorgauss_history_it > xorgauss_history_last) {
-						_l = xorgauss_history[--xorgauss_history_it];
-						#ifndef TEST_SUBST
-							if(_cnf_is_false(_l)) { /** printf("ter contr %lld\n",_l); /**/ return false; }
-							if(_cnf_is_undef(_l)) {
-								_loop_pass = true;
-								if(!wdsat_set_true(_l)) { return false; }
-							}
-						#else
-							if(_substitution_is_false(_l)) { /** printf("subt contr %lld\n",_l); /**/ return false; }
-							if(_substitution_is_undef(_l)) {
-								_loop_pass = true;
-								if(!wdsat_set_true(_l)) { return false; }
-							}
-						#endif
-					}
-					xorgauss_history_last = xorgauss_history_top;
-				}
-			#ifdef XOR_CONSTR
 			}
-			#endif
+			substitution_history_last = substitution_history_top;
+			
+			_loop_pass = false;
+			if(_continue) {
+				xorgauss_history_it = xorgauss_history_top;
+				while(xorgauss_history_it > xorgauss_history_last) {
+					_l = xorgauss_history[--xorgauss_history_it];
+					if(_substitution_is_false(_l)) { /** printf("subt contr %lld\n",_l); /**/ return false; }
+					if(_substitution_is_undef(_l)) {
+						_loop_pass = true;
+						if(!wdsat_set_true(_l)) { return false; }
+					}
+				}
+				xorgauss_history_last = xorgauss_history_top;
+			}
 		}
-	#ifdef XOR_CONSTR
 	}
-	#endif
 	return true;
 }
 
