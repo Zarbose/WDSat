@@ -275,7 +275,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
-	// printf("%lld %ld\n",l,d);
+	printf("%lld %ld\n",l,d);
 
 	if(l > nb_min_vars)
 	{
@@ -294,21 +294,12 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
-	#ifndef TEST_SUBST
-		if(!_cnf_is_undef(set[l])) {
-			return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
-		}
-	#else
-		if(!_substitution_is_undef(set[l])) {
-			return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
-		}
-	#endif
-	#ifndef TEST_SUBST
-		_cnf_breakpoint;
-	#endif
-	#ifdef TEST_SUBST
-		_substitution_breakpoint;
-	#endif
+
+	if(!_substitution_is_undef(set[l])) {
+		printf("A\n");
+		return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
+	}
+	_substitution_breakpoint;
 	_xorset_breakpoint;
 	_xorgauss_breakpoint;
 	conf[0]++;
@@ -318,23 +309,11 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	/**/
 	if(!wdsat_infer(-set[l],conf,d))
 	{
-		#ifdef STAT
-			clockcycles_init = getticks();
-		#endif
-		#ifndef TEST_SUBST
-			cnf_undo();
-		#endif
-		#ifdef TEST_SUBST
-			substitution_undo();
-			// printf("undo\n");
-		#endif
+		printf("B\n");
+		substitution_undo();
 		xorset_undo();
 		xorgauss_undo();
-		#ifdef STAT
-			clockcycles_last = getticks();
-			float diff_ticks = elapsed(clockcycles_last, clockcycles_init);
-			printf("backtrack;%f\n",diff_ticks);
-		#endif
+
 #ifdef __DEBUG__
 		printf("lev:%d--undo on 0\n",set[l]);
 		for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
@@ -346,23 +325,11 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	{
 		if(!wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1))
 		{
-			#ifdef STAT
-				clockcycles_init = getticks();
-			#endif
-			#ifndef TEST_SUBST
-				cnf_undo();
-			#endif
-			#ifdef TEST_SUBST
-				substitution_undo();
-				// printf("undo\n");
-			#endif
+			printf("C\n");
+			substitution_undo();
 			xorset_undo();
 			xorgauss_undo();
-			#ifdef STAT
-				clockcycles_last = getticks();
-				float diff_ticks = elapsed(clockcycles_last, clockcycles_init);
-				printf("backtrack;%f\n",diff_ticks);
-			#endif
+
 #ifdef __DEBUG__
 			printf("lev:%d--undo on 0 profond\n",set[l]);
 			for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
@@ -375,12 +342,8 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #ifdef __DEBUG__
 			printf("lev:%d--ok on 0\n",set[l]);
 #endif
-			#ifndef TEST_SUBST
-				_cnf_mergepoint;
-			#endif
-			#ifdef TEST_SUBST
-				_substitution_mergepoint;
-			#endif
+			printf("D\n");
+			_substitution_mergepoint;
 			_xorset_mergepoint;
 			_xorgauss_mergepoint;
 			return true;
@@ -391,6 +354,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #ifdef __DEBUG__
 		printf("lev:%d--undo on 1\n",set[l]);
 #endif
+		printf("E\n");
 		return false;
 	}
 #ifdef __DEBUG__
@@ -399,6 +363,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	printf("\n");
 #endif
 
+	printf("F\n");
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 }
 
@@ -406,17 +371,13 @@ int start = 0;
 
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int apro = (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__));
-	// printf("%ld %d %ld\n",nb_var,apro,l);
+	printf("--- %ld ---\n",l);
 
 	bool _loop_pass = true;
 	bool _continue;
-	#ifndef TEST_SUBST
-		int_t cnf_history_it;
-		int_t cnf_history_last = cnf_history_top;
-	#else
-		int_t substitution_history_it;
-		int_t substitution_history_last = substitution_history_top;
-	#endif
+
+	int_t substitution_history_it;
+	int_t substitution_history_last = substitution_history_top;
 	int_t xorgauss_history_it;
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
@@ -431,14 +392,16 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 			while(substitution_history_it > 0) {
 				_l = substitution_history[--substitution_history_it];
 				if(_xorgauss_is_undef(_l)) {
-					if(!xorgauss_set_true(_l)) { /** printf("gauss contr %lld\n",_l); /**/ return false; }
+					printf("set from sub %lld\n",_l);
+					if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l); /**/ return false; }
 					_continue = true;
 				}
 			}
 			start++;
 		}
 		else {
-			if(!xorgauss_set_true(l)) { /** printf("gauss contr %lld\n",l); /**/ return false; }
+			printf("set %lld\n",l);
+			if(!xorgauss_set_true(l)) { /**/ printf("gauss contr %lld\n",l); /**/ return false; }
 		}
 	}
 

@@ -753,6 +753,7 @@ bool xorgauss_infer(int_t v) {
 			xorgauss_history[xorgauss_history_top++] = (_tv_i ? (int_t) i : -(int_t) i);
 			_xorgauss_set(i, _tv_i);
 			xorgauss_up_stack[xorgauss_up_top_stack++] = (_tv_i ? (int_t) i : -(int_t) i); // Ligne 11 et 13 algo 4.7
+			// printf("add %ld\n",xorgauss_up_stack[xorgauss_up_top_stack-1]);
 			//assert(xorgauss_history_top < __ID_SIZE__);
 			assert(xorgauss_up_top_stack < __ID_SIZE__);
 		}
@@ -767,10 +768,13 @@ bool xorgauss_infer(int_t v) {
 		xorgauss_history[xorgauss_history_top++] = (_tv_to_subst ? (int_t) _to_subst : -(int_t) _to_subst);
 		_xorgauss_set(_to_subst, _tv_to_subst);
 		xorgauss_up_stack[xorgauss_up_top_stack++] = (_tv_to_subst ? (int_t) _to_subst : -(int_t) _to_subst); // Ligne 24 et 26 algo 4.8
+		// printf("add %ld\n",xorgauss_up_stack[xorgauss_up_top_stack-1]);
 		assert(xorgauss_history_top < __ID_SIZE__);
 		assert(xorgauss_up_top_stack < __ID_SIZE__);
 	}
+
 	/*Fin de INFER_NON_REPRESENTATIVE ou INFER_REPRESENTATIVE*/
+	
 	return true;
 }
 
