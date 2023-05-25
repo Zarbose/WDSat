@@ -27,7 +27,7 @@ int_t nb_var = 0;
 #define ENABLE_PRINT
 
 // #define STAT
-#define XOR_CONSTR
+// #define XOR_CONSTR
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -275,6 +275,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
+	printf("%ld %ld\n",l,d);
 
 	#ifdef STAT
 		ticks clockcycles_init, clockcycles_last;
