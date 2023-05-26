@@ -183,14 +183,62 @@ int substitution_is_unary(int value){
     return 0;
 }
 
-void substitution_fprint_new_systeme(){
+
+int substitution_count_nb_var(){
+
+    const int_t _n_v = dimacs_nb_vars();
+    int_t* index = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    index =  index + _n_v;
+
+    for(int_t i = -_n_v; i <= _n_v; ++i) {
+        if(!i) {
+            continue;
+        }
+
+        // Index
+        index[i] = 0;
+    }
+
+    FILE* new_sys = fopen("tmp_sys/new","r");
+    char chaine[2000];
+    while (fgets(chaine, 2000, new_sys) != NULL){
+        char * strToken = strtok ( chaine, " " );
+        while ( strToken != NULL ) {
+
+            if(strcmp(strToken, "x") == 0 || strcmp(strToken, "0") == 0 ){
+                strToken = strtok ( NULL, " " );
+                continue;
+            }
+
+            int intToken = atoi(strToken);
+
+            if (substitution_is_unary(intToken)){
+                index[intToken]++;
+            }
+            strToken = strtok ( NULL, " " );
+        }
+    }
+
+    fclose(new_sys);
+
+    int cpt=0;
+    for(int_t i = -_n_v; i <= _n_v; ++i) {
+        if (i == 0) continue;
+        if (index[i] != 0)
+            cpt++;
+    }
+
+    return cpt;
+}
+
+void substitution_write_new_systeme(){
     char chaine[2000];
 
     FILE* flux = fopen("tmp_sys/tmp","r");
-    FILE* new_sys = fopen("tmp_sys/new","w+");
+    FILE* tmp_sys = fopen("tmp_sys/new","w+");
 
     while (fgets(chaine, 2000, flux) != NULL){
-        fputs("x ", new_sys);
+        fputs("x ", tmp_sys);
         char * strToken = strtok ( chaine, " " );
         while ( strToken != NULL ) {
             if(strcmp(strToken, "x") == 0 || strcmp(strToken, "0") == 0 ){
@@ -212,61 +260,82 @@ void substitution_fprint_new_systeme(){
                         // printf("A\n");
                         char buffer[10];
                         sprintf(buffer, "%d", intToken);
-                        fputs(buffer, new_sys);
-                        fputc(' ', new_sys);
+                        fputs(buffer, tmp_sys);
+                        fputc(' ', tmp_sys);
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_true(b)){ // N T ==> v devient b
-                        printf("B\n");
+                        // printf("B\n");
                         char buffer[10];
                         sprintf(buffer, "%d", b);
-                        fputs(buffer, new_sys);
-                        fputc(' ', new_sys);
+                        fputs(buffer, tmp_sys);
+                        fputc(' ', tmp_sys);
                     }
                     else if (_substitution_is_undef(b) && _substitution_is_true(a)){ // T N ==> v devient a
-                        printf("C\n");
+                        // printf("C\n");
                         char buffer[10];
                         sprintf(buffer, "%d", a);
-                        fputs(buffer, new_sys);
-                        fputc(' ', new_sys);
+                        fputs(buffer, tmp_sys);
+                        fputc(' ', tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_false(b)){ // F F ==> v devient F
                         // printf("D\n");
-                        fputs("F ", new_sys);
+                        fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_true(a) && _substitution_is_true(b)){ // T T ==> v devient T
                         // printf("E\n");
-                        fputs("T ", new_sys);
+                        fputs("T ", tmp_sys);
                     }
                     else if (_substitution_is_true(a) && _substitution_is_false(b)){ // T F ==> v devient F
                         // printf("F\n");
-                        fputs("F ", new_sys);
+                        fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_true(b)){ // F T ==> v devient F
                         // printf("G\n");
-                        fputs("F ", new_sys);
+                        fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_false(b)){ // N F ==> v devient F
                         // printf("H\n");
-                        fputs("F ", new_sys);
+                        fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_undef(b)){ // F N ==> v devient F
                         // printf("I\n");
-                        fputs("F ", new_sys);
+                        fputs("F ", tmp_sys);
                     }
                     
                 }
                 else {
-                    fputs(strToken, new_sys);
-                    fputc(' ', new_sys);
+                    fputs(strToken, tmp_sys);
+                    fputc(' ', tmp_sys);
                 }
             }
 
             strToken = strtok ( NULL, " " );
         }
-        fputs("0\n", new_sys);
+        fputs("0\n", tmp_sys);
     }
     fclose(flux);
+    fclose(tmp_sys);
+
+    int nb_var = substitution_count_nb_var();
+
+    // "p anf nb_var 53"
+
+    FILE* new_sys = fopen("tmp_sys/final","w+");
+    FILE* file = fopen("tmp_sys/new","r");
+
+    fputs("p anf ", new_sys);
+    char buffer[10];
+    sprintf(buffer, "%d", nb_var);
+    fputs(buffer, new_sys);
+    fputs(" 53\n", new_sys);
+
+    while (fgets(chaine, 2000, file) != NULL){
+        fputs(chaine, new_sys);
+        // printf("%s\n",chaine);
+    }
+
     fclose(new_sys);
+    fclose(file);
 }
 
 // Utils functions

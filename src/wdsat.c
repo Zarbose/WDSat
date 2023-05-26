@@ -11,6 +11,7 @@
 #include<time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
 
 #include "wdsat.h"
 #include "cnf.h"
@@ -363,24 +364,26 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	// if ( nb_var <= apro){
+	if ( nb_var <= apro + 1){
 		if(!wdsat_set_true(l)){ return false; }
-	// }
+	}
 	
 	/**
 	cpt++;
 	if ( cpt == 10000){
-		substitution_fprint_new_systeme();
+		substitution_write_new_systeme();
 		exit(0);
 	}
 	/**/
 
 	/**/
-	if(nb_var >= apro ){
-		printf("%d\n",conf[0]);
-		substitution_fprint_new_systeme();
+	if(nb_var >= apro +1 ){
+		// printf("%d %ld %d\n",conf[0],nb_var, apro);
+		substitution_write_new_systeme();
+		// sleep(1);
 		exit(0);
-	}
+	// }
+	
 	/**/
 
 		// if (start == 0) {
@@ -401,35 +404,35 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 		// }
 	// }
 
-	while(_loop_pass) {
-		_continue = false;
-		substitution_history_it = substitution_history_top;
-		while(substitution_history_it > substitution_history_last) {
-			_l = substitution_history[--substitution_history_it];
-			if(_xorgauss_is_undef(_l)) {
-				if(!xorgauss_set_true(_l)) { /** printf("gauss contr %lld\n",_l); /**/ return false; }
-				_continue = true;
-			}
-		}
-		substitution_history_last = substitution_history_top;
-
-		_loop_pass = false;
-		if(_continue) {
-			xorgauss_history_it = xorgauss_history_top;
-			while(xorgauss_history_it > xorgauss_history_last) {
-				_l = xorgauss_history[--xorgauss_history_it];
-				if(_substitution_is_false(_l)) { /** printf("subt contr %lld\n",_l); /**/ return false; }
-				if(_substitution_is_undef(_l)) {
-					_loop_pass = true;
-					if(!wdsat_set_true(_l)) {
-						return false;
-					}
+		while(_loop_pass) {
+			_continue = false;
+			substitution_history_it = substitution_history_top;
+			while(substitution_history_it > substitution_history_last) {
+				_l = substitution_history[--substitution_history_it];
+				if(_xorgauss_is_undef(_l)) {
+					if(!xorgauss_set_true(_l)) { /** printf("gauss contr %lld\n",_l); /**/ return false; }
+					_continue = true;
 				}
 			}
-			xorgauss_history_last = xorgauss_history_top;
+			substitution_history_last = substitution_history_top;
+
+			_loop_pass = false;
+			if(_continue) {
+				xorgauss_history_it = xorgauss_history_top;
+				while(xorgauss_history_it > xorgauss_history_last) {
+					_l = xorgauss_history[--xorgauss_history_it];
+					if(_substitution_is_false(_l)) { /** printf("subt contr %lld\n",_l); /**/ return false; }
+					if(_substitution_is_undef(_l)) {
+						_loop_pass = true;
+						if(!wdsat_set_true(_l)) {
+							return false;
+						}
+					}
+				}
+				xorgauss_history_last = xorgauss_history_top;
+			}
 		}
 	}
-	// }
 	return true;
 }
 

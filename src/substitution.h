@@ -92,7 +92,7 @@ void substitution_fprint_history_inte_index_stack(void);
 void substitution_fprint_substitution_up_stack(void);
 void substitution_fprint_substitution_index_stack(void);
 void substitution_fprint_values(void);
-void substitution_fprint_new_systeme(void);
+void substitution_write_new_systeme(void);
 
 // Utils functions
 void substitution_add_check_stack(int_t v);
