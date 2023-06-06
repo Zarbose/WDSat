@@ -15,7 +15,11 @@
 
 #include "wdsat_utils.h"
 
-extern int_t nb_var;
+#ifdef VAR_GLOBALES
+    int_t nb_var = 0;
+#else
+    extern int_t nb_var;
+#endif
 
 /// States of reading automata
 #define ADOS   0

@@ -10,7 +10,7 @@
 
 // #define STAT
 
-int_t nb_var;
+// int_t nb_var;
 
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
@@ -274,6 +274,7 @@ void substitution_write_new_systeme(){
                         // printf("A %d\n",intToken);
                         char buffer[10];
 
+                        /**
                         int val = (intToken < 0) ? -1 : 1;
                         printf("%d %d\n",val,intToken);
                         if (val == -1){
@@ -290,6 +291,9 @@ void substitution_write_new_systeme(){
                                 sprintf(buffer, "%d", index[intToken]);
                             }
                         }
+                        /**/
+  
+                        sprintf(buffer, "%d", intToken);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
                     }
@@ -297,6 +301,7 @@ void substitution_write_new_systeme(){
                         // printf("B\n");
                         char buffer[10];
 
+                        /**
                         int val = (b < 0) ? -1 : 1;
                         printf("%d %d\n",val,b);
                         if (val == -1){
@@ -313,7 +318,9 @@ void substitution_write_new_systeme(){
                                 sprintf(buffer, "%d", index[b]);
                             }
                         }
+                        /**/
 
+                        sprintf(buffer, "%d", b);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
                     }
@@ -321,6 +328,7 @@ void substitution_write_new_systeme(){
                         // printf("C\n");
                         char buffer[10];
 
+                        /**
                         int val = (a < 0) ? -1 : 1;
                         printf("%d %d\n",val,a);
                         if (val == -1){
@@ -337,7 +345,9 @@ void substitution_write_new_systeme(){
                                 sprintf(buffer, "%d", index[a]);
                             }
                         }
-                        sprintf(buffer, "%d", index[a]);
+                        /**/
+
+                        sprintf(buffer, "%d", a);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
                     }
@@ -380,17 +390,17 @@ void substitution_write_new_systeme(){
     fclose(flux);
     fclose(tmp_sys);
 
-    int nb_var = substitution_count_nb_var();
-    printf("nb_var = %d\n",nb_var);
+    int vars = substitution_count_nb_var();
+    printf("nb_var = %d\n",vars);
 
-    // "p anf nb_var 53"
+    // "p anf vars 53"
 
     FILE* new_sys = fopen("tmp_sys/final","w+");
     FILE* file = fopen("tmp_sys/new","r");
 
     fputs("p anf ", new_sys);
     char buffer[10];
-    sprintf(buffer, "%d", nb_var);
+    sprintf(buffer, "%d", vars);
     fputs(buffer, new_sys);
     fputs(" 53\n", new_sys);
 
