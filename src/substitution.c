@@ -292,6 +292,7 @@ void substitution_write_new_systeme(){
                             }
                         }
                         /**/
+  
                         sprintf(buffer, "%d", intToken);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
