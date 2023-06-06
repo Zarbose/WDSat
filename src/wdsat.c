@@ -364,7 +364,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	if ( nb_var <= apro + 1){
+	if ( nb_var <= apro+10){
 		if(!wdsat_set_true(l)){ return false; }
 	}
 	
@@ -377,10 +377,11 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	/**/
 
 	/**/
-	if(nb_var >= apro +1 ){
+	if(nb_var >= apro+10 ){
 		// printf("%d %ld %d\n",conf[0],nb_var, apro);
 		substitution_write_new_systeme();
 		// sleep(1);
+		// return false;
 		exit(0);
 	// }
 	
@@ -432,6 +433,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_last = xorgauss_history_top;
 			}
 		}
+		// return false;
 	}
 	return true;
 }

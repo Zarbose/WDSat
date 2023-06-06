@@ -135,6 +135,12 @@ void dimacs_read_formula(FILE *f) {
 					str_l = strtok (NULL, " ");
 					continue;
 				}
+				if(strcmp(str_l, "F") == 0)
+				{
+					dimacs_xor_equation_constant[dimacs_nb_of_xor_equations] = (dimacs_xor_equation_constant[dimacs_nb_of_xor_equations]) % 2;
+					str_l = strtok (NULL, " ");
+					continue;
+				}
 				if(str_l[0] == '.')
 				{
 					deg = str_l[1] - '0'; //att if __MAX_DEGREE__ > 9
