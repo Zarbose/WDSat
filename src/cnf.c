@@ -10,7 +10,7 @@
 #include "dimacs.h"
 #include "wdsat_utils.h"
 
-int_t nb_var;
+// int_t nb_var;
 
 
 // unit propagation stack

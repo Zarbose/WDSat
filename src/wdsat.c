@@ -17,11 +17,12 @@
 #include "cnf.h"
 #include "xorset.h"
 #include "xorgauss.h"
+#define VAR_GLOBALES
 #include "dimacs.h"
 #include "substitution.h"
 #include "cycle.h"
 
-int_t nb_var = 0;
+// int_t nb_var = 0;
 
 #define TEST_SUBST
 
@@ -364,20 +365,12 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	if ( nb_var <= apro + 1){
+	if ( nb_var <= apro + 10){
 		if(!wdsat_set_true(l)){ return false; }
 	}
-	
-	/**
-	cpt++;
-	if ( cpt == 10000){
-		substitution_write_new_systeme();
-		exit(0);
-	}
-	/**/
 
 	/**/
-	if(nb_var >= apro +1 ){
+	if(nb_var >= apro +10 ){
 		// printf("%d %ld %d\n",conf[0],nb_var, apro);
 		substitution_write_new_systeme();
 		// sleep(1);
@@ -385,24 +378,6 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	// }
 	
 	/**/
-
-		// if (start == 0) {
-		// 	substitution_history_it = substitution_history_top;
-		// 	while(substitution_history_it > 0) {
-		// 		_l = substitution_history[--substitution_history_it];
-		// 		if(_xorgauss_is_undef(_l)) {
-		// 			printf("set from sub %lld\n",_l);
-		// 			if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l); /**/ return false; }
-		// 			_continue = true;
-		// 		}
-		// 	}
-		// 	start++;
-		// }
-		// else {
-		// 	printf("set %lld\n",l);
-		// 	if(!xorgauss_set_true(l)) { /**/ printf("gauss contr %lld\n",l); /**/ return false; }
-		// }
-	// }
 
 		while(_loop_pass) {
 			_continue = false;

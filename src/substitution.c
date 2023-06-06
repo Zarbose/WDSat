@@ -10,7 +10,7 @@
 
 // #define STAT
 
-int_t nb_var;
+// int_t nb_var;
 
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
@@ -212,9 +212,9 @@ int substitution_count_nb_var(){
 
             int intToken = atoi(strToken);
 
-            if (substitution_is_unary(intToken)){
-                index[intToken]++;
-            }
+            // if (substitution_is_unary(intToken)){
+            index[intToken]++;
+            // }
             strToken = strtok ( NULL, " " );
         }
     }
@@ -224,8 +224,10 @@ int substitution_count_nb_var(){
     int cpt=0;
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if (i == 0) continue;
-        if (index[i] != 0)
+        if (index[i] != 0){
             cpt++;
+            // printf("%d\n",i);
+        }
     }
 
     return cpt;
@@ -236,6 +238,18 @@ void substitution_write_new_systeme(){
 
     FILE* flux = fopen("tmp_sys/tmp","r");
     FILE* tmp_sys = fopen("tmp_sys/new","w+");
+
+    int var=1;
+    const int_t _n_v = dimacs_nb_vars();
+    int_t* index = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    index =  index + _n_v;
+
+    for(int_t i = -_n_v; i <= _n_v; ++i) {
+        if(!i) {
+            continue;
+        }
+        index[i] = 0;
+    }
 
     while (fgets(chaine, 2000, flux) != NULL){
         fputs("x ", tmp_sys);
@@ -257,8 +271,27 @@ void substitution_write_new_systeme(){
                     // printf("%d %d\n",substitution_assignment[a],substitution_assignment[b]);
 
                     if (_substitution_is_undef(a) && _substitution_is_undef(b)){ // N N ==> pas de changement
-                        // printf("A\n");
+                        // printf("A %d\n",intToken);
                         char buffer[10];
+
+                        /**
+                        int val = (intToken < 0) ? -1 : 1;
+                        printf("%d %d\n",val,intToken);
+                        if (val == -1){
+                            if (index[-intToken] == 0){
+                                index[-intToken] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[-intToken]);
+                            }
+                        }
+                        else{
+                            if (index[intToken] == 0){
+                                index[intToken] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[intToken]);
+                            }
+                        }
+                        /**/
                         sprintf(buffer, "%d", intToken);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
@@ -266,6 +299,26 @@ void substitution_write_new_systeme(){
                     else if (_substitution_is_undef(a) && _substitution_is_true(b)){ // N T ==> v devient b
                         // printf("B\n");
                         char buffer[10];
+
+                        /**
+                        int val = (b < 0) ? -1 : 1;
+                        printf("%d %d\n",val,b);
+                        if (val == -1){
+                            if (index[-b] == 0){
+                                index[-b] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[-b]);
+                            }
+                        }
+                        else{
+                            if (index[b] == 0){
+                                index[b] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[b]);
+                            }
+                        }
+                        /**/
+
                         sprintf(buffer, "%d", b);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
@@ -273,6 +326,26 @@ void substitution_write_new_systeme(){
                     else if (_substitution_is_undef(b) && _substitution_is_true(a)){ // T N ==> v devient a
                         // printf("C\n");
                         char buffer[10];
+
+                        /**
+                        int val = (a < 0) ? -1 : 1;
+                        printf("%d %d\n",val,a);
+                        if (val == -1){
+                            if (index[-a] == 0){
+                                index[-a] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[-a]);
+                            }
+                        }
+                        else{
+                            if (index[a] == 0){
+                                index[a] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[a]);
+                            }
+                        }
+                        /**/
+
                         sprintf(buffer, "%d", a);
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
@@ -316,16 +389,17 @@ void substitution_write_new_systeme(){
     fclose(flux);
     fclose(tmp_sys);
 
-    int nb_var = substitution_count_nb_var();
+    int vars = substitution_count_nb_var();
+    printf("nb_var = %d\n",vars);
 
-    // "p anf nb_var 53"
+    // "p anf vars 53"
 
     FILE* new_sys = fopen("tmp_sys/final","w+");
     FILE* file = fopen("tmp_sys/new","r");
 
     fputs("p anf ", new_sys);
     char buffer[10];
-    sprintf(buffer, "%d", nb_var);
+    sprintf(buffer, "%d", vars);
     fputs(buffer, new_sys);
     fputs(" 53\n", new_sys);
 
