@@ -10,8 +10,6 @@
 #include "dimacs.h"
 #include "wdsat_utils.h"
 
-// int_t nb_var;
-
 
 // unit propagation stack
 int_t cnf_up_stack[__ID_SIZE__];

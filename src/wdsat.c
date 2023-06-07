@@ -370,7 +370,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	}
 
 	/**/
-	if(nb_var >= apro+10 ){
+	if(nb_var >= apro+10){
 		// printf("%d %ld %d\n",conf[0],nb_var, apro);
 		substitution_write_new_systeme();
 		// sleep(1);
@@ -476,11 +476,16 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
+	
+	/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+		// xorgauss_write_origin();
+	/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
+
+
+	
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
 	// xorgauss_fprint_system();
-	// substitution_fprint_equivalency_all();
-	// exit(0);
 
 	// xorset_fprint();
 	// xorset_index_structure_fprintf();

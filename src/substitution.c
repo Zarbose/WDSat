@@ -8,8 +8,7 @@
 #include "dimacs.h"
 #include "cycle.h"
 
-// #define CLEAN
-// int_t nb_var;
+#define CLEAN
 
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
@@ -58,6 +57,7 @@ static int_t **substitution_values_buffer;
 static int_t *substitution_index;
 static int_t *substitution_index_buffer;
 
+static char assignement_string[__MAX_ANF_ID__];
 
 // Regular print
 void substitution_fprint_equivalency_all() {
@@ -175,30 +175,35 @@ void substitution_fprint_values(){
 }
 
 int substitution_is_unary(int value){
-
     if ((value > __MAX_ANF_ID__ - 1) || (value < -__MAX_ANF_ID__ + 1)) return 0;
-
     return 1;
 }
 
+void substitution_get_assignment_string(){
+    char buffer[__MAX_ANF_ID__];
+    char var_buffer[10];
+
+    for (int_t i = 1LL; i <= __MAX_ANF_ID__-1; ++i){
+        sprintf(var_buffer, "%ld",substitution_assignment[i]);
+        strcat(buffer,var_buffer);
+    }
+    strcpy(assignement_string,buffer);
+}
 
 int substitution_count_nb_var(){ // Ok
 
-    const int_t _n_v = dimacs_nb_vars();
-    int_t* index = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
-    index =  index + _n_v;
+    const int_t _n_v = substitution_nb_of_var;
+    int_t* index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    int_t* index =  index_buffer + _n_v;
 
     for(int_t i = -_n_v; i <= _n_v; ++i) {
-        if(!i) {
-            continue;
-        }
-
-        // Index
+        if(!i) continue;
         index[i] = 0;
     }
 
-    FILE* new_sys = fopen("tmp_sys/new","r");
+    FILE* new_sys = fopen("xorgauss_sys/new_sys/final","r");
     char chaine[2000];
+    fgets(chaine, 2000, new_sys);
     while (fgets(chaine, 2000, new_sys) != NULL){
         char * strToken = strtok ( chaine, " " );
         while ( strToken != NULL ) {
@@ -222,28 +227,26 @@ int substitution_count_nb_var(){ // Ok
 
     fclose(new_sys);
 
-    int cpt=0;
+    int cpt = 0;
     for(int_t i = -_n_v; i <= _n_v; ++i) {
-        if (i == 0) continue;
-        if (index[i] != 0){
-            cpt++;
-            // printf("%d\n",i);
-        }
+        if (!i) continue;
+        if (index[i] != 0) cpt++;
     }
 
+    free(index_buffer);
     return cpt;
 }
 
 void substitution_write_new_systeme(){
     char chaine[2000];
 
-    FILE* flux = fopen("tmp_sys/tmp","r");
-    FILE* tmp_sys = fopen("tmp_sys/new","w+");
+    FILE* flux = fopen("xorgauss_sys/origin","r");
+    FILE* xorgauss_tmp_sys = fopen("xorgauss_sys/tmp_sys/tmp","w+");
 
     int var=1;
-    const int_t _n_v = dimacs_nb_vars();
-    int_t* index = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
-    index =  index + _n_v;
+    const int_t _n_v = substitution_nb_of_var;
+    int_t* index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
+    int_t* index =  index_buffer + _n_v;
 
     for(int_t i = -_n_v; i <= _n_v; ++i) {
         if(!i) {
@@ -253,7 +256,7 @@ void substitution_write_new_systeme(){
     }
 
     while (fgets(chaine, sizeof(chaine), flux) != NULL){
-        fputs("x ", tmp_sys);
+        fputs("x ", xorgauss_tmp_sys);
         char * strToken = strtok ( chaine, " " );
         while ( strToken != NULL ) {
             if(strToken[0] == 'x'){
@@ -296,8 +299,8 @@ void substitution_write_new_systeme(){
 #else
                         sprintf(buffer, "%d", intToken);
 #endif
-                        fputs(buffer, tmp_sys);
-                        fputc(' ', tmp_sys);
+                        fputs(buffer, xorgauss_tmp_sys);
+                        fputc(' ', xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_true(b)){ // N T ==> v devient b
                         // printf("B %d ==> %d\n",intToken,b);
@@ -322,8 +325,8 @@ void substitution_write_new_systeme(){
 #else
                         sprintf(buffer, "%d", b);
 #endif
-                        fputs(buffer, tmp_sys);
-                        fputc(' ', tmp_sys);
+                        fputs(buffer, xorgauss_tmp_sys);
+                        fputc(' ', xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_undef(b) && _substitution_is_true(a)){ // T N ==> v devient a
                         // printf("C %d ==> %d\n",intToken,a);
@@ -348,26 +351,26 @@ void substitution_write_new_systeme(){
 #else
                         sprintf(buffer, "%d", a);
 #endif
-                        fputs(buffer, tmp_sys);
-                        fputc(' ', tmp_sys);
+                        fputs(buffer, xorgauss_tmp_sys);
+                        fputc(' ', xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_false(b)){ // F F ==> v devient F
-                        fputs("F ", tmp_sys);
+                        fputs("F ", xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_true(a) && _substitution_is_true(b)){ // T T ==> v devient T
-                        fputs("T ", tmp_sys);
+                        fputs("T ", xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_true(a) && _substitution_is_false(b)){ // T F ==> v devient F
-                        fputs("F ", tmp_sys);
+                        fputs("F ", xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_true(b)){ // F T ==> v devient F
-                        fputs("F ", tmp_sys);
+                        fputs("F ", xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_false(b)){ // N F ==> v devient F
-                        fputs("F ", tmp_sys);
+                        fputs("F ", xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_undef(b)){ // F N ==> v devient F
-                        fputs("F ", tmp_sys);
+                        fputs("F ", xorgauss_tmp_sys);
                     }
                     
                 }
@@ -393,14 +396,14 @@ void substitution_write_new_systeme(){
 #else
                         sprintf(buffer, "%d", intToken);
 #endif
-                        fputs(buffer, tmp_sys);
-                        fputc(' ', tmp_sys);
+                        fputs(buffer, xorgauss_tmp_sys);
+                        fputc(' ', xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_false(intToken)){
-                        fputs("F ", tmp_sys);
+                        fputs("F ", xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_true(intToken)){
-                        fputs("T ", tmp_sys);
+                        fputs("T ", xorgauss_tmp_sys);
                     }
                 }
             }
@@ -426,31 +429,33 @@ void substitution_write_new_systeme(){
 #else
                     sprintf(buffer, "%d", intToken);
 #endif
-                    fputs(buffer, tmp_sys);
-                    fputc(' ', tmp_sys);
+                    fputs(buffer, xorgauss_tmp_sys);
+                    fputc(' ', xorgauss_tmp_sys);
                 }
                 else if (_substitution_is_false(intToken)){
-                    fputs("F ", tmp_sys);
+                    fputs("F ", xorgauss_tmp_sys);
                 }
                 else if (_substitution_is_true(intToken)){
-                    fputs("T ", tmp_sys);
+                    fputs("T ", xorgauss_tmp_sys);
                 }
             }
 
             strToken = strtok ( NULL, " " );
         }
-        fputs("0\n", tmp_sys);
+        fputs("0\n", xorgauss_tmp_sys);
     }
     fclose(flux);
-    fclose(tmp_sys);
+    fclose(xorgauss_tmp_sys);
 
     int vars = substitution_count_nb_var();
-    printf("nb_var = %d\n",vars);
+    // printf("nb_var = %d\n",vars);
 
-    // "p anf vars 53"
+    substitution_get_assignment_string();
+    char file_str[100]="xorgauss_sys/new_sys/final_";
+    strcat(file_str,assignement_string);
 
-    FILE* new_sys = fopen("tmp_sys/final","w+");
-    FILE* file = fopen("tmp_sys/new","r");
+    FILE* new_sys = fopen(file_str,"w+");
+    FILE* file = fopen("xorgauss_sys/tmp_sys/tmp","r");
 
     fputs("p anf ", new_sys);
     char buffer[10];
@@ -464,6 +469,8 @@ void substitution_write_new_systeme(){
 
     fclose(new_sys);
     fclose(file);
+
+    free(index_buffer);
 }
 
 // Utils functions

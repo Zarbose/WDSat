@@ -75,6 +75,7 @@ void xorgauss_fprint_system(void);
 void xorgauss_fprint_for_xorset(void);
 void xorgauss_count_nb_equationxor(void);
 const uint_t xorgauss_get_nb_xorequation(void);
+void xorgauss_write_origin(void);
 
 #ifdef __XG_ENHANCED__ //if XG-enhanced
 

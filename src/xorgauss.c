@@ -130,6 +130,44 @@ void xorgauss_fprint_for_xorset() {
 	}
 }
 
+void xorgauss_write_origin(){
+	FILE* origin = fopen("xorgauss_sys/origin","w+");
+	uint_t v;
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
+		if(xorgauss_equivalent[v])
+		{
+			if(_boolean_vector_get(xorgauss_equivalency[v], 0)){
+				char buff[10];
+				fputs("x ", origin);
+				sprintf(buff, "%lld", v);
+				fputs(buff, origin);
+				fputc(' ', origin);
+			}
+
+			else{
+				char buff[10];
+				fputs("x ", origin);
+				sprintf(buff, "%lld", -v);
+				fputs(buff, origin);
+				fputc(' ', origin);
+			}
+			for(uint_t _boolean_vector_fprint_i = 1ULL; _boolean_vector_fprint_i <= xorgauss_nb_of_vars; ++_boolean_vector_fprint_i)
+			{
+				if(_boolean_vector_get(xorgauss_equivalency[v], _boolean_vector_fprint_i))
+				{
+					char buff[10];
+					sprintf(buff, "%llu", _boolean_vector_fprint_i);
+					fputs(buff, origin);
+					fputc(' ', origin);
+				}
+				
+			}
+			fputs("0\n", origin);
+		}
+	}
+	fclose(origin);
+}
+
 inline void xorgauss_reset_boolean_vector(uint_t *v) {
 	for(uint_t i = 0ULL; i < __SZ_GAUSS__; ++i)
 		/// different writing for same aim
