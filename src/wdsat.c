@@ -365,12 +365,14 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	if ( nb_var <= apro+10){
+	int v=0;
+
+	if ( nb_var <= apro+v){
 		if(!wdsat_set_true(l)){ return false; }
 	}
 
 	/**/
-	if(nb_var >= apro+10){
+	if(nb_var >= apro+v){
 		// printf("%d %ld %d\n",conf[0],nb_var, apro);
 		substitution_write_new_systeme();
 		// sleep(1);
@@ -476,7 +478,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
-	
+
 	/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
 		// xorgauss_write_origin();
 	/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
