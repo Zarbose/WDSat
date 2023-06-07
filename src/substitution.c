@@ -8,8 +8,7 @@
 #include "dimacs.h"
 #include "cycle.h"
 
-// #define STAT
-
+// #define CLEAN
 // int_t nb_var;
 
 // utils variables
@@ -177,14 +176,13 @@ void substitution_fprint_values(){
 
 int substitution_is_unary(int value){
 
-    if (value > __MAX_ANF_ID__ - 1) return 1;
-    if (value < -__MAX_ANF_ID__ + 1) return 1;
+    if ((value > __MAX_ANF_ID__ - 1) || (value < -__MAX_ANF_ID__ + 1)) return 0;
 
-    return 0;
+    return 1;
 }
 
 
-int substitution_count_nb_var(){
+int substitution_count_nb_var(){ // Ok
 
     const int_t _n_v = dimacs_nb_vars();
     int_t* index = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
@@ -205,16 +203,19 @@ int substitution_count_nb_var(){
         char * strToken = strtok ( chaine, " " );
         while ( strToken != NULL ) {
 
-            if(strcmp(strToken, "x") == 0 || strcmp(strToken, "0") == 0 ){
+            if(strToken[0] == 'x'){
                 strToken = strtok ( NULL, " " );
                 continue;
             }
 
+            if(strToken[0] == '0'){
+                strToken = strtok ( NULL, " " );
+                break;
+            }
+
             int intToken = atoi(strToken);
 
-            // if (substitution_is_unary(intToken)){
             index[intToken]++;
-            // }
             strToken = strtok ( NULL, " " );
         }
     }
@@ -251,32 +252,33 @@ void substitution_write_new_systeme(){
         index[i] = 0;
     }
 
-    while (fgets(chaine, 2000, flux) != NULL){
+    while (fgets(chaine, sizeof(chaine), flux) != NULL){
         fputs("x ", tmp_sys);
         char * strToken = strtok ( chaine, " " );
         while ( strToken != NULL ) {
-            if(strcmp(strToken, "x") == 0 || strcmp(strToken, "0") == 0 ){
+            if(strToken[0] == 'x'){
                 strToken = strtok ( NULL, " " );
                 continue;
             }
 
+            if(strToken[0] == '0'){
+                strToken = strtok ( NULL, " " );
+                break;
+            }
+            
             int intToken = atoi(strToken);
 
-            if (substitution_is_unary(intToken)){
+            if (!substitution_is_unary(intToken)){
 
                 if (substitution_equivalent[intToken]){
                     int a = substitution_equivalency_all[intToken][0];
                     int b = substitution_equivalency_all[intToken][1];
 
-                    // printf("%d %d\n",substitution_assignment[a],substitution_assignment[b]);
-
                     if (_substitution_is_undef(a) && _substitution_is_undef(b)){ // N N ==> pas de changement
                         // printf("A %d\n",intToken);
                         char buffer[10];
-
-                        /**
+#ifdef CLEAN
                         int val = (intToken < 0) ? -1 : 1;
-                        printf("%d %d\n",val,intToken);
                         if (val == -1){
                             if (index[-intToken] == 0){
                                 index[-intToken] = var;
@@ -291,19 +293,18 @@ void substitution_write_new_systeme(){
                                 sprintf(buffer, "%d", index[intToken]);
                             }
                         }
-                        /**/
-  
+#else
                         sprintf(buffer, "%d", intToken);
+#endif
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_true(b)){ // N T ==> v devient b
-                        // printf("B\n");
+                        // printf("B %d ==> %d\n",intToken,b);
                         char buffer[10];
 
-                        /**
+#ifdef CLEAN
                         int val = (b < 0) ? -1 : 1;
-                        printf("%d %d\n",val,b);
                         if (val == -1){
                             if (index[-b] == 0){
                                 index[-b] = var;
@@ -318,19 +319,18 @@ void substitution_write_new_systeme(){
                                 sprintf(buffer, "%d", index[b]);
                             }
                         }
-                        /**/
-
+#else
                         sprintf(buffer, "%d", b);
+#endif
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
                     }
                     else if (_substitution_is_undef(b) && _substitution_is_true(a)){ // T N ==> v devient a
-                        // printf("C\n");
+                        // printf("C %d ==> %d\n",intToken,a);
                         char buffer[10];
 
-                        /**
+#ifdef CLEAN
                         int val = (a < 0) ? -1 : 1;
-                        printf("%d %d\n",val,a);
                         if (val == -1){
                             if (index[-a] == 0){
                                 index[-a] = var;
@@ -345,41 +345,95 @@ void substitution_write_new_systeme(){
                                 sprintf(buffer, "%d", index[a]);
                             }
                         }
-                        /**/
-
+#else
                         sprintf(buffer, "%d", a);
+#endif
                         fputs(buffer, tmp_sys);
                         fputc(' ', tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_false(b)){ // F F ==> v devient F
-                        // printf("D\n");
                         fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_true(a) && _substitution_is_true(b)){ // T T ==> v devient T
-                        // printf("E\n");
                         fputs("T ", tmp_sys);
                     }
                     else if (_substitution_is_true(a) && _substitution_is_false(b)){ // T F ==> v devient F
-                        // printf("F\n");
                         fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_true(b)){ // F T ==> v devient F
-                        // printf("G\n");
                         fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_false(b)){ // N F ==> v devient F
-                        // printf("H\n");
                         fputs("F ", tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_undef(b)){ // F N ==> v devient F
-                        // printf("I\n");
                         fputs("F ", tmp_sys);
                     }
                     
                 }
                 else {
-                    fputs(strToken, tmp_sys);
+                    char buffer[10];
+                    if (_substitution_is_undef(intToken)){
+#ifdef CLEAN
+                        int val = (intToken < 0) ? -1 : 1;
+                        if (val == -1){
+                            if (index[-intToken] == 0){
+                                index[-intToken] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[-intToken]);
+                            }
+                        }
+                        else{
+                            if (index[intToken] == 0){
+                                index[intToken] = var;
+                                var++;
+                                sprintf(buffer, "%d", index[intToken]);
+                            }
+                        }
+#else
+                        sprintf(buffer, "%d", intToken);
+#endif
+                        fputs(buffer, tmp_sys);
+                        fputc(' ', tmp_sys);
+                    }
+                    else if (_substitution_is_false(intToken)){
+                        fputs("F ", tmp_sys);
+                    }
+                    else if (_substitution_is_true(intToken)){
+                        fputs("T ", tmp_sys);
+                    }
+                }
+            }
+            else{
+                char buffer[10];
+                if (_substitution_is_undef(intToken)){
+#ifdef CLEAN
+                    int val = (intToken < 0) ? -1 : 1;
+                    if (val == -1){
+                        if (index[-intToken] == 0){
+                            index[-intToken] = var;
+                            var++;
+                            sprintf(buffer, "%d", index[-intToken]);
+                        }
+                    }
+                    else{
+                        if (index[intToken] == 0){
+                            index[intToken] = var;
+                            var++;
+                            sprintf(buffer, "%d", index[intToken]);
+                        }
+                    }
+#else
+                    sprintf(buffer, "%d", intToken);
+#endif
+                    fputs(buffer, tmp_sys);
                     fputc(' ', tmp_sys);
+                }
+                else if (_substitution_is_false(intToken)){
+                    fputs("F ", tmp_sys);
+                }
+                else if (_substitution_is_true(intToken)){
+                    fputs("T ", tmp_sys);
                 }
             }
 
@@ -406,7 +460,6 @@ void substitution_write_new_systeme(){
 
     while (fgets(chaine, 2000, file) != NULL){
         fputs(chaine, new_sys);
-        // printf("%s\n",chaine);
     }
 
     fclose(new_sys);
