@@ -3,6 +3,7 @@
 wdsat_solver
 result/*
 fichier/
+xorgauss_sys/*
 
 backtrack.csv
 classique.csv
