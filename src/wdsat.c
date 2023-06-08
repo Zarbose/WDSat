@@ -26,7 +26,7 @@
 
 #define TEST_SUBST
 
-#define ENABLE_PRINT
+// #define ENABLE_PRINT
 
 // #define STAT
 #define XOR_CONSTR
@@ -256,7 +256,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
-	// printf("%lld %ld\n",l,d);
+	int apro = (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__));
 
 	if(l > nb_min_vars)
 	{
@@ -269,6 +269,12 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #endif
 		return true;
 	}
+
+	if ( nb_var >= apro){
+		substitution_write_new_systeme();
+		return false;
+	}
+
 #ifdef __DEBUG__
 	printf("\nSetting:%d\n",set[l]);
 	for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
@@ -372,12 +378,12 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	}
 
 	/**/
-	if(nb_var >= apro+v){
+	if(nb_var >= apro+v+1){
 		// printf("%d %ld %d\n",conf[0],nb_var, apro);
-		substitution_write_new_systeme();
+		// substitution_write_new_systeme();
 		// sleep(1);
 		// return false;
-		exit(0);
+		// exit(0);
 	// }
 	
 	/**/
