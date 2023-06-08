@@ -57,7 +57,7 @@ static int_t **substitution_values_buffer;
 static int_t *substitution_index;
 static int_t *substitution_index_buffer;
 
-static char assignement_string[__MAX_ANF_ID__];
+char assignement_string[100];
 
 // Regular print
 void substitution_fprint_equivalency_all() {
@@ -180,14 +180,18 @@ int substitution_is_unary(int value){
 }
 
 void substitution_get_assignment_string(){
-    char buffer[__MAX_ANF_ID__];
-    char var_buffer[10];
+    strcpy(assignement_string,"");
+    int var_buffer[100];
+    char buffer[10];
 
-    for (int_t i = 1LL; i <= __MAX_ANF_ID__-1; ++i){
-        sprintf(var_buffer, "%ld",substitution_assignment[i]);
-        strcat(buffer,var_buffer);
+    for (int i = 1; i < __MAX_ANF_ID__; i++){
+        var_buffer[i]=(int) substitution_assignment[i];
     }
-    strcpy(assignement_string,buffer);
+
+    for (int i = 1; i < __MAX_ANF_ID__; i++){
+        sprintf(buffer, "%d",var_buffer[i]);
+        strcat(assignement_string,buffer);
+    }
 }
 
 int substitution_count_nb_var(){ // Ok
@@ -429,7 +433,7 @@ void substitution_write_new_systeme(){
 
     int vars = substitution_count_nb_var();
     printf("nb_var = %d\n",vars);
-
+    
     substitution_get_assignment_string();
     char file_str[100]="xorgauss_sys/new_sys/final_";
     strcat(file_str,assignement_string);
