@@ -31,6 +31,8 @@
 // #define STAT
 #define XOR_CONSTR
 
+#define FULL_GEN
+
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
 // static int_t nb_of_vars; // Not used
@@ -258,8 +260,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 int cpt_level=0;
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
-	// int apro = (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__));
-
 	if(l > nb_min_vars)
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -271,18 +271,17 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #endif
 		return true;
 	}
-
-	// if (cpt_level < 10342){
-		if ( nb_var >= __APRO__){
-			substitution_write_new_systeme();
-			// printf("%d: ",cpt_level);
-			// cpt_level++;
-			// for(int i = 1; i < __MAX_ANF_ID__; i++)
-			// 	printf("%d",substitution_assignment[i]);
-			// printf("\n");
-			return false;
-		}
-	// }
+#ifdef FULL_GEN
+	if ( nb_var > __APRO__){
+		substitution_write_new_systeme();
+		// printf("%d: ",cpt_level);
+		// cpt_level++;
+		// for(int i = 1; i < __MAX_ANF_ID__; i++)
+		// 	printf("%d",substitution_assignment[i]);
+		// printf("\n");
+		return false;
+	}
+#endif
 #ifdef __DEBUG__
 	printf("\nSetting:%d\n",set[l]);
 	for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
@@ -366,8 +365,6 @@ int start = 0;
 int cpt=0;
 
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
-	// int apro = (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__));
-	
 	bool _loop_pass = true;
 	bool _continue;
 
@@ -379,23 +376,17 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 
 	int v=0;
 
-	if ( nb_var <= __APRO__+v){
-	// if (cpt_level < 10342){
+	// if ( nb_var <= __APRO__+ v){
 		if(!wdsat_set_true(l)){ return false; }
-	}
+	// }
 
 	/**/
-	if(nb_var >= __APRO__ + v+1){
-		// exit(0);
-		// printf("%d %ld %d\n",conf[0],nb_var, apro);
-		// substitution_write_new_systeme();
-		// sleep(1);
-		// return false;
-		// exit(0);
+	if(nb_var > __APRO__ + v + 10000){
+		substitution_write_new_systeme();
+		exit(0);
 	// }
 	
 	/**/
-	// if (cpt_level >= 10342){
 		while(_loop_pass) {
 			_continue = false;
 			substitution_history_it = substitution_history_top;

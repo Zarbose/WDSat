@@ -262,8 +262,11 @@ void substitution_write_new_systeme(){
     while (fgets(chaine, sizeof(chaine), flux) != NULL){
         fputs("x ", xorgauss_tmp_sys);
         char * strToken = strtok ( chaine, " " );
-        
+
+        int constante = -1;
+
         while ( strToken != NULL ) {
+            
 
             if(strToken[0] == 'x'){
                 strToken = strtok ( NULL, " " );
@@ -346,22 +349,28 @@ void substitution_write_new_systeme(){
                         fputc(' ', xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_false(a) && _substitution_is_false(b)){ // F F ==> v devient F
-                        fputs("F ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 0;
+                        else constante = constante ^ 0;
                     }
                     else if (_substitution_is_true(a) && _substitution_is_true(b)){ // T T ==> v devient T
-                        fputs("T ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 1;
+                        else constante = constante ^ 1;
                     }
                     else if (_substitution_is_true(a) && _substitution_is_false(b)){ // T F ==> v devient F
-                        fputs("F ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 0;
+                        else constante = constante ^ 0;
                     }
                     else if (_substitution_is_false(a) && _substitution_is_true(b)){ // F T ==> v devient F
-                        fputs("F ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 0;
+                        else constante = constante ^ 0;
                     }
                     else if (_substitution_is_undef(a) && _substitution_is_false(b)){ // N F ==> v devient F
-                        fputs("F ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 0;
+                        else constante = constante ^ 0;
                     }
                     else if (_substitution_is_false(a) && _substitution_is_undef(b)){ // F N ==> v devient F
-                        fputs("F ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 0;
+                        else constante = constante ^ 0;
                     }
                     
                 }
@@ -386,10 +395,12 @@ void substitution_write_new_systeme(){
                         fputc(' ', xorgauss_tmp_sys);
                     }
                     else if (_substitution_is_false(intToken)){
-                        fputs("F ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 0;
+                        else constante = constante ^ 0;
                     }
                     else if (_substitution_is_true(intToken)){
-                        fputs("T ", xorgauss_tmp_sys);
+                        if (constante == -1) constante = 1;
+                        else constante = constante ^ 1;
                     }
                 }
             }
@@ -414,15 +425,20 @@ void substitution_write_new_systeme(){
                     fputc(' ', xorgauss_tmp_sys);
                 }
                 else if (_substitution_is_false(intToken)){
-                    fputs("F ", xorgauss_tmp_sys);
+                    if (constante == -1) constante = 0;
+                    else constante = constante ^ 0;
                 }
                 else if (_substitution_is_true(intToken)){
-                    fputs("T ", xorgauss_tmp_sys);
+                    if (constante == -1) constante = 1;
+                    else constante = constante ^ 1;
+                    // fputs("T ", xorgaus_tmp_sys);
                 }
             }
-
+            
             strToken = strtok ( NULL, " " );
         }
+        if (constante == 1) fputc('T', xorgauss_tmp_sys);
+        if (constante == 1) fputc(' ', xorgauss_tmp_sys);
         
         fputs("0\n", xorgauss_tmp_sys);
     }
