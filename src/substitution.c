@@ -194,7 +194,7 @@ void substitution_get_assignment_string(){
     }
 }
 
-int substitution_count_nb_var(){ // Ok
+int substitution_count_nb_var(){
     const int_t _n_v = substitution_nb_of_var;
     int_t* index_buffer = (int_t *)malloc((__SIGNED_ID_SIZE__)*sizeof(int_t));
     int_t* index =  index_buffer + _n_v;

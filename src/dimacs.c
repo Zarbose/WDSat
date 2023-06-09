@@ -137,7 +137,7 @@ void dimacs_read_formula(FILE *f) {
 				}
 				if(strcmp(str_l, "F") == 0)
 				{
-					dimacs_xor_equation_constant[dimacs_nb_of_xor_equations] = (dimacs_xor_equation_constant[dimacs_nb_of_xor_equations]) % 2;
+					dimacs_xor_equation_constant[dimacs_nb_of_xor_equations] = (dimacs_xor_equation_constant[dimacs_nb_of_xor_equations] + 1) % 2;
 					str_l = strtok (NULL, " ");
 					continue;
 				}

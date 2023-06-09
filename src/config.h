@@ -147,6 +147,7 @@
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ 53
 # define __MAX_XEQ_SIZE__ 650
+# define __APRO__ 14
 
 /** Rainbow : N=4 M=11 **/
 /*# define __MAX_ANF_ID__ 5 // make it +1
@@ -157,3 +158,13 @@
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ 11
 # define __MAX_XEQ_SIZE__ 20*/
+
+/** Custom : N=69 M=53 **/
+/*# define __MAX_ANF_ID__ 69 // make it +1
+# define __MAX_DEGREE__ 3 // make it +1
+# define __MAX_ID__ 69
+# define __MAX_BUFFER_SIZE__ 200000
+# define __MAX_EQ__ 1378
+# define __MAX_EQ_SIZE__ 4 //make it +1
+# define __MAX_XEQ__ 53
+# define __MAX_XEQ_SIZE__ 4830*/
