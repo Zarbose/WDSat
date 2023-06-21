@@ -31,7 +31,7 @@
 // #define STAT
 #define XOR_CONSTR
 
-#define FULL_GEN
+// #define FULL_GEN
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -274,11 +274,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #ifdef FULL_GEN
 	if ( nb_var > __APRO__){
 		substitution_write_new_systeme();
-		// printf("%d: ",cpt_level);
-		// cpt_level++;
-		// for(int i = 1; i < __MAX_ANF_ID__; i++)
-		// 	printf("%d",substitution_assignment[i]);
-		// printf("\n");
+		// exit(0);
 		return false;
 	}
 #endif
@@ -361,7 +357,6 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 }
 
-int start = 0;
 int cpt=0;
 
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
@@ -376,17 +371,11 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 
 	int v=0;
 
-	// if ( nb_var <= __APRO__+ v){
+	if ( nb_var <= __APRO__+ v){
 		if(!wdsat_set_true(l)){ return false; }
-	// }
+	}
 
-	/**/
-	if(nb_var > __APRO__ + v + 10000){
-		substitution_write_new_systeme();
-		exit(0);
-	// }
-	
-	/**/
+	if(nb_var > __APRO__ + v ){
 		while(_loop_pass) {
 			_continue = false;
 			substitution_history_it = substitution_history_top;
