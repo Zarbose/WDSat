@@ -31,8 +31,11 @@ static uint_t xorgauss_nb_of_equations;
 uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__]; // ==> EC structure
 bool xorgauss_equivalent[__ID_SIZE__];
 
-uint_t xorgauss_root_equivalency[__ID_SIZE__][__SZ_GAUSS__]; // ==> EC structure
+uint_t xorgauss_root_equivalency[__ID_SIZE__][__SZ_GAUSS__];
 bool xorgauss_root_equivalent[__ID_SIZE__];
+
+uint_t xorgauss_intermediate_equivalency[__ID_SIZE__][__SZ_GAUSS__];
+bool xorgauss_intermediate_equivalent[__ID_SIZE__];
 
 boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 boolean_t *xorgauss_assignment;
@@ -302,7 +305,16 @@ void xorgauss_reset_structure(){
 	memcpy(xorgauss_equivalent,xorgauss_root_equivalent,sizeof(xorgauss_root_equivalent));
 }
 
-// Initialise et remplie les structures pour le module XORGAUSS
+void xorgauss_save_intermediate_structure(){
+	memcpy(xorgauss_intermediate_equivalency,xorgauss_equivalency,sizeof(xorgauss_equivalency));
+	memcpy(xorgauss_intermediate_equivalent,xorgauss_equivalent,sizeof(xorgauss_equivalent));
+}
+
+void xorgauss_restore_intermediate_structure(){
+	memcpy(xorgauss_equivalency,xorgauss_intermediate_equivalency,sizeof(xorgauss_intermediate_equivalency));
+	memcpy(xorgauss_equivalent,xorgauss_intermediate_equivalent,sizeof(xorgauss_intermediate_equivalent));
+}
+
 bool xorgauss_from_dimacs() {
 	static uint_t i, j, u_lt;
 	static int_t lt;
@@ -382,7 +394,6 @@ bool xorgauss_from_dimacs() {
 	return(true);
 }
 
-// Fonction qui effectue la substitution
 bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 {
 	static uint_t i, _to_subst;
@@ -834,7 +845,6 @@ bool xorgauss_infer(int_t v) {
 	return true;
 }
 
-// Initialise et remplie les structures pour le module XORGAUSS 
 bool xorgauss_initiate_from_dimacs() {
 	const int_t _n_v = dimacs_nb_vars();
 	const int_t _n_x = dimacs_nb_xor_equations();
