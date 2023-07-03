@@ -715,9 +715,6 @@ bool substitution_infer(){
         else{
             _substitution_set(l,__TRUE__)
             if (l < substitution_nb_unary_vars && l > -substitution_nb_unary_vars) nb_var++;
-            /**
-            printf("set sub %ld to true\n",l);
-            /**/
             substitution_history[substitution_history_top++] = l;
 
             for (int_t i = 0; i != substitution_index[l]; ++i){
