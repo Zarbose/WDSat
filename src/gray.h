@@ -3,8 +3,8 @@
 
 #include "config.h"
 
-#define col __MAX_ANF_ID__-1
-#define raw pow(2,col)
+#define col (__MAX_ANF_ID__-1)-__APRO__
+#define row pow(2,col)
 
 extern int **gray_table;
 
