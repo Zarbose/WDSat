@@ -31,6 +31,9 @@ static uint_t xorgauss_nb_of_equations;
 uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__]; // ==> EC structure
 bool xorgauss_equivalent[__ID_SIZE__];
 
+uint_t xorgauss_root_equivalency[__ID_SIZE__][__SZ_GAUSS__]; // ==> EC structure
+bool xorgauss_root_equivalent[__ID_SIZE__];
+
 boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 boolean_t *xorgauss_assignment;
 
@@ -74,6 +77,15 @@ void xorgauss_fprint() {
 	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
 		printf(" [%lld][%s] <=> ", v, xorgauss_equivalent[v] ? "EQU" : "NEQ");
 		_boolean_vector_fprint(xorgauss_equivalency[v], xorgauss_nb_of_vars);
+		printf("\n");
+	}
+}
+
+void xorgauss_root_fprint() {
+	uint_t v;
+	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
+		printf(" [%lld][%s] <=> ", v, xorgauss_root_equivalent[v] ? "EQU" : "NEQ");
+		_boolean_vector_fprint(xorgauss_root_equivalency[v], xorgauss_nb_of_vars);
 		printf("\n");
 	}
 }
@@ -285,6 +297,11 @@ void aff_bin(uint_t v) // Not used
 	printf("\n");
 }
 
+void xorgauss_reset_structure(){
+	memcpy(xorgauss_equivalency,xorgauss_root_equivalency,sizeof(xorgauss_root_equivalency));
+	memcpy(xorgauss_equivalent,xorgauss_root_equivalent,sizeof(xorgauss_root_equivalent));
+}
+
 // Initialise et remplie les structures pour le module XORGAUSS
 bool xorgauss_from_dimacs() {
 	static uint_t i, j, u_lt;
@@ -358,6 +375,10 @@ bool xorgauss_from_dimacs() {
 			_xorgauss_set(j, _tv);
 		}
 	}
+
+	memcpy(xorgauss_root_equivalency,xorgauss_equivalency,sizeof(xorgauss_equivalency));
+	memcpy(xorgauss_root_equivalent,xorgauss_equivalent,sizeof(xorgauss_equivalent));
+
 	return(true);
 }
 
@@ -702,9 +723,6 @@ bool xorgauss_replace(const int_t v_bin, const int_t v_mon)
 	}
 #endif
 
-
-// _tf = truth value of _v
-// _uv = propositional variable
 bool xorgauss_set_true(const int_t v)
 {
 	assert(abs((int) v) <= xorgauss_nb_of_vars);
