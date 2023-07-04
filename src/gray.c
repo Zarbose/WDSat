@@ -47,6 +47,13 @@ int * gray_get_row(int id){
     return gray_table[id];
 }
 
+void gray_print_row(int id){
+    for (int i = 0; i < col ; i++){
+        printf("%d",gray_table[id][i]);
+    }
+    printf("\n");
+}
+
 
 void gray_free_structure(){
 

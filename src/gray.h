@@ -12,5 +12,6 @@ void gray_initiate(void);
 void gray_free_structure(void);
 void gray_decimal_to_binary(int num, int **gray_table, int pos);
 int * gray_get_row(int id);
+void gray_print_row(int id);
 
 #endif
