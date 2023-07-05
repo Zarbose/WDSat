@@ -8,10 +8,6 @@
 #include "dimacs.h"
 #include "cycle.h"
 
-// #define STAT
-
-int_t nb_var;
-
 // utils variables
 static uint_t substitution_nb_of_var; // Ici substitution_nb_of_var = 325
 static int_t substitution_nb_unary_vars; // Ici substitution_nb_unary_vars = 25
@@ -401,40 +397,13 @@ bool substitution_set_true(const int_t l) {
     return(substitution_infer());
 }
 
-#ifdef STAT
-    void substitution_write_data(int value,char* dest){
-        FILE* flux = fopen(dest,"a+");
-        if( flux == NULL) {printf("FICHIER NULL : %s\n",dest); exit(2);}
-        fprintf(flux, "%d\n",value);
-        fclose(flux);
-    }
-#endif
-
 bool substitution_infer(){
-
-    #ifdef STAT
-        ticks clockcycles_init, clockcycles_last;
-    #endif
-
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
-        #ifdef STAT
-            clockcycles_init = getticks();
-        #endif
         if(!substitution_update_tables(l)){ // Pourquoi c'est mieux de le faire ici ?
-            #ifdef STAT
-                clockcycles_last = getticks();
-                int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
-                substitution_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/sub");
-            #endif
             return false;
         }
-        #ifdef STAT
-            clockcycles_last = getticks();
-            int diff_ticks = elapsed(clockcycles_last, clockcycles_init);
-            substitution_write_data(diff_ticks,"/home/simon/Documents/WDSat/script/stat/files/sub");
-        #endif
 
         if (_substitution_is_true(l)) continue;
         else if (_substitution_is_false(l)){
@@ -443,10 +412,7 @@ bool substitution_infer(){
         }
         else{
             _substitution_set(l,__TRUE__)
-            if (l < substitution_nb_unary_vars && l > -substitution_nb_unary_vars) nb_var++;
-            /**
-            printf("set sub %ld to true\n",l);
-            /**/
+            if (l < substitution_nb_unary_vars && l > -substitution_nb_unary_vars) dimacs_increase_set_vars();
             substitution_history[substitution_history_top++] = l;
 
             for (int_t i = 0; i != substitution_index[l]; ++i){
@@ -472,7 +438,7 @@ void substitution_undo() {
     while(substitution_history_top != top_step) {
         _l = substitution_history[--substitution_history_top];
         _substitution_unset(_l);
-        if (_l < substitution_nb_unary_vars && _l > -substitution_nb_unary_vars) nb_var--;
+        if (_l < substitution_nb_unary_vars && _l > -substitution_nb_unary_vars) dimacs_decrease_set_vars();
     }
 	substitution_history_top_it = substitution_history_top;
 

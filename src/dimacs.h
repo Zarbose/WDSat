@@ -69,6 +69,10 @@ char *dimacs_get_meaning(const int_t i);
 boolean_t dimacs_get_truth_value(const int_t);
 int_t dimacs_get_assigned_ids(int_t *);
 uint_t dimacs_get_ids_from_key(uint_t *, const char *);
+int_t dimacs_get_set_vars(void);
+
+int_t dimacs_increase_set_vars(void);
+int_t dimacs_decrease_set_vars(void);
 
 
 const int_t dimacs_nb_vars(void);
