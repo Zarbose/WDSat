@@ -1,5 +1,7 @@
 #!/bin/bash -u
 
+source ../constants.sh
+
 err() {
     echo "[$(date +'%Y-%m-%d')]: $*" >&2
 }
@@ -18,10 +20,9 @@ M=`expr \( $o2 \* 2 \) - 1`
 
 # 27 25 53
 
-mydir=$HOME/Documents/WDSat
-benchmark=Documents/WDSat/benchmarks/Rainbow/N_${N}_M_${M}_V2
-src=$HOME/$benchmark
-save=0
+mydir=$root_dir
+benchmark=benchmarks/Rainbow/N_${N}_M_${M}
+src=$mydir/$benchmark
 
 ### Gestion des paramètres
 options=$(getopt -o Sh -l help -- "$@")
@@ -33,9 +34,6 @@ while true; do
             usage
             exit 0
             shift;;
-        -S) 
-            save=1
-            shift;;
         --)
             shift
             break;;
@@ -44,24 +42,14 @@ while true; do
             shift;;
     esac 
 done
-counter=0
+
 cd $mydir
+
 i=0
 for elm in $src/*;do
     echo "------------- Nouvelle instance "`expr $i + 1`" -------------"
 
-    # if [ $counter -eq 10 ];then
-    #     sleep 270
-    # fi
-
-    # if [ $counter -eq 20 ];then
-    #     sleep 270
-    # fi
-
-    # ./wdsat_solver -S -x -i $elm &
-    ./wdsat_solver -S -x -i $elm
-
-    # counter=$((counter+1))
+    ./wdsat_solver -x -i $elm
 
     ((i+=1))
 done
