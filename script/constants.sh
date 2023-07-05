@@ -1,0 +1,1 @@
+root_dir="$HOME"/Documents/WDSat
