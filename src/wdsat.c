@@ -14,31 +14,17 @@
 #include <unistd.h>
 
 #include "wdsat.h"
-#include "cnf.h"
 #include "xorset.h"
 #include "xorgauss.h"
-#define VAR_GLOBALES
 #include "dimacs.h"
 #include "substitution.h"
 #include "cycle.h"
 
-#define TEST_SUBST
-
 #define ENABLE_PRINT
-
-// #define FULL_GEN
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
 // static int_t nb_of_vars; // Not used
-
-/// @var int_t wdsat_cnf_up_stack[__ID_SIZE__];
-/// @brief unit propagation cnf stack
-static int_t wdsat_cnf_up_stack[__ID_SIZE__];
-
-/// @var int_t wdsat_cnf_up_top_stack;
-/// @brief unit propagation cnf stack top
-static int_t wdsat_cnf_up_top_stack;
 
 /// @var int_t wdsat_xorset_up_stack[__ID_SIZE__];
 /// @brief unit propagation xorset stack
@@ -107,13 +93,6 @@ void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
 
 	float total_ticks = elapsed(clockcycles_last, clockcycles_init);
 
-	printf("cnf_assignment:");
-	for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
-	{
-		printf("%d", cnf_assignment[j]);
-	}
-	printf("\n");
-
 	printf("sub_assignment:");
 	for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
 	{
@@ -161,7 +140,6 @@ bool wdsat_set_true(const int_t l) {
 }
 
 bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) {
-	// printf("%d\n",dec);
 	if(l > set_end)
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -173,12 +151,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 #endif
 		return true;
 	}
-
-#ifdef FULL_GEN
-	if ( nb_var > __APRO__){
-		return false;
-	}
-#endif
 
 	if(!_substitution_is_undef(set[l])) {
 		return wdsat_solve_rest(l + 1, set_end,conf, dec + 1);
@@ -217,7 +189,6 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 }
 
 bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
-	// printf("%d\n",d);
 	if(l > nb_min_vars)
 	{
 #ifdef __FIND_ALL_SOLUTIONS__
@@ -229,12 +200,6 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #endif
 		return true;
 	}
-
-#ifdef FULL_GEN
-	if ( nb_var > __APRO__){
-		return false;
-	}
-#endif
 
 #ifdef __DEBUG__
 	printf("\nSetting:%d\n",set[l]);
@@ -354,7 +319,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	int_t nb_min_vars;
 	int_t conf[1]={0};
 
-	cnf_initiate_from_dimacs();
 	xorset_initiate_from_dimacs();
 	substitution_initiate_from_dimacs();
 
@@ -368,22 +332,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	//check allocated memory
 	if(dimacs_nb_vars() < __MAX_ID__)
 		printf("\n!!! Running times are not optimal with these parameters. Set the __MAX_ID__ constant to %d !!!\n\n", dimacs_nb_vars());
-
-	//code for multithread: assign prefix for this thread
-	if(strlen(thread) > 0)
-	{
-		char *str_l;
-		int_t l;
-		str_l = strtok (thread, ",");
-		while(str_l != NULL)
-		{
-			l = atoi(str_l);
-			cnf_up_stack[cnf_up_top_stack++] = l;
-			assert(cnf_up_top_stack < __ID_SIZE__);
-			str_l = strtok (NULL, ",");
-		}
-	}
-	// end code for multithread (this has to be done before wdsat_infer_unitary();
 
 	if(strlen(mvc_graph) > 0)
 	{
@@ -412,7 +360,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
-	// xorgauss_root_fprint();
 	// xorgauss_fprint_for_xorset();
 	// xorgauss_fprint();
 	// xorgauss_fprint_system();
@@ -424,9 +371,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// dimacs_print_equivalency();
 	// dimacs_print_table();
 
-	// cnf_fprint();
-
-	// substitution_fprint_equivalency_unary();
 
 
 	clock_t debut = clock();
@@ -451,7 +395,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	if(xg == 1)
 	{
-		ticks clockcycles_init, clockcycles_last;
+		ticks clockcycles_init;
 		clockcycles_init = getticks();
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");

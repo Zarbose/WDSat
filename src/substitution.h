@@ -18,7 +18,6 @@ extern bool substitution_equivalent[__ID_SIZE__]; // index to read faster substi
 extern int_t substitution_equivalency_unary[__MAX_ANF_ID__][__MAX_ID__];
 extern int_t substitution_equivalent_index_unary[__MAX_ANF_ID__];
 
-
 // stack structures
 extern int_t substitution_up_stack[__ID_SIZE__];
 extern int_t substitution_up_top_stack;
