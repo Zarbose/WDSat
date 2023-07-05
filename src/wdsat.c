@@ -21,13 +21,10 @@
 #include "dimacs.h"
 #include "substitution.h"
 #include "cycle.h"
-#include "gray.h"
 
 #define TEST_SUBST
 
 #define ENABLE_PRINT
-
-#define GRAY
 
 // #define FULL_GEN
 
@@ -349,7 +346,6 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 }
 
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
-	printf("NEW\n");
 	bool _loop_pass = true;
 	bool _continue;
 
@@ -359,84 +355,36 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	int_t xorgauss_history_last = xorgauss_history_top;
 	int_t _l;
 
-	int v=0;
-
-#ifdef GRAY
-	if ( nb_var <= __APRO__+ v){
-		printf("A\n");
-		if(!wdsat_set_true(l)){ return false; }
-	}
-#else
 	if(!wdsat_set_true(l)){ return false; }
-#endif
 
-#ifdef GRAY
-	if(nb_var > __APRO__ + v){
-		printf("B\n");
-		// printf("Avant\n");
-		// substitution_fprint_unary_var_assignment();
-
-		// reconstruction de l'histoire
+	while(_loop_pass) {
+		_continue = false;
 		substitution_history_it = substitution_history_top;
 		while(substitution_history_it > substitution_history_last) {
 			_l = substitution_history[--substitution_history_it];
 			if(_xorgauss_is_undef(_l)) {
-				if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l); /**/ return false; }
+				if(!xorgauss_set_true(_l)) { /** printf("gauss contr %lld\n",_l); /**/ return false; }
+				_continue = true;
 			}
 		}
-		// printf("Après\n");
+		substitution_history_last = substitution_history_top;
 
-		// Sauvegarde de l'histoire
-		xorgauss_save_intermediate_structure();
-
-		// printf("ICI\n");
-
-		// Test des différentees combinaisons de Gray
-		for (int i = 0; i < row; i++){
-			// printf("A\n");
-			xorgauss_restore_intermediate_structure();
-			// printf("B\n");
-
-			const int * vect_gray = gray_get_row(i);
-			// gray_print_row(i);
-			for (int j = 0; j < col; j++){
-				_l = (vect_gray[j] == 0) ? -(j+1) : (j+1);
-				if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l);/**/ return false; }
-			}
-		}
-		// return true;
-		return false; // ==> A supprimer
-	}	
-#else
-		while(_loop_pass) {
-			_continue = false;
-			substitution_history_it = substitution_history_top;
-			while(substitution_history_it > substitution_history_last) {
-				_l = substitution_history[--substitution_history_it];
-				if(_xorgauss_is_undef(_l)) {
-					if(!xorgauss_set_true(_l)) { /** printf("gauss contr %lld\n",_l); /**/ return false; }
-					_continue = true;
-				}
-			}
-			substitution_history_last = substitution_history_top;
-
-			_loop_pass = false;
-			if(_continue) {
-				xorgauss_history_it = xorgauss_history_top;
-				while(xorgauss_history_it > xorgauss_history_last) {
-					_l = xorgauss_history[--xorgauss_history_it];
-					if(_substitution_is_false(_l)) { /** printf("subt contr %lld\n",_l); /**/ return false; }
-					if(_substitution_is_undef(_l)) {
-						_loop_pass = true;
-						if(!wdsat_set_true(_l)) {
-							return false;
-						}
+		_loop_pass = false;
+		if(_continue) {
+			xorgauss_history_it = xorgauss_history_top;
+			while(xorgauss_history_it > xorgauss_history_last) {
+				_l = xorgauss_history[--xorgauss_history_it];
+				if(_substitution_is_false(_l)) { /** printf("subt contr %lld\n",_l); /**/ return false; }
+				if(_substitution_is_undef(_l)) {
+					_loop_pass = true;
+					if(!wdsat_set_true(_l)) {
+						return false;
 					}
 				}
-				xorgauss_history_last = xorgauss_history_top;
 			}
+			xorgauss_history_last = xorgauss_history_top;
 		}
-#endif
+	}
 	return true;
 }
 
@@ -448,7 +396,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	cnf_initiate_from_dimacs();
 	xorset_initiate_from_dimacs();
 	substitution_initiate_from_dimacs();
-	gray_initiate();
 
 	if(!xorgauss_initiate_from_dimacs())
 	{
@@ -537,7 +484,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 			substitution_free_structure();
-			gray_free_structure();
 
 			return false;
 		}
@@ -555,7 +501,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 			substitution_free_structure();
-			gray_free_structure();
 			return false;
 		}
 	}
@@ -565,7 +510,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 	substitution_free_structure();
-	gray_free_structure();
 	return (true);
 
 }

@@ -31,17 +31,8 @@ static uint_t xorgauss_nb_of_equations;
 uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__]; // ==> EC structure
 bool xorgauss_equivalent[__ID_SIZE__];
 
-uint_t xorgauss_root_equivalency[__ID_SIZE__][__SZ_GAUSS__];
-bool xorgauss_root_equivalent[__ID_SIZE__];
-
-uint_t xorgauss_intermediate_equivalency[__ID_SIZE__][__SZ_GAUSS__];
-bool xorgauss_intermediate_equivalent[__ID_SIZE__];
-
 boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 boolean_t *xorgauss_assignment;
-
-boolean_t xorgauss_intermediate_assignment_buffer[__SIGNED_ID_SIZE__];
-boolean_t *xorgauss_intermediate_assignment;
 
 // undo structures
 int_t xorgauss_history[__ID_SIZE__];
@@ -66,35 +57,7 @@ int_t xorgauss_reset[__ID_SIZE__];
 int_t xorgauss_reset_top;
 #endif
 
-int_t xorgauss_count_xorequation=0LL;
-int_t xorgauss_count_nb_var_xor=0LL;
 inline const uint_t xorgauss_get_nb_xorequation() { return xorgauss_nb_of_equations; }
-static int_t list_var[__ID_SIZE__];
-
-void xorgauss_fprint_nb_equationxor(){
-	uint_t v, cpt=0ULL;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v)
-		if(xorgauss_equivalent[v]){ cpt++; }
-	printf("%lld\n",cpt);
-}
-
-void xorgauss_fprint() {
-	uint_t v;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
-		printf(" [%lld][%s] <=> ", v, xorgauss_equivalent[v] ? "EQU" : "NEQ");
-		_boolean_vector_fprint(xorgauss_equivalency[v], xorgauss_nb_of_vars);
-		printf("\n");
-	}
-}
-
-void xorgauss_root_fprint() {
-	uint_t v;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
-		printf(" [%lld][%s] <=> ", v, xorgauss_root_equivalent[v] ? "EQU" : "NEQ");
-		_boolean_vector_fprint(xorgauss_root_equivalency[v], xorgauss_nb_of_vars);
-		printf("\n");
-	}
-}
 
 void xorgauss_fprint_system() {
 	uint_t v;
@@ -146,44 +109,6 @@ void xorgauss_fprint_for_xorset() {
 			printf("0\n");
 		}
 	}
-}
-
-void xorgauss_write_origin(){
-	FILE* origin = fopen("xorgauss_sys/origin","w+");
-	uint_t v;
-	for(v = 1ULL; v <= xorgauss_nb_of_vars; ++v) {
-		if(xorgauss_equivalent[v])
-		{
-			if(_boolean_vector_get(xorgauss_equivalency[v], 0)){
-				char buff[10];
-				fputs("x ", origin);
-				sprintf(buff, "%lld", v);
-				fputs(buff, origin);
-				fputc(' ', origin);
-			}
-
-			else{
-				char buff[10];
-				fputs("x ", origin);
-				sprintf(buff, "%lld", -v);
-				fputs(buff, origin);
-				fputc(' ', origin);
-			}
-			for(uint_t _boolean_vector_fprint_i = 1ULL; _boolean_vector_fprint_i <= xorgauss_nb_of_vars; ++_boolean_vector_fprint_i)
-			{
-				if(_boolean_vector_get(xorgauss_equivalency[v], _boolean_vector_fprint_i))
-				{
-					char buff[10];
-					sprintf(buff, "%llu", _boolean_vector_fprint_i);
-					fputs(buff, origin);
-					fputc(' ', origin);
-				}
-				
-			}
-			fputs("0\n", origin);
-		}
-	}
-	fclose(origin);
 }
 
 inline void xorgauss_reset_boolean_vector(uint_t *v) {
@@ -303,23 +228,6 @@ void aff_bin(uint_t v) // Not used
 	printf("\n");
 }
 
-void xorgauss_reset_structure(){
-	memcpy(xorgauss_equivalency,xorgauss_root_equivalency,sizeof(xorgauss_root_equivalency));
-	memcpy(xorgauss_equivalent,xorgauss_root_equivalent,sizeof(xorgauss_root_equivalent));
-}
-
-void xorgauss_save_intermediate_structure(){
-	memcpy(xorgauss_intermediate_equivalency,xorgauss_equivalency,sizeof(xorgauss_equivalency));
-	memcpy(xorgauss_intermediate_equivalent,xorgauss_equivalent,sizeof(xorgauss_equivalent));
-	memcmp(xorgauss_intermediate_assignment_buffer,xorgauss_assignment_buffer,sizeof(xorgauss_assignment_buffer));
-}
-
-void xorgauss_restore_intermediate_structure(){
-	memcpy(xorgauss_equivalency,xorgauss_intermediate_equivalency,sizeof(xorgauss_intermediate_equivalency));
-	memcpy(xorgauss_equivalent,xorgauss_intermediate_equivalent,sizeof(xorgauss_intermediate_equivalent));
-	memcmp(xorgauss_assignment_buffer,xorgauss_intermediate_assignment_buffer,sizeof(xorgauss_intermediate_assignment_buffer));
-}
-
 bool xorgauss_from_dimacs() {
 	static uint_t i, j, u_lt;
 	static int_t lt;
@@ -392,9 +300,6 @@ bool xorgauss_from_dimacs() {
 			_xorgauss_set(j, _tv);
 		}
 	}
-
-	memcpy(xorgauss_root_equivalency,xorgauss_equivalency,sizeof(xorgauss_equivalency));
-	memcpy(xorgauss_root_equivalent,xorgauss_equivalent,sizeof(xorgauss_equivalent));
 
 	return(true);
 }
@@ -856,7 +761,6 @@ bool xorgauss_initiate_from_dimacs() {
 	xorgauss_nb_of_equations = _n_x;
 	xorgauss_nb_of_vars = _n_v;
 	xorgauss_assignment = xorgauss_assignment_buffer + _n_v + 1LL;
-	xorgauss_intermediate_assignment = xorgauss_intermediate_assignment_buffer + _n_v + 1LL;
 	assert(xorgauss_nb_of_vars <= __MAX_ID__);
 	assert(xorgauss_nb_of_equations <= __MAX_XEQ__);
 	/// initiate static structures
@@ -868,7 +772,6 @@ bool xorgauss_initiate_from_dimacs() {
 		xorgauss_current_degree[i] = dimacs_get_current_degree(i);
 #endif
 	}
-	memcmp(xorgauss_intermediate_assignment_buffer,xorgauss_assignment_buffer,sizeof(xorgauss_assignment_buffer));
 	xorgauss_history_top = xorgauss_step_top = xorgauss_up_top_stack = 0LL;
 #ifndef __XG_ENHANCED__
 	xorgauss_mask_top = xorgauss_mask_list_top = xorgauss_reset_top = 0LL;

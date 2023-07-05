@@ -23,20 +23,8 @@
 extern uint_t xorgauss_equivalency[__ID_SIZE__][__SZ_GAUSS__];
 extern bool xorgauss_equivalent[__ID_SIZE__];
 
-extern uint_t xorgauss_root_equivalency[__ID_SIZE__][__SZ_GAUSS__];
-extern bool xorgauss_root_equivalent[__ID_SIZE__];
-
-extern uint_t xorgauss_intermediate_equivalency[__ID_SIZE__][__SZ_GAUSS__];
-extern bool xorgauss_intermediate_equivalent[__ID_SIZE__];
-
 extern boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 extern boolean_t *xorgauss_assignment;
-
-extern boolean_t xorgauss_intermediate_assignment_buffer[__SIGNED_ID_SIZE__];
-extern boolean_t *xorgauss_intermediate_assignment;
-
-extern int_t xorgauss_count_xorequation;
-extern int_t xorgauss_count_nb_var_xor;
 
 // undo structures
 extern int_t xorgauss_history[__ID_SIZE__];
@@ -72,22 +60,13 @@ bool xorgauss_is_constant(uint_t *);
 void xorgauss_xor_it(uint_t *, uint_t *);
 bool xorgauss_xor_it_and_check(uint_t *, uint_t *);
 void xorgauss_fprint(void);
-void xorgauss_root_fprint(void);
-void xorgauss_reset_structure(void);
-void xorgauss_save_intermediate_structure(void);
-void xorgauss_restore_intermediate_structure(void);
-
-void xorgauss_fprint_nb_equationxor(void);
-void xorgauss_count_nb_var_nb_equation(void);
 
 bool xorgauss_set_true(const int_t);
 void aff_bin(uint_t v);
 void xorgauss_undo(void);
-void set_from_outside(void);
 bool xorgauss_infer(int_t v);
 void xorgauss_fprint_system(void);
 void xorgauss_fprint_for_xorset(void);
-void xorgauss_count_nb_equationxor(void);
 const uint_t xorgauss_get_nb_xorequation(void);
 void xorgauss_write_origin(void);
 
