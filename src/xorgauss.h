@@ -32,6 +32,9 @@ extern bool xorgauss_intermediate_equivalent[__ID_SIZE__];
 extern boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 extern boolean_t *xorgauss_assignment;
 
+extern boolean_t xorgauss_intermediate_assignment_buffer[__SIGNED_ID_SIZE__];
+extern boolean_t *xorgauss_intermediate_assignment;
+
 extern int_t xorgauss_count_xorequation;
 extern int_t xorgauss_count_nb_var_xor;
 
@@ -121,6 +124,7 @@ xorgauss_step_mask_top && --xorgauss_step_mask_top; \
 #endif //endif
 
 #define _xorgauss_unset(_v) xorgauss_assignment[_v] = xorgauss_assignment[-_v] = __UNDEF__
+#define _xorgauss_intermediate_unset(_v) xorgauss_intermediate_assignment[_v] = xorgauss_intermediate_assignment[-_v] = __UNDEF__
 
 #define _xorgauss_set(_v, _tv) \
 { \

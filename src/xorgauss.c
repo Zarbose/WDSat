@@ -40,6 +40,9 @@ bool xorgauss_intermediate_equivalent[__ID_SIZE__];
 boolean_t xorgauss_assignment_buffer[__SIGNED_ID_SIZE__];
 boolean_t *xorgauss_assignment;
 
+boolean_t xorgauss_intermediate_assignment_buffer[__SIGNED_ID_SIZE__];
+boolean_t *xorgauss_intermediate_assignment;
+
 // undo structures
 int_t xorgauss_history[__ID_SIZE__];
 int_t xorgauss_history_top;
@@ -308,11 +311,13 @@ void xorgauss_reset_structure(){
 void xorgauss_save_intermediate_structure(){
 	memcpy(xorgauss_intermediate_equivalency,xorgauss_equivalency,sizeof(xorgauss_equivalency));
 	memcpy(xorgauss_intermediate_equivalent,xorgauss_equivalent,sizeof(xorgauss_equivalent));
+	memcmp(xorgauss_intermediate_assignment_buffer,xorgauss_assignment_buffer,sizeof(xorgauss_assignment_buffer));
 }
 
 void xorgauss_restore_intermediate_structure(){
 	memcpy(xorgauss_equivalency,xorgauss_intermediate_equivalency,sizeof(xorgauss_intermediate_equivalency));
 	memcpy(xorgauss_equivalent,xorgauss_intermediate_equivalent,sizeof(xorgauss_intermediate_equivalent));
+	memcmp(xorgauss_assignment_buffer,xorgauss_intermediate_assignment_buffer,sizeof(xorgauss_intermediate_assignment_buffer));
 }
 
 bool xorgauss_from_dimacs() {
@@ -851,6 +856,7 @@ bool xorgauss_initiate_from_dimacs() {
 	xorgauss_nb_of_equations = _n_x;
 	xorgauss_nb_of_vars = _n_v;
 	xorgauss_assignment = xorgauss_assignment_buffer + _n_v + 1LL;
+	xorgauss_intermediate_assignment = xorgauss_intermediate_assignment_buffer + _n_v + 1LL;
 	assert(xorgauss_nb_of_vars <= __MAX_ID__);
 	assert(xorgauss_nb_of_equations <= __MAX_XEQ__);
 	/// initiate static structures
@@ -862,6 +868,7 @@ bool xorgauss_initiate_from_dimacs() {
 		xorgauss_current_degree[i] = dimacs_get_current_degree(i);
 #endif
 	}
+	memcmp(xorgauss_intermediate_assignment_buffer,xorgauss_assignment_buffer,sizeof(xorgauss_assignment_buffer));
 	xorgauss_history_top = xorgauss_step_top = xorgauss_up_top_stack = 0LL;
 #ifndef __XG_ENHANCED__
 	xorgauss_mask_top = xorgauss_mask_list_top = xorgauss_reset_top = 0LL;
