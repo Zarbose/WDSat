@@ -20,7 +20,7 @@
 #include "substitution.h"
 #include "cycle.h"
 
-#define TEST_SUBST
+// #define SUBST
 
 #define ENABLE_PRINT
 
@@ -125,13 +125,13 @@ bool wdsat_set_true(const int_t l) {
 
     bool _next_loop;
     int_t _l;
-#ifndef TEST_SUBST
+#ifndef SUBST
 	wdsat_cnf_up_top_stack = 0LL;
 	wdsat_cnf_up_stack[wdsat_cnf_up_top_stack++] = l;
 #endif
     wdsat_xorset_up_top_stack = 0LL;
     wdsat_xorset_up_stack[wdsat_xorset_up_top_stack++] = l;
-#ifdef TEST_SUBST
+#ifdef SUBST
 	wdsat_substitution_up_top_stack = 0LL;
 	wdsat_substitution_up_stack[wdsat_substitution_up_top_stack++] = l;
 #endif
@@ -139,7 +139,7 @@ bool wdsat_set_true(const int_t l) {
     _next_loop = true;
     while(_next_loop) {
 		_next_loop = false;
-#ifndef TEST_SUBST
+#ifndef SUBST
 		while(wdsat_cnf_up_top_stack) {
 			_l = wdsat_cnf_up_stack[--wdsat_cnf_up_top_stack];
 			if(_cnf_is_undef(_l)) _next_loop = true;
@@ -147,7 +147,7 @@ bool wdsat_set_true(const int_t l) {
 		}
 #endif
 
-#ifdef TEST_SUBST
+#ifdef SUBST
 		while (wdsat_substitution_up_top_stack) {
 			_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
 			if(_substitution_is_undef(_l)) _next_loop = true;
@@ -161,13 +161,13 @@ bool wdsat_set_true(const int_t l) {
 
 			if(!xorset_set_true(_l)) { /** printf("xor contr %lld\n",_l);/**/ return false; }
 		}
-#ifndef TEST_SUBST
+#ifndef SUBST
 		wdsat_cnf_up_top_stack = xorset_last_assigned(wdsat_cnf_up_stack);
 		wdsat_xorset_up_top_stack = cnf_last_assigned(wdsat_xorset_up_stack);
 #else
 		wdsat_xorset_up_top_stack = substitution_last_assigned(wdsat_xorset_up_stack);
 #endif
-#ifdef TEST_SUBST
+#ifdef SUBST
 		wdsat_substitution_up_top_stack = xorset_last_assigned(wdsat_substitution_up_stack);
 
 #endif
@@ -188,7 +188,7 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 #endif
 		return true;	
 	}
-#ifndef TEST_SUBST
+#ifndef SUBST
 	if(!_cnf_is_undef(set[l])) {
 		return wdsat_solve_rest(l + 1, set_end,conf, dec +1);
 	} 
@@ -198,22 +198,22 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 	} 
 #endif
 
-#ifndef TEST_SUBST
+#ifndef SUBST
 	_cnf_breakpoint;
 #endif
 	_xorset_breakpoint;
-#ifdef TEST_SUBST
+#ifdef SUBST
 	_substitution_breakpoint;
 #endif
 	conf[0]++;
 
 	if(!wdsat_set_true(-set[l])) // ligne 5 et 5 algo 4.1
 	{
-#ifndef TEST_SUBST
+#ifndef SUBST
 		cnf_undo();
 #endif
 		xorset_undo();
-#ifdef TEST_SUBST
+#ifdef SUBST
 		substitution_undo();
 #endif
 
@@ -225,11 +225,11 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 	{
 		if(!wdsat_solve_rest(l + 1, set_end,conf, dec + 1))
 		{
-#ifndef TEST_SUBST
+#ifndef SUBST
 			cnf_undo();
 #endif
 			xorset_undo();
-#ifdef TEST_SUBST
+#ifdef SUBST
 			substitution_undo();
 #endif
 
@@ -238,11 +238,11 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 		}
 		else
 		{
-#ifndef TEST_SUBST
+#ifndef SUBST
 			_cnf_mergepoint;
 #endif
 			_xorset_mergepoint;
-#ifdef TEST_SUBST
+#ifdef SUBST
 			_substitution_mergepoint;
 #endif
 			return true;
@@ -269,7 +269,7 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
-#ifndef TEST_SUBST
+#ifndef SUBST
 	if(!_cnf_is_undef(set[l])) {
 		return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 	} 
@@ -278,10 +278,10 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);
 	} 
 #endif
-#ifndef TEST_SUBST
+#ifndef SUBST
 	_cnf_breakpoint;
 #endif
-#ifdef TEST_SUBST
+#ifdef SUBST
 	_substitution_breakpoint;
 #endif
 	_xorset_breakpoint;
@@ -290,10 +290,10 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 
 	if(!wdsat_infer(-set[l],conf,d))
 	{
-#ifndef TEST_SUBST
+#ifndef SUBST
 		cnf_undo();
 #endif
-#ifdef TEST_SUBST
+#ifdef SUBST
 		substitution_undo();
 #endif
 		xorset_undo();
@@ -309,10 +309,10 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 	{
 		if(!wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1))
 		{
-#ifndef TEST_SUBST
+#ifndef SUBST
 			cnf_undo();
 #endif
-#ifdef TEST_SUBST
+#ifdef SUBST
 			substitution_undo();
 #endif
 			xorset_undo();
@@ -329,10 +329,10 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 #ifdef __DEBUG__
 			printf("lev:%d--ok on 0\n",set[l]);
 #endif
-#ifndef TEST_SUBST
+#ifndef SUBST
 			_cnf_mergepoint;
 #endif
-#ifdef TEST_SUBST
+#ifdef SUBST
 			_substitution_mergepoint;
 #endif
 			_xorset_mergepoint;
@@ -361,7 +361,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 
 	bool _loop_pass = true;
 	bool _continue;
-#ifndef TEST_SUBST
+#ifndef SUBST
 	int_t cnf_history_it;
 	int_t cnf_history_last = cnf_history_top;
 #else
@@ -378,7 +378,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;
-#ifndef TEST_SUBST
+#ifndef SUBST
 		cnf_history_it = cnf_history_top;
 		while(cnf_history_it > cnf_history_last) {
 			_l = cnf_history[--cnf_history_it];
@@ -406,7 +406,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 				xorgauss_history_it = xorgauss_history_top;
 				while(xorgauss_history_it > xorgauss_history_last) {
 					_l = xorgauss_history[--xorgauss_history_it];
-#ifndef TEST_SUBST
+#ifndef SUBST
 					if(_cnf_is_false(_l)) { /** printf("ter contr %lld\n",_l); /**/ return false; }
 					if(_cnf_is_undef(_l)) {
 						_loop_pass = true;
@@ -431,10 +431,10 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	int_t j;
 	int_t nb_min_vars;
 	int_t conf[1]={0};
-
+	
+	cnf_initiate_from_dimacs();
 	xorset_initiate_from_dimacs();
 	substitution_initiate_from_dimacs();
-
 	if(!xorgauss_initiate_from_dimacs())
 	{
 		printf("UNSAT on XORGAUSS init\n");
@@ -445,7 +445,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	//check allocated memory
 	if(dimacs_nb_vars() < __MAX_ID__)
 		printf("\n!!! Running times are not optimal with these parameters. Set the __MAX_ID__ constant to %d !!!\n\n", dimacs_nb_vars());
-
+	
 	//code for multithread: assign prefix for this thread
 	if(strlen(thread) > 0)
 	{
@@ -461,7 +461,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 	// end code for multithread (this has to be done before wdsat_infer_unitary();
-
+	
 	if(strlen(mvc_graph) > 0)
 	{
 		nb_min_vars = 0;
@@ -489,21 +489,7 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 		}
 	}
 
-	// xorgauss_fprint_for_xorset();
-	// xorgauss_fprint();
-	// xorgauss_fprint_system();
-
-	// xorset_fprint();
-	// xorset_index_structure_fprintf();
-
-	// dimacs_print_formula();
-	// dimacs_print_equivalency();
-	// dimacs_print_table();
-
-
-
 	clock_t debut = clock();
-
 	ticks clockcycles_init;
 	clockcycles_init = getticks();
 
@@ -514,36 +500,30 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			#ifdef ENABLE_PRINT
 				wdsat_fprint_result(conf,debut,clockcycles_init);
 			#endif
-
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
-
 			substitution_free_structure();
-
 			return false;
 		}
 	}
 	if(xg == 1)
 	{
-		ticks clockcycles_init;
-		clockcycles_init = getticks();
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");
-			#ifdef ENABLE_PRINT
-				wdsat_fprint_result(conf,debut,clockcycles_init);
-			#endif
-
+#ifdef ENABLE_PRINT
+			wdsat_fprint_result(conf,debut,clockcycles_init);
+#endif
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 			substitution_free_structure();
 			return false;
 		}
+
 	}
-	#ifdef ENABLE_PRINT
-		wdsat_fprint_result(conf,debut,clockcycles_init);
-	#endif
+#ifdef ENABLE_PRINT
+	wdsat_fprint_result(conf,debut,clockcycles_init);
+#endif
 	if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 	substitution_free_structure();
 	return (true);
-
 }
