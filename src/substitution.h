@@ -13,7 +13,7 @@
 
 // cnf module equivalence structures
 extern int_t substitution_equivalency_all[__ID_SIZE__][__SZ_SUB__];
-extern bool substitution_equivalent[__ID_SIZE__]; // index to read faster substitution_equivalency
+extern bool substitution_equivalent[__ID_SIZE__];
 
 extern int_t substitution_equivalency_unary[__MAX_ANF_ID__][__MAX_ID__];
 extern int_t substitution_equivalent_index_unary[__MAX_ANF_ID__];
@@ -34,7 +34,6 @@ extern int_t substitution_history_top;
 extern int_t substitution_step[__ID_SIZE__];
 extern int_t substitution_step_top;
 
-// nuew undo structures
 extern int_t *substitution_history_inte_stack;
 extern int_t substitution_history_inte_top;
 
@@ -90,14 +89,11 @@ void substitution_fprint_history_main_stack(void);
 void substitution_fprint_history_inte_index_stack(void);
 void substitution_fprint_substitution_up_stack(void);
 void substitution_fprint_substitution_index_stack(void);
-void substitution_fprint_values(void);
-void substitution_write_new_systeme(void);
 
 // Utils functions
 void substitution_add_check_stack(int_t v);
 void substitution_reset_stack(void);
 int_t substitution_last_assigned(int_t *up_stack);
-void substitution_increase_history_flag(void);
 
 // Init functions
 bool substitution_initiate_from_dimacs(void);
@@ -109,6 +105,6 @@ bool substitution_infer(void);
 // Undo functions
 void substitution_undo(void);
 
-// End functions
+// Free functions
 void substitution_free_structure(void);
 #endif

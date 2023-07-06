@@ -51,7 +51,6 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 	ticks clockcycles_last;
 	clockcycles_last = getticks();
 	float total_ticks = elapsed(clockcycles_last, clockcycles_init);
-	// printf("OUIII %d\n",total_ticks);
 
 	FILE* fichier = NULL;
 	char path_file[1000];
@@ -359,19 +358,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			set[j - 1] = j;
 		}
 	}
-
-	// xorgauss_fprint_for_xorset();
-	// xorgauss_fprint();
-	// xorgauss_fprint_system();
-
-	// xorset_fprint();
-	// xorset_index_structure_fprintf();
-
-	// dimacs_print_formula();
-	// dimacs_print_equivalency();
-	// dimacs_print_table();
-
-
 
 	clock_t debut = clock();
 
