@@ -147,7 +147,4 @@
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ 53
 # define __MAX_XEQ_SIZE__ 650
-# define __APRO__ 15
-
-// int apro = (int) ((__MAX_ANF_ID__-1)-sqrt(2*__MAX_XEQ__));
 

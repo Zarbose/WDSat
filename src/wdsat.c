@@ -382,9 +382,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	{
 		if(!wdsat_solve_rest(0, nb_min_vars - 1, conf,0)) {
 			printf("UNSAT\n");
-			#ifdef ENABLE_PRINT
-				wdsat_fprint_result(conf,debut,clockcycles_init);
-			#endif
+#ifdef ENABLE_PRINT
+			wdsat_fprint_result(conf,debut,clockcycles_init);
+#endif
 
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
@@ -395,13 +395,11 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	}
 	if(xg == 1)
 	{
-		ticks clockcycles_init;
-		clockcycles_init = getticks();
 		if(!wdsat_solve_rest_XG(0, nb_min_vars - 1, conf, 0)) {
 			printf("UNSAT\n");
-			#ifdef ENABLE_PRINT
-				wdsat_fprint_result(conf,debut,clockcycles_init);
-			#endif
+#ifdef ENABLE_PRINT
+			wdsat_fprint_result(conf,debut,clockcycles_init);
+#endif
 
 			if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
@@ -409,9 +407,9 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 			return false;
 		}
 	}
-	#ifdef ENABLE_PRINT
-		wdsat_fprint_result(conf,debut,clockcycles_init);
-	#endif
+#ifdef ENABLE_PRINT
+	wdsat_fprint_result(conf,debut,clockcycles_init);
+#endif
 	if (S == 1) wdsat_save_result(debut,clockcycles_init,conf,filename);
 
 	substitution_free_structure();
