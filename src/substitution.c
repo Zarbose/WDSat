@@ -172,8 +172,7 @@ void substitution_fprint_values(){
 // Utils functions
 bool substitution_is_unary_var(const int_t _l){
     int_t abs_val = (_l < 0) ? -_l : _l;
-    if( abs_val > substitution_nb_unary_vars) return false;
-    return true;
+    return abs_val <= substitution_nb_unary_vars;
 }
 
 void substitution_reset_stack(){
@@ -223,9 +222,7 @@ void substitution_update_dynamic_part(const int_t _l){
 bool substitution_update_tables(const int_t l){
     const bool _tf = (l < 0) ? false : true;
     if (substitution_is_unary_var(l)){
-        if (_tf){
-            substitution_update_dynamic_part(l);
-        }
+        if (_tf) substitution_update_dynamic_part(l);
     }
     else{
         if (!_tf){ /* La régle x26 = false */
