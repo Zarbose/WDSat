@@ -147,4 +147,3 @@
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ 53
 # define __MAX_XEQ_SIZE__ 650
-

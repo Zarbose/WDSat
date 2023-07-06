@@ -8,7 +8,7 @@ err() {
 }
 
 usage() {
-    echo -e "\nUse: ./$(basename "$0") seed o2 [verbose]\n"
+    echo -e "\nUse: ./$(basename "$0") seed o2\n"
 }
 
 [ $# -lt 2 ] && err "Missing arguments" && usage && exit 1

@@ -13,13 +13,6 @@ usage() {
     -S to enable the saving of the results into $src ( o2=27 N=25 M=53 )\n"
 }
 
-# o2=$1
-o2=27
-N=`expr $o2 - 2`
-M=`expr \( $o2 \* 2 \) - 1`
-
-# 27 25 53
-
 mydir=$root_dir
 benchmark=benchmarks/Rainbow/N_${N}_M_${M}
 src=$mydir/$benchmark
@@ -42,6 +35,12 @@ while true; do
             shift;;
     esac 
 done
+
+# o2=$1
+o2=27
+N=`expr $o2 - 2`
+M=`expr \( $o2 \* 2 \) - 1`
+
 
 cd $mydir
 
