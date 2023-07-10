@@ -90,6 +90,11 @@ int_t ** get_dimacs_xor_equation(void);
 bool dimacs_xor_constant(const int_t i);
 boolean_t dimacs_get_current_degree(const int_t i);
 
+int_t dimacs_get_backtrack(void);
+int_t dimacs_up_backtrack(void);
+int_t dimacs_down_backtrack(void);
+int_t dimacs_reset_backtrack(void);
+
 const bool dimacs_is_header_read(void);
 const bool dimacs_is_read(void);
 const int_t dimacs_nb_unary_vars(void);

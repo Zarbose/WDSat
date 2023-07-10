@@ -21,7 +21,6 @@
 #include "dimacs.h"
 #include "substitution.h"
 #include "cycle.h"
-#include "gray.h"
 
 #define TEST_SUBST
 
@@ -124,6 +123,13 @@ void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
 	}
 	printf("\n");
 
+	printf("xor_assignment:");
+	for(int j = 1; j <= dimacs_nb_unary_vars(); j++)
+	{
+		printf("%d", xorgauss_assignment[j]);
+	}
+	printf("\n");
+
 	printf("conf:%ld\n",conf[0]);
 	printf("temps_ml:%d\n",duree_ml);
 	printf("ticks:%f\n",total_ticks);
@@ -148,7 +154,7 @@ bool wdsat_set_true(const int_t l) {
 			_l = wdsat_substitution_up_stack[--wdsat_substitution_up_top_stack];
 			// printf("sub %ld\n",_l);
 			if(_substitution_is_undef(_l)) _next_loop = true;
-			if(!substitution_set_true(_l)) { /** printf("subt contr %lld\n",_l);/**/ return false; }
+			if(!substitution_set_true(_l)) { /**/ printf("subt contr %lld\n",_l);/**/ return false; }
 		}
 
 		while(wdsat_xorset_up_top_stack) {
@@ -156,7 +162,7 @@ bool wdsat_set_true(const int_t l) {
 			// printf("xorset %ld\n",_l);
 			if(_xorset_is_undef(_l)) _next_loop = true;
 
-			if(!xorset_set_true(_l)) { /** printf("xor contr %lld\n",_l);/**/ return false; }
+			if(!xorset_set_true(_l)) { /**/ printf("xor contr %lld\n",_l);/**/ return false; }
 		}
 
 		wdsat_xorset_up_top_stack = substitution_last_assigned(wdsat_xorset_up_stack);
@@ -349,7 +355,6 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 }
 
 bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
-	printf("NEW\n");
 	bool _loop_pass = true;
 	bool _continue;
 
@@ -363,7 +368,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 
 #ifdef GRAY
 	if ( nb_var <= __APRO__+ v){
-		printf("A\n");
+		// printf("A\n");
 		if(!wdsat_set_true(l)){ return false; }
 	}
 #else
@@ -372,40 +377,27 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 
 #ifdef GRAY
 	if(nb_var > __APRO__ + v){
-		printf("B\n");
-		// printf("Avant\n");
-		// substitution_fprint_unary_var_assignment();
-
+		// printf("B\n");
 		// reconstruction de l'histoire
+
 		substitution_history_it = substitution_history_top;
-		while(substitution_history_it > substitution_history_last) {
+		while(substitution_history_it > 0) {
 			_l = substitution_history[--substitution_history_it];
+			// printf("get %lld\n",_l);
 			if(_xorgauss_is_undef(_l)) {
+				dimacs_up_backtrack();
+				// printf("set %lld\n",_l);
 				if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l); /**/ return false; }
 			}
 		}
-		// printf("Après\n");
 
-		// Sauvegarde de l'histoire
-		xorgauss_save_intermediate_structure();
-
-		// printf("ICI\n");
-
-		// Test des différentees combinaisons de Gray
-		for (int i = 0; i < row; i++){
-			// printf("A\n");
-			xorgauss_restore_intermediate_structure();
-			// printf("B\n");
-
-			const int * vect_gray = gray_get_row(i);
-			// gray_print_row(i);
-			for (int j = 0; j < col; j++){
-				_l = (vect_gray[j] == 0) ? -(j+1) : (j+1);
-				if(!xorgauss_set_true(_l)) { /**/ printf("gauss contr %lld\n",_l);/**/ return false; }
-			}
+		if(_xorgauss_is_undef(l)) {
+			// printf("ICI\n");
+			dimacs_up_backtrack();
+			if(!xorgauss_set_true(l)) { /**/ printf("gauss contr %lld\n",l); /**/ return false; }
 		}
 		// return true;
-		return false; // ==> A supprimer
+		// return false; // ==> A supprimer
 	}	
 #else
 		while(_loop_pass) {
@@ -519,7 +511,6 @@ bool wdsat_solve(int_t n, int_t new_l, int_t new_m, char *irr, char *X3, int_t x
 	// cnf_fprint();
 
 	// substitution_fprint_equivalency_unary();
-
 
 	clock_t debut = clock();
 

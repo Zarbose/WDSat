@@ -55,6 +55,8 @@ static int_t dimacs_nb_of_eq = 0LL;
 uint_t dimacs_monomials_to_column[__MAX_ANF_ID__][__ID_SIZE__][__MAX_DEGREE__ - 1];
 boolean_t dimacs_current_degree[__ID_SIZE__];
 
+int_t nb_backtrack = 0;
+
 /* ----------------- Getters, Setters */
 inline const int_t dimacs_nb_vars() { return dimacs_nb_of_vars; }
 inline const int_t dimacs_nb_equations() { return dimacs_nb_of_boolean_equations; }
@@ -72,6 +74,11 @@ inline const bool dimacs_is_read() { return(_dimacs_read); }
 inline int_t ** get_dimacs_xor_equation() { return dimacs_xor_equation; }
 inline bool dimacs_xor_constant(const int_t i) { return dimacs_xor_equation_constant[i]; }
 inline boolean_t dimacs_get_current_degree(const int_t i) { return dimacs_current_degree[i]; }
+
+inline int_t dimacs_get_backtrack(){return nb_backtrack;}
+inline int_t dimacs_up_backtrack(){nb_backtrack++;}
+inline int_t dimacs_down_backtrack(){nb_backtrack--;}
+inline int_t dimacs_reset_backtrack(){nb_backtrack=0;}
 /* ----------------- */
 
 void dimacs_generate_meaning() {

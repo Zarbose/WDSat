@@ -703,7 +703,8 @@ bool substitution_infer(){
     static int_t l;
     while(substitution_up_top_stack) {
         l = substitution_up_stack[--substitution_up_top_stack];
-        if(!substitution_update_tables(l)){ // Pourquoi c'est mieux de le faire ici ?
+        // printf("sub %lld\n",l);
+        if(!substitution_update_tables(l)){
             return false;
         }
 
