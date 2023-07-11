@@ -1,0 +1,2 @@
+cg_annotate --threshold=0.05 cachegrind.out.<PID>
+callgrind_annotate --threshold=99.8 callgrind.out.<PID>
