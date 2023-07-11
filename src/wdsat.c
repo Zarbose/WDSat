@@ -20,9 +20,11 @@
 #include "substitution.h"
 #include "cycle.h"
 
-// #define SUBST
+#define SUBST
 
 #define ENABLE_PRINT
+
+#define FULL_GEN
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -79,7 +81,7 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 	}
 
 
-	sprintf(path_file,"perfo_solveur/result_constr_xorgauss.csv");
+	sprintf(path_file,"performance/test_border/sub_xorgauss_no_enhance.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
 		fprintf(fichier, "%d;%ld;%ld;%f;\n",seed,conf[0],duree_ml,total_ticks);
@@ -188,6 +190,13 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 #endif
 		return true;	
 	}
+
+#ifdef FULL_GEN
+	if ( nb_var > __APRO__){
+		return false;
+	}
+#endif
+
 #ifndef SUBST
 	if(!_cnf_is_undef(set[l])) {
 		return wdsat_solve_rest(l + 1, set_end,conf, dec +1);
@@ -269,6 +278,13 @@ bool wdsat_solve_rest_XG(int_t l, int_t nb_min_vars, int_t conf[], int_t d) {
 		printf("%d", xorgauss_assignment[i]);
 	printf("\n");
 #endif
+
+#ifdef FULL_GEN
+	if ( nb_var > __APRO__){
+		return false;
+	}
+#endif
+
 #ifndef SUBST
 	if(!_cnf_is_undef(set[l])) {
 		return wdsat_solve_rest_XG(l + 1, nb_min_vars, conf, d + 1);

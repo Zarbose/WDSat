@@ -24,7 +24,7 @@ LIB_GEN = $(SRC_GEN:.c=.h)
 all: ../wdsat_solver clean
 
 ../wdsat_solver: $(OBJ_GEN)
-	$(CC) $^ -o $@ $(LDFLAGS) -lm
+	$(CC) $^ -o $@ $(LDFLAGS) -lm -g
 
 %.o: %.c %.h
 	$(CC) $(FLAGS) -c $< 

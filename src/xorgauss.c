@@ -799,20 +799,16 @@ bool xorgauss_initiate_from_dimacs() {
 	return(xorgauss_from_dimacs());
 }
 
-void xorgauss_undo() {
-	int_t _l;
-	const int_t top_step = (xorgauss_step_top) ? xorgauss_step[--xorgauss_step_top] : 0;
-	while(xorgauss_history_top != top_step) {
-		_l = xorgauss_history[--xorgauss_history_top];
-		_xorgauss_unset(_l);
-	}
-	xorgauss_up_top_stack = 0LL;
+
 #ifdef __XG_ENHANCED__
+void xxxxxx_xorgauss_memcpy_xxxxxx(){
 	memcpy(xorgauss_equivalency, xorgauss_equivalency_history[xorgauss_step_top], sizeof(int_t)*__ID_SIZE__*__SZ_GAUSS__);
 	memcpy(xorgauss_equivalent, xorgauss_equivalent_history[xorgauss_step_top], sizeof(bool)*__ID_SIZE__);
 	memcpy(xorgauss_assignment_buffer, xorgauss_assignment_buffer_history[xorgauss_step_top], sizeof(boolean_t)*__SIGNED_ID_SIZE__);
-	memcpy(xorgauss_current_degree, xorgauss_current_degree_history[xorgauss_step_top], sizeof(boolean_t)*__ID_SIZE__);
+	memcpy(xorgauss_current_degree, xorgauss_current_degree_history[xorgauss_step_top], sizeof(boolean_t)*__ID_SIZE__);	
+}
 #else
+void xxxxxx_xorgauss_memcpy_xxxxxx(){
 	const int_t top_step_mask = (xorgauss_step_mask_top) ? xorgauss_step_mask[--xorgauss_step_mask_top] : 0;
 	while(xorgauss_mask_top != top_step_mask)
 	{
@@ -828,6 +824,22 @@ void xorgauss_undo() {
 		xorgauss_reset_boolean_vector(xorgauss_equivalency[xorgauss_reset[--xorgauss_reset_top]]);
 		xorgauss_equivalent[xorgauss_reset[xorgauss_reset_top]] = false;
 	}
+}
+#endif
+
+
+void xorgauss_undo() {
+	int_t _l;
+	const int_t top_step = (xorgauss_step_top) ? xorgauss_step[--xorgauss_step_top] : 0;
+	while(xorgauss_history_top != top_step) {
+		_l = xorgauss_history[--xorgauss_history_top];
+		_xorgauss_unset(_l);
+	}
+	xorgauss_up_top_stack = 0LL;
+#ifdef __XG_ENHANCED__
+	xxxxxx_xorgauss_memcpy_xxxxxx();
+#else
+	xxxxxx_xorgauss_memcpy_xxxxxx();
 #endif
 }
 
