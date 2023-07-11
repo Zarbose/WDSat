@@ -11,8 +11,8 @@ usage() {
 [ $# -lt 2 ] && err "Missing arguments" && usage && exit 1
 
 start_seed=0
-nbf=$2
-o2=$3
+nbf=$1
+o2=$2
 
 for (( i = 0; i < $nbf; i++));do
     echo `expr $i + 1`

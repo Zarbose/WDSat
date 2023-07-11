@@ -12,14 +12,14 @@ usage() {
 }
 
 # o2=$1
-o2=27
+o2=32
 N=`expr $o2 - 2`
 M=`expr \( $o2 \* 2 \) - 1`
 
 # 27 25 53
 
 mydir=$HOME/Documents/WDSat
-benchmark=Documents/WDSat/benchmarks/Rainbow/N_${N}_M_${M}_V2
+benchmark=Documents/WDSat/benchmarks/Rainbow/N_${N}_M_${M}
 src=$HOME/$benchmark
 save=0
 
@@ -44,24 +44,14 @@ while true; do
             shift;;
     esac 
 done
-counter=0
+
 cd $mydir
 i=0
+
 for elm in $src/*;do
     echo "------------- Nouvelle instance "`expr $i + 1`" -------------"
 
-    # if [ $counter -eq 10 ];then
-    #     sleep 270
-    # fi
-
-    # if [ $counter -eq 20 ];then
-    #     sleep 270
-    # fi
-
-    # ./wdsat_solver -S -x -i $elm &
     ./wdsat_solver -S -x -i $elm
-
-    # counter=$((counter+1))
 
     ((i+=1))
 done
