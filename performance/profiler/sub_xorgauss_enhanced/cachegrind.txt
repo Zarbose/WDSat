@@ -1,0 +1,110 @@
+--------------------------------------------------------------------------------
+-- Metadata
+--------------------------------------------------------------------------------
+Invocation:       /usr/local/bin/cg_annotate --threshold=0.05 cachegrind.out.16499
+Command:          ./wdsat_solver -x -i benchmarks/Rainbow/N_25_M_53/rainbow_diff_s_3_q_2_o2_27_m_54_n_81_M_53_N_25.anf
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Threshold:        0.05%
+Annotation:       on
+
+--------------------------------------------------------------------------------
+-- Summary
+--------------------------------------------------------------------------------
+Ir____________________ 
+
+7,811,906,521 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+-- File:function summary
+--------------------------------------------------------------------------------
+  Ir__________________________  file:function
+
+< 6,777,440,851 (86.8%, 86.8%)  ???:
+  3,109,025,043 (39.8%)           xorgauss_infer
+  2,037,322,777 (26.1%)           xorgauss_replace
+    779,671,989 (10.0%)           xorset_infer
+    206,263,524  (2.6%)           xorset_undo
+    159,349,683  (2.0%)           substitution_update_dynamic_part
+    140,479,995  (1.8%)           substitution_infer
+     74,752,562  (1.0%)           substitution_undo
+     44,026,740  (0.6%)           wdsat_set_true
+     38,543,252  (0.5%)           xorgauss_set_true_enhanced
+     34,444,225  (0.4%)           xorgauss_set_true
+     32,729,761  (0.4%)           substitution_update_tables
+     20,427,025  (0.3%)           substitution_set_true
+     19,751,108  (0.3%)           xorset_set_true
+     19,586,340  (0.3%)           xorgauss_undo
+     16,110,098  (0.2%)           wdsat_infer
+     11,192,164  (0.1%)           xorset_last_assigned
+     10,812,466  (0.1%)           substitution_last_assigned
+      9,535,867  (0.1%)           wdsat_solve_rest_XG
+      6,520,434  (0.1%)           xxxxxx_xorgauss_memcpy_xxxxxx
+
+< 1,026,060,884 (13.1%, 99.9%)  ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:
+  1,026,060,051 (13.1%)           __memcpy_avx_unaligned_erms
+
+--------------------------------------------------------------------------------
+-- Function:file summary
+--------------------------------------------------------------------------------
+  Ir__________________________  function:file
+
+> 3,109,025,043 (39.8%, 39.8%)  xorgauss_infer:???
+
+> 2,037,322,777 (26.1%, 65.9%)  xorgauss_replace:???
+
+> 1,026,060,051 (13.1%, 79.0%)  __memcpy_avx_unaligned_erms:./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+
+>   779,671,989 (10.0%, 89.0%)  xorset_infer:???
+
+>   206,263,524  (2.6%, 91.6%)  xorset_undo:???
+
+>   159,349,683  (2.0%, 93.7%)  substitution_update_dynamic_part:???
+
+>   140,479,995  (1.8%, 95.5%)  substitution_infer:???
+
+>    74,752,562  (1.0%, 96.4%)  substitution_undo:???
+
+>    44,026,740  (0.6%, 97.0%)  wdsat_set_true:???
+
+>    38,543,252  (0.5%, 97.5%)  xorgauss_set_true_enhanced:???
+
+>    34,444,225  (0.4%, 97.9%)  xorgauss_set_true:???
+
+>    32,729,761  (0.4%, 98.3%)  substitution_update_tables:???
+
+>    20,427,025  (0.3%, 98.6%)  substitution_set_true:???
+
+>    19,751,108  (0.3%, 98.9%)  xorset_set_true:???
+
+>    19,586,340  (0.3%, 99.1%)  xorgauss_undo:???
+
+>    16,110,098  (0.2%, 99.3%)  wdsat_infer:???
+
+>    11,192,164  (0.1%, 99.5%)  xorset_last_assigned:???
+
+>    10,812,466  (0.1%, 99.6%)  substitution_last_assigned:???
+
+>     9,535,867  (0.1%, 99.7%)  wdsat_solve_rest_XG:???
+
+>     6,520,434  (0.1%, 99.8%)  xxxxxx_xorgauss_memcpy_xxxxxx:???
+
+--------------------------------------------------------------------------------
+-- Annotated source file: ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+--------------------------------------------------------------------------------
+Unannotated because one or more of these original files are unreadable:
+- ./string/../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S
+
+--------------------------------------------------------------------------------
+-- Annotation summary
+--------------------------------------------------------------------------------
+Ir___________________ 
+
+            0            annotated: files known & above threshold & readable, line numbers known
+            0            annotated: files known & above threshold & readable, line numbers unknown
+            0          unannotated: files known & above threshold & two or more non-identical
+1,026,060,884 (13.1%)  unannotated: files known & above threshold & unreadable 
+    8,404,786  (0.1%)  unannotated: files known & below threshold
+6,777,440,851 (86.8%)  unannotated: files unknown
+

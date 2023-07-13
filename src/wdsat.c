@@ -24,7 +24,7 @@
 
 #define ENABLE_PRINT
 
-#define FULL_GEN
+// #define FULL_GEN
 
 /// @var uint_t nb_of_vars;
 /// @brief number of variables
@@ -81,7 +81,7 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 	}
 
 
-	sprintf(path_file,"performance/test_border/sub_xorgauss_no_enhance.csv");
+	sprintf(path_file,"performance/test_border/sub_xorgauss_h.csv");
 	fichier=fopen(path_file,"a+");
 	if (fichier != NULL){
 		fprintf(fichier, "%d;%ld;%ld;%f;\n",seed,conf[0],duree_ml,total_ticks);
@@ -185,6 +185,8 @@ bool wdsat_solve_rest(int_t l, int_t set_end, int_t conf[]/**/, int_t dec /**/) 
 		printf("SAT:\n");
 		for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
 			printf("%d", cnf_assignment[i]);
+		for(int i = 1; i <= dimacs_nb_unary_vars(); i++)
+			printf("%d", substitution_assignment[i]);
 		printf("\nconf:%ld\n", conf[0]);
 		return false;
 #endif
@@ -391,6 +393,7 @@ bool wdsat_infer(const int_t l, int_t conf[], int_t d) {
 	if(!wdsat_set_true(l)){
 		return false;
 	}
+
 	while(_loop_pass) {
 		// finalyse with XORGAUSS
 		_continue = false;

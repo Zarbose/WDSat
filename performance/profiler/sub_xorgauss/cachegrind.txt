@@ -1,0 +1,90 @@
+--------------------------------------------------------------------------------
+-- Metadata
+--------------------------------------------------------------------------------
+Invocation:       /usr/local/bin/cg_annotate --threshold=0.05 cachegrind.out.15007
+Command:          ./wdsat_solver -x -i benchmarks/Rainbow/N_25_M_53/rainbow_diff_s_3_q_2_o2_27_m_54_n_81_M_53_N_25.anf
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Threshold:        0.05%
+Annotation:       on
+
+--------------------------------------------------------------------------------
+-- Summary
+--------------------------------------------------------------------------------
+Ir______________________ 
+
+499,716,183,203 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+-- File:function summary
+--------------------------------------------------------------------------------
+  Ir______________________________  file:function
+
+< 499,707,127,172 (100.0%, 100.0%)  ???:
+  272,463,280,459  (54.5%)            xorgauss_infer
+   81,840,224,675  (16.4%)            xxxxxx_xorgauss_memcpy_xxxxxx
+   77,057,070,029  (15.4%)            xorset_infer
+   18,642,925,380   (3.7%)            xorset_undo
+   13,767,136,298   (2.8%)            substitution_infer
+   11,902,397,265   (2.4%)            substitution_update_dynamic_part
+    6,156,403,877   (1.2%)            substitution_undo
+    3,815,300,616   (0.8%)            wdsat_set_true
+    2,972,631,525   (0.6%)            substitution_update_tables
+    2,377,374,952   (0.5%)            xorgauss_set_true
+    1,782,654,756   (0.4%)            xorgauss_undo
+    1,764,918,016   (0.4%)            substitution_set_true
+    1,740,959,220   (0.3%)            xorset_set_true
+    1,252,515,085   (0.3%)            wdsat_infer
+      975,882,186   (0.2%)            substitution_last_assigned
+      964,594,584   (0.2%)            xorset_last_assigned
+
+--------------------------------------------------------------------------------
+-- Function:file summary
+--------------------------------------------------------------------------------
+  Ir_____________________________  function:file
+
+> 272,463,280,459 (54.5%,  54.5%)  xorgauss_infer:???
+
+>  81,840,224,675 (16.4%,  70.9%)  xxxxxx_xorgauss_memcpy_xxxxxx:???
+
+>  77,057,070,029 (15.4%,  86.3%)  xorset_infer:???
+
+>  18,642,925,380  (3.7%,  90.1%)  xorset_undo:???
+
+>  13,767,136,298  (2.8%,  92.8%)  substitution_infer:???
+
+>  11,902,397,265  (2.4%,  95.2%)  substitution_update_dynamic_part:???
+
+>   6,156,403,877  (1.2%,  96.4%)  substitution_undo:???
+
+>   3,815,300,616  (0.8%,  97.2%)  wdsat_set_true:???
+
+>   2,972,631,525  (0.6%,  97.8%)  substitution_update_tables:???
+
+>   2,377,374,952  (0.5%,  98.3%)  xorgauss_set_true:???
+
+>   1,782,654,756  (0.4%,  98.6%)  xorgauss_undo:???
+
+>   1,764,918,016  (0.4%,  99.0%)  substitution_set_true:???
+
+>   1,740,959,220  (0.3%,  99.3%)  xorset_set_true:???
+
+>   1,252,515,085  (0.3%,  99.6%)  wdsat_infer:???
+
+>     975,882,186  (0.2%,  99.8%)  substitution_last_assigned:???
+
+>     964,594,584  (0.2%, 100.0%)  xorset_last_assigned:???
+
+--------------------------------------------------------------------------------
+-- Annotation summary
+--------------------------------------------------------------------------------
+Ir______________________ 
+
+              0             annotated: files known & above threshold & readable, line numbers known
+              0             annotated: files known & above threshold & readable, line numbers unknown
+              0           unannotated: files known & above threshold & two or more non-identical
+              0           unannotated: files known & above threshold & unreadable 
+      9,056,031   (0.0%)  unannotated: files known & below threshold
+499,707,127,172 (100.0%)  unannotated: files unknown
+

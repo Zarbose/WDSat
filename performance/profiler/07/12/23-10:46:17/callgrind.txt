@@ -1,0 +1,42 @@
+--------------------------------------------------------------------------------
+Profile data file 'callgrind.out.15433' (creator: callgrind-3.22.0.GIT)
+--------------------------------------------------------------------------------
+I1 cache: 
+D1 cache: 
+LL cache: 
+Timerange: Basic block 0 - 88088819486
+Trigger: Program termination
+Profiled target:  ./wdsat_solver -x -i benchmarks/Rainbow/N_25_M_53/rainbow_diff_s_3_q_2_o2_27_m_54_n_81_M_53_N_25.anf (PID 15433, part 1)
+Events recorded:  Ir
+Events shown:     Ir
+Event sort order: Ir
+Thresholds:       99.8
+Include dirs:     
+User annotated:   
+Auto-annotation:  on
+
+--------------------------------------------------------------------------------
+Ir                       
+--------------------------------------------------------------------------------
+499,387,081,802 (100.0%)  PROGRAM TOTALS
+
+--------------------------------------------------------------------------------
+Ir                        file:function
+--------------------------------------------------------------------------------
+272,463,280,459 (54.56%)  ???:xorgauss_infer [/home/simon/Documents/WDSat/wdsat_solver]
+ 81,840,224,675 (16.39%)  ???:xxxxxx_xorgauss_memcpy_xxxxxx [/home/simon/Documents/WDSat/wdsat_solver]
+ 77,057,070,029 (15.43%)  ???:xorset_infer [/home/simon/Documents/WDSat/wdsat_solver]
+ 18,642,925,380 ( 3.73%)  ???:xorset_undo [/home/simon/Documents/WDSat/wdsat_solver]
+ 13,601,146,103 ( 2.72%)  ???:substitution_infer [/home/simon/Documents/WDSat/wdsat_solver]
+ 11,902,397,265 ( 2.38%)  ???:substitution_update_dynamic_part [/home/simon/Documents/WDSat/wdsat_solver]
+  5,993,541,143 ( 1.20%)  ???:substitution_undo [/home/simon/Documents/WDSat/wdsat_solver]
+  3,815,300,616 ( 0.76%)  ???:wdsat_set_true [/home/simon/Documents/WDSat/wdsat_solver]
+  2,972,631,525 ( 0.60%)  ???:substitution_update_tables [/home/simon/Documents/WDSat/wdsat_solver]
+  2,377,374,952 ( 0.48%)  ???:xorgauss_set_true [/home/simon/Documents/WDSat/wdsat_solver]
+  1,782,654,756 ( 0.36%)  ???:xorgauss_undo [/home/simon/Documents/WDSat/wdsat_solver]
+  1,764,918,016 ( 0.35%)  ???:substitution_set_true [/home/simon/Documents/WDSat/wdsat_solver]
+  1,740,959,220 ( 0.35%)  ???:xorset_set_true [/home/simon/Documents/WDSat/wdsat_solver]
+  1,252,515,085 ( 0.25%)  ???:wdsat_infer [/home/simon/Documents/WDSat/wdsat_solver]
+    975,882,186 ( 0.20%)  ???:substitution_last_assigned [/home/simon/Documents/WDSat/wdsat_solver]
+    964,594,584 ( 0.19%)  ???:xorset_last_assigned [/home/simon/Documents/WDSat/wdsat_solver]
+

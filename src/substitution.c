@@ -213,10 +213,8 @@ void substitution_update_dynamic_part(const int_t _l){
         substitution_add_check_history_stack(-_y);
         substitution_add_check_history_stack(_x);
         substitution_add_check_history_stack(-_x);
-        // substitution_add_check_history_stack(-_l);
 
         substitution_values[_x][substitution_index[_x]++]=_y;
-        // substitution_values[_x][substitution_index[_x]++]=-_l;
 
         substitution_values[_y][substitution_index[_y]++]=_x;
 

@@ -12,8 +12,8 @@ usage() {
 }
 
 ### Constantes
-xorgauss=0
-input_file=$1
+flag_xorgauss=0
+
 mydir=$HOME/Documents/WDSat
 dest_dir=$(date +%D-%T)
 
@@ -29,7 +29,7 @@ while true; do
             exit 0
             shift;;
         -x) 
-            xorgauss=1
+            flag_xorgauss=1
             shift;;
         --)
             shift
@@ -39,6 +39,7 @@ while true; do
             shift;;
     esac 
 done
+input_file=$1
 ! [ -e $mydir/$input_file ] && usage && exit 2
 
 
@@ -47,7 +48,7 @@ mkdir -p $mydir/performance/profiler/$dest_dir
 
 string_options=""
 
-if [ $xorgauss -eq 1 ];then
+if [ $flag_xorgauss -eq 1 ];then
     string_options="-x -i $input_file"
 else
     string_options="-i $input_file"

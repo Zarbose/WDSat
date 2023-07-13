@@ -1,6 +1,6 @@
 
 //enable the XG-ext module (must use anf as input)
-// #define __XG_ENHANCED__
+#define __XG_ENHANCED__
 
 
 //find all solutions instead of only one
@@ -148,7 +148,7 @@
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ 63
 # define __MAX_XEQ_SIZE__ 930
-# define __APRO__ 15*/
+# define __APRO__ 19*/
 
 /** Rainbow : N=35 M=73 **/
 /*# define __MAX_ANF_ID__ 36 // make it +1
@@ -159,4 +159,4 @@
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ 73
 # define __MAX_XEQ_SIZE__ 1260
-# define __APRO__ 15*/
+# define __APRO__ 23*/
