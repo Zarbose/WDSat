@@ -54,7 +54,7 @@ static int_t wdsat_substitution_up_top_stack;
 
 static int_t set[__ID_SIZE__];
 
-void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *filename){
+void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *filename){ // Fonction de sauvegarde du temps d'exécution, nb conflits, ... dans un fichier
 	clock_t fin = clock();
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;
 
@@ -92,7 +92,7 @@ void wdsat_save_result(int debut,ticks clockcycles_init ,int_t conf[],char *file
 	printf("End seed %d\n",seed);
 }
 
-void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){
+void wdsat_fprint_result(int_t conf[], int debut, ticks clockcycles_init){ // Fonction de print des résultats du solveur
 
 	clock_t fin = clock();
 	int duree_ml = 1000*(fin-debut)/CLOCKS_PER_SEC;

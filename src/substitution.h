@@ -42,7 +42,7 @@ extern int_t *substitution_history_inte_stack; // Pile qui contient des couple d
 extern int_t substitution_history_inte_top; // Haut de la pile substitution_history_inte_stack
 
 extern int_t substitution_history_main_stack[__ID_SIZE__]; // Pile qui permet de savoir jusqu'ou dépiler substitution_history_inte_stack
-extern int_t substitution_history_main_top;
+extern int_t substitution_history_main_top; // Haut de la pile substitution_history_main_stack
 
 extern int_t *substitution_history_inte_index_stack; // Index pour empêcher les doublons dans substitution_history_inte_stack
 extern int_t substitution_history_tag; // Tag utilisé dans substitution_history_inte_index_stack pour empêcher les doublons
