@@ -18,7 +18,7 @@ extern bool substitution_equivalent[__ID_SIZE__]; // Tableau qui permet de savoi
 
 // unary_var <=> no_unary_var
 extern int_t substitution_equivalency_unary[__MAX_ANF_ID__][__MAX_ID__]; // Tableau qui contient des équivalences du type unary_var <=> no_unary_var
-extern int_t substitution_equivalent_index_unary[__MAX_ANF_ID__]; // Index qui permet de connaître la longueur d'une équivalence (ex : 26 <=> 3 1 4) dans le tableau substitution_equivalency_unary 
+extern int_t substitution_equivalent_index_unary[__MAX_ANF_ID__]; // Index qui permet de connaître la longueur d'une équivalence (ex : 1 <=> 26 27 28) dans le tableau substitution_equivalency_unary 
 
 // stack structures
 extern int_t substitution_up_stack[__ID_SIZE__]; // Pile de propagation du module
