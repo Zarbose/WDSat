@@ -181,14 +181,14 @@ void substitution_reset_stack(){
 }
 
 // Add to stack functions
-void substitution_add_check_stack(int_t v){
+void substitution_add_check_stack(int_t v){ // Ajout d'un élément dans la pile de propagation en testant s'il n'y est déjà pas présent
     if ( !(substitution_index_stack[v] == substitution_tag) ){
         substitution_up_stack[substitution_up_top_stack++]=v;
         substitution_index_stack[v]=substitution_tag;
     }
 }
 
-void substitution_add_check_history_stack(int_t v){
+void substitution_add_check_history_stack(int_t v){ // Ajout d'un coulpe d'éléments dans l'une des piles de backtrack en testant s'il n'y est déjà pas présent
     if ( !(substitution_history_inte_index_stack[v] == substitution_history_tag) ){
         substitution_history_inte_stack[substitution_history_inte_top++]=substitution_index[v];
         substitution_history_inte_stack[substitution_history_inte_top++]=v;
@@ -197,7 +197,7 @@ void substitution_add_check_history_stack(int_t v){
 }
 
 // Update "main" struture functions
-void substitution_update_dynamic_part(const int_t _l){
+void substitution_update_dynamic_part(const int_t _l){ // Mise à jour du tableau substitution_values en utilisant les règles dynamiques
     const uint_t _uv = (uint_t) ((_l < 0) ? -_l : _l);
     for (int j = 0; j<substitution_equivalent_index_unary[_uv]; j+=2){
         int_t _x = substitution_equivalency_unary[_uv][j];
@@ -219,7 +219,7 @@ void substitution_update_dynamic_part(const int_t _l){
     }
 }
 
-bool substitution_update_tables(const int_t l){
+bool substitution_update_tables(const int_t l){ // Mise à jour du tableau substitution_values
     const bool _tf = (l < 0) ? false : true;
     if (substitution_is_unary_var(l)){
         if (_tf) substitution_update_dynamic_part(l);
@@ -259,7 +259,7 @@ bool substitution_update_tables(const int_t l){
 }
 
 // Init functions
-void substitution_init_static_part(){
+void substitution_init_static_part(){ // Initialisation du tableau substitution_values en utilisant les règles statiques
     for(int_t i = 1; i <= substitution_nb_unary_vars; ++i) {
         for (int j = 0; j<substitution_equivalent_index_unary[i]; j+=2){
             int_t _x1 = i;
