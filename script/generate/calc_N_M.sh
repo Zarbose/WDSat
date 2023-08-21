@@ -6,7 +6,7 @@
 
 o2=$1
 
-n=`expr $o2 - 2`
-m=`expr \( $o2 \* 2 \) - 1`
+n=$(expr $o2 - 2)
+m=$(expr \( $o2 \* 2 \) - 1)
 
 echo "n = $n m = $m"

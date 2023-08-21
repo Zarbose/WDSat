@@ -1,4 +1,5 @@
 import sys
+from math import *
 
 def usage():
     print( "\tusage: python3 create_wdsat_config_rainbow.y N M" )
@@ -41,4 +42,5 @@ elif len( sys.argv ) == 3:
 # define __MAX_EQ__ {5}
 # define __MAX_EQ_SIZE__ 4 //make it +1
 # define __MAX_XEQ__ {1}
-# define __MAX_XEQ_SIZE__ {4}*/\n""".format(N, M, N + 1, int(N*(N+1)/2), N * (N + 1), int(M*(M-1)/2)))
+# define __MAX_XEQ_SIZE__ {4}*/
+# define __APRO__ {6}\n""".format(N, M, N + 1, int(N*(N+1)/2), N * (N + 1), int(M*(M-1)/2)),(int(N-sqrt(2*M))+1))
